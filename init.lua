@@ -1,0 +1,7 @@
+require('plugins')
+require('settings')
+require('cf-compe')
+require('cf-lspsaga')
+require('cf-lsp')
+require('cf-treesitter')
+require('keymaps')
