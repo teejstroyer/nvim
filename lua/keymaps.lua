@@ -8,14 +8,13 @@ let mapleader="\<Space>"
 
 inoremap <expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"
 inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
-nnoremap <silent> <leader><leader> :WhichKey '<Space>'<CR>
 nnoremap <silent> <leader>J :resize -2<CR>
 nnoremap <silent> <leader>K :resize +2<CR>
 nnoremap <silent> <leader>H :vertical resize +2<CR>
 nnoremap <silent> <leader>L :vertical resize -2<CR>
 nnoremap <silent> <leader>jj <C-W>j
 nnoremap <silent> <leader>kk <C-W>k
-nnoremap <silent> <leader>hh <C-W>h
+nnoremap <silent> <leader>hh  <C-W>h
 nnoremap <silent> <leader>ll <C-W>l
 nnoremap <silent> <leader>gh <cmd>lua require'lspsaga.provider'.lsp_finder()<CR>
 nnoremap <silent> <leader>ca <cmd>lua require('lspsaga.codeaction').code_action()<CR>

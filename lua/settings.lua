@@ -1,7 +1,7 @@
 local go = vim.o  -- global option
 local wo = vim.wo -- window option
 local bo = vim.bo -- buffer option
-
+--
 bo.expandtab = true
 bo.smartindent = true        -- Makes indenting smart
 go.backup = false            -- This is recommended by coc
@@ -24,8 +24,7 @@ go.showtabline = 2           -- Always show tabs
 go.smartcase = true
 go.splitbelow = true         -- Horizontal splits will automatically be below
 go.splitright = true         -- Vertical splits will automatically be to the right
-go.swapfile = true
-go.t_Co = "256"              -- Support 256 colors
+go.swapfile = false
 go.termguicolors = true      -- set term giu colors most terminals support this
 go.timeoutlen = 100          -- By default timeoutlen is 1000 ms
 go.title = true
@@ -37,7 +36,7 @@ wo.number = true
 wo.relativenumber = true
 wo.signcolumn = "yes"        -- Always show the signcolumn, otherwise it would shift the text each time
 wo.wrap = false
--- vim cmds
+---- vim cmds
 vim.cmd('set colorcolumn=99999')      -- fix indentline for now
 vim.cmd('set inccommand=split')       -- Make substitution work in realtime
 vim.cmd('set iskeyword+=-')           -- treat dash separated words as a word text object"
@@ -47,3 +46,4 @@ vim.cmd('set ts=4')                   -- Insert 2 spaces for a tab
 vim.cmd('set whichwrap+=<,>,[,],h,l') -- move to next line with theses keys
 vim.cmd('syntax on')                  -- move to next line with theses keys
 vim.cmd('colorscheme evening')
+--
