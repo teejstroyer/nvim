@@ -5,7 +5,7 @@ require("which-key").setup {
         -- the presets plugin, adds help for a bunch of default keybindings in Neovim
         -- No actual key bindings are created
         spelling = {
-            enabled = false, -- enabling this will show WhichKey when pressing z= to select spelling suggestions
+            enabled = true, -- enabling this will show WhichKey when pressing z= to select spelling suggestions
             suggestions = 20, -- how many suggestions should be shown in the list?
         },
         presets = {
@@ -33,7 +33,7 @@ require("which-key").setup {
         separator = "➜", -- symbol used between a key and it's label
         group = "+", -- symbol prepended to a group
     },
-    window = {
+    window =  {
         border = "none", -- none, single, double, shadow
         position = "bottom", -- bottom, top
         margin = { 1, 0, 1, 0 }, -- extra window margin [top, right, bottom, left]
