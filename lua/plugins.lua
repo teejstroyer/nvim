@@ -16,6 +16,7 @@ return require('packer').startup(function()
   use {'nvim-treesitter/nvim-treesitter', run = ':TSUpdate', config = function() require('cf-treesitter') end}
   use {'folke/which-key.nvim', config = function() require('cf-whichkey') end}
   --LSP PLUGINS
+  use 'nvim-lua/completion-nvim'
   use 'OmniSharp/omnisharp-vim'           --C# LSP
   use 'neovim/nvim-lspconfig'             --LSP configuration
   use {'glepnir/lspsaga.nvim', config = function() require('cf-lspsaga') end} --Pretty pop ups
@@ -23,5 +24,11 @@ return require('packer').startup(function()
   use {'kabouzeid/nvim-lspinstall', config = function() require('cf-lsp') end} --LSP INSTALLER AND SETUP
   use 'dart-lang/dart-vim-plugin'
   --COMPLETION
-  use {'hrsh7th/nvim-compe', config = function() require('cf-compe') end} --Completion Engine
+  use {
+      "hrsh7th/nvim-cmp",
+      requires = {
+          "hrsh7th/vim-vsnip",
+          "hrsh7th/cmp-buffer",
+      },
+      config = function() require('cf-cmp') end }
 end)

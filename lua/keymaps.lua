@@ -1,11 +1,6 @@
 vim.cmd([[
-set notimeout
-set ttimeout
-set timeoutlen=500
-
 nnoremap <Space> <NOP>
 let mapleader="\<Space>"
-
 inoremap <expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"
 inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
 nnoremap <silent> <leader>J :resize -2<CR>
