@@ -2,6 +2,7 @@ local go = vim.o  -- global option
 local wo = vim.wo -- window option
 local bo = vim.bo -- buffer option
 --
+--
 bo.expandtab = true
 bo.smartindent = true        -- Makes indenting smart
 go.backup = false            -- This is recommended by coc
@@ -26,7 +27,7 @@ go.splitbelow = true         -- Horizontal splits will automatically be below
 go.splitright = true         -- Vertical splits will automatically be to the right
 go.swapfile = false
 go.termguicolors = true      -- set term giu colors most terminals support this
-go.timeoutlen = 100          -- By default timeoutlen is 1000 ms
+go.timeoutlen = 400          -- By default timeoutlen is 1000 ms
 go.title = true
 go.titlestring="%<%F%=%l/%L - nvim"
 go.updatetime = 300          -- Faster completion
@@ -46,4 +47,3 @@ vim.cmd('set ts=4')                   -- Insert 2 spaces for a tab
 vim.cmd('set whichwrap+=<,>,[,],h,l') -- move to next line with theses keys
 vim.cmd('syntax on')                  -- move to next line with theses keys
 vim.cmd('colorscheme evening')
---
