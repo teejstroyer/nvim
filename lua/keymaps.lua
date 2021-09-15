@@ -26,4 +26,5 @@ nnoremap <silent> <leader>n <cmd>lua require'lspsaga.diagnostic'.lsp_jump_diagno
 nnoremap <silent> <leader>; <cmd>lua require'lspsaga.diagnostic'.lsp_jump_diagnostic_next()<CR>
 nnoremap <silent> <leader>ft <cmd>lua require('lspsaga.floaterm').open_float_terminal()<CR> 
 tnoremap <silent> <leader>ft <C-\><C-n>:lua require('lspsaga.floaterm').close_float_terminal()<CR>
+nnoremap <silent> <leader><leader> :WhichKey<CR>
 ]])
