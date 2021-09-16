@@ -35,4 +35,9 @@ return require('packer').startup(function()
           "hrsh7th/cmp-buffer",
       }
   }
+  use {'tzachar/cmp-tabnine', 
+      run='./install.sh',
+      requires = 'hrsh7th/nvim-cmp', 
+      config = function() require('cf-tabnine') end;
+  }
 end)

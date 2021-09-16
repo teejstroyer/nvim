@@ -18,8 +18,9 @@ cmp.setup({
 	},
 	sources = { 
 		{ name = 'nvim_lsp' },
-		{ name = 'cmp-buffer' },
-		{ name = 'vim-vsnip'},
+		{ name = 'cmp_tabnine' },
+		{ name = 'cmp_buffer' },
+		{ name = 'vim_vsnip'},
 		{ name = 'buffer' },
 	},
 })
