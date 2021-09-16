@@ -24,20 +24,19 @@ return require('packer').startup(function()
   use 'dart-lang/dart-vim-plugin'
   --COMPLETION
   use 'hrsh7th/cmp-nvim-lsp' -- LSP source for nvim-cmp
-  use 'saadparwaiz1/cmp_luasnip' -- Snippets source for nvim-cmp
-  use 'L3MON4D3/LuaSnip' -- Snippets plugin
+  use 'L3MON4D3/LuaSnip' -- Snippets Engine
+  use { 'saadparwaiz1/cmp_luasnip' } -- LuaSnip bindings for cmp
   -- Autocompletion plugin
   use {
       'hrsh7th/nvim-cmp',
       config = function () require('cf-cmp') end,
       requires = {
-          "hrsh7th/vim-vsnip",
           "hrsh7th/cmp-buffer",
       }
   }
-  use {'tzachar/cmp-tabnine', 
+  use {'tzachar/cmp-tabnine',
       run='./install.sh',
-      requires = 'hrsh7th/nvim-cmp', 
+      requires = 'hrsh7th/nvim-cmp',
       config = function() require('cf-tabnine') end;
   }
 end)
