@@ -41,7 +41,6 @@ require('packer').startup(function()
   use 'L3MON4D3/LuaSnip'
   use {'tami5/lspsaga.nvim', branch='nvim51'}
   use {'folke/trouble.nvim', requires = 'kyazdani42/nvim-web-devicons', config = function() require('trouble').setup {} end }
-  use {'tzachar/cmp-tabnine', run='./install.sh', requires= 'hrsh7th/nvim-cmp'}
   -- Language Specific
   use 'OmniSharp/omnisharp-vim'           --C# LSP
   use 'dart-lang/dart-vim-plugin'
@@ -150,18 +149,6 @@ lsp_installer.on_server_ready(function(server)
 end)
 
 ------------------------------------------------------------------
--- TABNINE -------------------------------------------------------
-------------------------------------------------------------------
-local tabnine = require('cmp_tabnine.config')
-tabnine:setup({
-        max_lines = 1000;
-        max_num_results = 20;
-        sort = true;
-	run_on_every_keystroke = true;
-	snippet_placeholder = '..~';
-})
-
-------------------------------------------------------------------
 -- CMP -----------------------------------------------------------
 ------------------------------------------------------------------
 local cmp = require 'cmp'
@@ -189,7 +176,6 @@ cmp.setup({
     sources = cmp.config.sources({
         { name = 'nvim_lsp' },
         { name = 'luasnip' }, -- For luasnip users.
-        { name = 'cmp-tabnine' },
     }, {
         { name = 'buffer' },
     })
