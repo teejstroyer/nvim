@@ -31,6 +31,7 @@ require('packer').startup({function()
   use 'luochen1990/rainbow'               --Rainbow Braces
   use {'nvim-treesitter/nvim-treesitter', run = ':TSUpdate'}
   use 'folke/which-key.nvim'
+
   -- LSP
   use { 'neovim/nvim-lspconfig', requires = {'hrsh7th/nvim-cmp'}, }
   use 'williamboman/nvim-lsp-installer'
@@ -40,9 +41,6 @@ require('packer').startup({function()
   use 'L3MON4D3/LuaSnip'
   use {'tami5/lspsaga.nvim', branch='nvim51'}
   use {'folke/trouble.nvim', requires = 'kyazdani42/nvim-web-devicons', config = function() require('trouble').setup {} end }
-  -- Language Specific
-  --use 'OmniSharp/omnisharp-vim'           --C# LSP
-
   --Auto install/setup packer 
   if packer_bootstrap then 
     require('packer').sync()
@@ -211,28 +209,27 @@ nnoremap ("<leader>ll","<C-W>l","silent")
 nnoremap ("<leader>vs",":vs<CR>")
 nnoremap ("<leader>hs",":sp<CR>")
 nnoremap ("<leader><leader>",":WhichKey<CR>","silent")
-nnoremap ("gh","<cmd require'lspsaga.provider'.lsp_finder()<CR>","silent")
-nnoremap ("<leader>gh","<cmd>lua require'lspsaga.provider'.lsp_finder()<CR>","silent")
-nnoremap ("<leader>ca","<cmd>lua require('lspsaga.codeaction').code_action()<CR>","silent")
-vnoremap ("<leader>ca",":<C-U>lua require('lspsaga.codeaction').range_code_action()<CR>","silent")
-nnoremap ("K","<cmd>lua require('lspsaga.hover').render_hover_doc()<CR>","silent")
-nnoremap ("<C-j>","<cmd>lua require('lspsaga.action').smart_scroll_with_saga(1)<CR>","silent")
-nnoremap ("<C-k>","<cmd>lua require('lspsaga.action').smart_scroll_with_saga(-1)<CR>","silent")
-nnoremap ("<leader>gs","<cmd>lua require('lspsaga.signaturehelp').signature_help()<CR>","silent")
-nnoremap ("<leader>gr","<cmd>lua require('lspsaga.rename').rename()<CR>","silent")
-nnoremap ("<leader>gd","<cmd>lua require'lspsaga.provider'.preview_definition()<CR>","silent")
-nnoremap ("<leader>cd","<cmd>lua require'lspsaga.diagnostic'.show_line_diagnostics()<CR>","silent")
-nnoremap ("<leader>cc","<cmd>lua require'lspsaga.diagnostic'.show_cursor_diagnostics()<CR>","silent")
-nnoremap ("<leader>n","<cmd>lua require'lspsaga.diagnostic'.lsp_jump_diagnostic_prev()<CR>","silent")
-nnoremap ("<leader>;","<cmd>lua require'lspsaga.diagnostic'.lsp_jump_diagnostic_next()<CR>","silent")
-nnoremap ("<leader>ft","<cmd>lua require('lspsaga.floaterm').open_float_terminal()<CR> ","silent")
-tnoremap ("<leader>ft","<C-\\><C-n>:lua require('lspsaga.floaterm').close_float_terminal()<CR>","silent")
 nnoremap ("<leader>xx","<cmd>TroubleToggle<cr>","silent")
 nnoremap ("<leader>xw","<cmd>TroubleToggle lsp_workspace_diagnostics<cr>")
 nnoremap ("<leader>xd","<cmd>TroubleToggle lsp_document_diagnostics<cr>")
 nnoremap ("<leader>xq","<cmd>TroubleToggle quickfix<cr>")
 nnoremap ("<leader>xl","<cmd>TroubleToggle loclist<cr>")
+
 nnoremap ("gR","<cmd>TroubleToggle lsp_references<cr>")
+nnoremap ("gD", "<cmd>lua vim.lsp.buf.declaration()<CR>")
+nnoremap ("gd", "<cmd>lua vim.lsp.buf.definition()<CR>")
+nnoremap ("K", "<cmd>lua vim.lsp.buf.hover()<CR>")
+nnoremap ("gi", "<cmd>lua vim.lsp.buf.implementation()<CR>")
+nnoremap ("<C-k>", "<cmd>lua vim.lsp.buf.signature_help()<CR>")
+nnoremap ("<leader>wa", "<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>")
+nnoremap ("<leader>wr", "<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>")
+nnoremap ("<leader>wl", "<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>")
+nnoremap ("<leader>D", "<cmd>lua vim.lsp.buf.type_definition()<CR>")
+nnoremap ("<leader>rn", "<cmd>lua vim.lsp.buf.rename()<CR>")
+nnoremap ("<leader>ca", "<cmd>lua vim.lsp.buf.code_action()<CR>")
+nnoremap ("gr", "<cmd>lua vim.lsp.buf.references()<CR>")
+nnoremap ("<leader>f", "<cmd>lua vim.lsp.buf.formatting()<CR>")
+
 inoremap("<Tab>", [[pumvisible() ? "\<C-n>" : "\<Tab>"]], "silent", "expr")
 inoremap("<S-Tab>", [[pumvisible() ? "\<C-p>" : "\<S-Tab>"]], "silent", "expr")
 
