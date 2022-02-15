@@ -17,14 +17,13 @@ local wo = vim.wo -- window option
 local bo = vim.bo -- buffer option
 local fn = vim.fn
 local execute = vim.api.nvim_command
-local install_path = fn.stdpath('data')..'/site/pack/packer/opt/packer.nvim'
 
+local install_path = fn.stdpath('data')..'/site/pack/packer/start/packer.nvim'
 if fn.empty(fn.glob(install_path)) > 0 then
-  fn.system({'git', 'clone', 'https://github.com/wbthomason/packer.nvim', install_path})
-  execute 'packadd packer.nvim'
+  packer_bootstrap = fn.system({'git', 'clone', '--depth', '1', 'https://github.com/wbthomason/packer.nvim', install_path})
 end
 
-require('packer').startup(function()
+require('packer').startup({function()
   use 'wbthomason/packer.nvim' -- packer manages itself
 	use "b0o/mapx.nvim"
   use 'airblade/vim-gitgutter'            --Git gutter symbols
@@ -42,10 +41,18 @@ require('packer').startup(function()
   use {'tami5/lspsaga.nvim', branch='nvim51'}
   use {'folke/trouble.nvim', requires = 'kyazdani42/nvim-web-devicons', config = function() require('trouble').setup {} end }
   -- Language Specific
-  use 'OmniSharp/omnisharp-vim'           --C# LSP
-  use 'dart-lang/dart-vim-plugin'
+  --use 'OmniSharp/omnisharp-vim'           --C# LSP
 
-end)
+  --Auto install/setup packer 
+  if packer_bootstrap then 
+    require('packer').sync()
+  end
+end,
+config = {
+  display = {
+    open_fn = require('packer.util').float,
+  }
+}})
 ------------------------------------------------------------------
 -- SETTINGS ------------------------------------------------------
 ------------------------------------------------------------------
