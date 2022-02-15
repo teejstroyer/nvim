@@ -38,7 +38,14 @@ require('packer').startup({function()
     requires = { {'nvim-lua/plenary.nvim'} }
   }
 
-  -- LSP
+  use {
+    'kyazdani42/nvim-tree.lua',
+    requires = {
+      'kyazdani42/nvim-web-devicons', -- optional, for file icon
+    },
+    config = function() require'nvim-tree'.setup {} end
+  }
+  -- LSP 
   use { 'neovim/nvim-lspconfig', requires = {'hrsh7th/nvim-cmp'}, }
   use 'williamboman/nvim-lsp-installer'
   use 'hrsh7th/nvim-cmp'
@@ -243,6 +250,10 @@ nnoremap ("<leader>ff", "<cmd>Telescope find_files<cr>")
 nnoremap ("<leader>fg", "<cmd>Telescope live_grep<cr>")
 nnoremap ("<leader>fb", "<cmd>Telescope buffers<cr>")
 nnoremap ("<leader>fh", "<cmd>Telescope help_tags<cr>")
+
+nnoremap ("<leader>t", ":NvimTreeToggle<CR>")
+nnoremap ("<leader>tr", ":NvimTreeRefresh<CR>")
+nnoremap ("<leader>ts", ":NvimTreeFindFile<CR>")
 
 inoremap("<Tab>", [[pumvisible() ? "\<C-n>" : "\<Tab>"]], "silent", "expr")
 inoremap("<S-Tab>", [[pumvisible() ? "\<C-p>" : "\<S-Tab>"]], "silent", "expr")
