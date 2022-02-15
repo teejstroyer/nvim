@@ -29,8 +29,14 @@ require('packer').startup({function()
   use 'airblade/vim-gitgutter'            --Git gutter symbols
   use 'lilydjwg/colorizer'                --Colors hex
   use 'luochen1990/rainbow'               --Rainbow Braces
+  use { "ellisonleao/gruvbox.nvim" }      --Colorscheme
   use {'nvim-treesitter/nvim-treesitter', run = ':TSUpdate'}
   use 'folke/which-key.nvim'
+  use {'stevearc/dressing.nvim'}
+  use {
+    'nvim-telescope/telescope.nvim',
+    requires = { {'nvim-lua/plenary.nvim'} }
+  }
 
   -- LSP
   use { 'neovim/nvim-lspconfig', requires = {'hrsh7th/nvim-cmp'}, }
@@ -41,8 +47,8 @@ require('packer').startup({function()
   use 'L3MON4D3/LuaSnip'
   use {'tami5/lspsaga.nvim', branch='nvim51'}
   use {'folke/trouble.nvim', requires = 'kyazdani42/nvim-web-devicons', config = function() require('trouble').setup {} end }
-  --Auto install/setup packer 
-  if packer_bootstrap then 
+  --Auto install/setup packer
+  if packer_bootstrap then
     require('packer').sync()
   end
 end,
@@ -54,6 +60,10 @@ config = {
 ------------------------------------------------------------------
 -- SETTINGS ------------------------------------------------------
 ------------------------------------------------------------------
+
+vim.o.background = "dark" -- or "light" for light mode
+vim.cmd([[colorscheme gruvbox]])
+
 bo.expandtab = true
 bo.smartindent = true        -- Makes indenting smart
 go.backup = false            -- This is recommended by coc
@@ -97,7 +107,6 @@ vim.cmd('set sw=2')                   -- Change the number of space characters i
 vim.cmd('set ts=2')                   -- Insert 2 spaces for a tab
 vim.cmd('set whichwrap+=<,>,[,],h,l') -- move to next line with theses keys
 vim.cmd('syntax on')                  -- move to next line with theses keys
-vim.cmd('colorscheme evening')
 
 ------------------------------------------------------------------
 -- WHICH KEY -----------------------------------------------------
@@ -229,6 +238,11 @@ nnoremap ("<leader>rn", "<cmd>lua vim.lsp.buf.rename()<CR>")
 nnoremap ("<leader>ca", "<cmd>lua vim.lsp.buf.code_action()<CR>")
 nnoremap ("gr", "<cmd>lua vim.lsp.buf.references()<CR>")
 nnoremap ("<leader>f", "<cmd>lua vim.lsp.buf.formatting()<CR>")
+
+nnoremap ("<leader>ff", "<cmd>Telescope find_files<cr>")
+nnoremap ("<leader>fg", "<cmd>Telescope live_grep<cr>")
+nnoremap ("<leader>fb", "<cmd>Telescope buffers<cr>")
+nnoremap ("<leader>fh", "<cmd>Telescope help_tags<cr>")
 
 inoremap("<Tab>", [[pumvisible() ? "\<C-n>" : "\<Tab>"]], "silent", "expr")
 inoremap("<S-Tab>", [[pumvisible() ? "\<C-p>" : "\<S-Tab>"]], "silent", "expr")
