@@ -21,8 +21,8 @@ if fn.empty(fn.glob(install_path)) > 0 then
 end
 
 require('packer').startup({function()
-  use 'wbthomason/packer.nvim' -- packer manages itself
-	use "b0o/mapx.nvim"
+  use 'wbthomason/packer.nvim'            --Packer manages itself
+	use "b0o/mapx.nvim"                     --Functions for setting mappings
   use 'airblade/vim-gitgutter'            --Git gutter symbols
   use 'lilydjwg/colorizer'                --Colors hex
   use 'luochen1990/rainbow'               --Rainbow Braces
@@ -59,7 +59,6 @@ config = {
 
 vim.o.background = "dark" -- or "light" for light mode
 vim.cmd([[colorscheme gruvbox]])
-
 bo.expandtab = true
 bo.smartindent = true        -- Makes indenting smart
 go.backup = false            -- This is recommended by coc
