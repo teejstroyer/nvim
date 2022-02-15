@@ -41,7 +41,7 @@ require('packer').startup({function()
     },
     config = function() require'nvim-tree'.setup {} end
   }
-  -- LSP 
+  -- LSP
   use { 'neovim/nvim-lspconfig', requires = {'hrsh7th/nvim-cmp'}, }
   use 'williamboman/nvim-lsp-installer'
   use 'hrsh7th/nvim-cmp'
@@ -49,6 +49,7 @@ require('packer').startup({function()
   use 'kosayoda/nvim-lightbulb'           --Code Action symbol
   use 'L3MON4D3/LuaSnip'
   use {'folke/trouble.nvim', requires = 'kyazdani42/nvim-web-devicons', config = function() require('trouble').setup {} end }
+
   --Auto install/setup packer
   if packer_bootstrap then
     require('packer').sync()
@@ -63,8 +64,9 @@ config = {
 -- SETTINGS ------------------------------------------------------
 ------------------------------------------------------------------
 
-vim.o.background = "dark" -- or "light" for light mode
+vim.o.background = "dark"    -- or "light" for light mode
 vim.cmd([[colorscheme gruvbox]])
+--
 bo.expandtab = true
 bo.smartindent = true        -- Makes indenting smart
 go.backup = false            -- This is recommended by coc
@@ -245,4 +247,3 @@ nnoremap ("<leader>ts", ":NvimTreeFindFile<CR>")
 
 inoremap("<Tab>", [[pumvisible() ? "\<C-n>" : "\<Tab>"]], "silent", "expr")
 inoremap("<S-Tab>", [[pumvisible() ? "\<C-p>" : "\<S-Tab>"]], "silent", "expr")
-
