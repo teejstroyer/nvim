@@ -22,8 +22,8 @@ end
 
 require('packer').startup({function()
   use 'wbthomason/packer.nvim'            --Packer manages itself
+
 	use "b0o/mapx.nvim"                     --Functions for setting mappings
-  use 'airblade/vim-gitgutter'            --Git gutter symbols
   use 'lilydjwg/colorizer'                --Colors hex
   use 'luochen1990/rainbow'               --Rainbow Braces
   use { "ellisonleao/gruvbox.nvim" }      --Colorscheme
@@ -39,8 +39,19 @@ require('packer').startup({function()
     requires = {
       'kyazdani42/nvim-web-devicons', -- optional, for file icon
     },
-    config = function() require'nvim-tree'.setup {} end
+    config = function() require('nvim-tree').setup {} end
   }
+
+	use {
+		'lewis6991/gitsigns.nvim',
+		requires = {
+			'nvim-lua/plenary.nvim'
+		},
+		config = function ()
+			require('gitsigns').setup();
+		end
+		-- tag = 'release' -- To use the latest release
+	}
   -- LSP
   use { 'neovim/nvim-lspconfig', requires = {'hrsh7th/nvim-cmp'}, }
   use 'williamboman/nvim-lsp-installer'
@@ -60,6 +71,7 @@ config = {
     open_fn = require('packer.util').float,
   }
 }})
+
 ------------------------------------------------------------------
 -- SETTINGS ------------------------------------------------------
 ------------------------------------------------------------------
@@ -208,12 +220,12 @@ nnoremap ("<leader>J",":resize -2<CR>","silent")
 nnoremap ("<leader>K",":resize +2<CR>","silent")
 nnoremap ("<leader>H",":vertical resize +2<CR>","silent")
 nnoremap ("<leader>L",":vertical resize -2<CR>","silent")
-nnoremap ("<leader>jj","<C-W>j","silent")
-nnoremap ("<leader>kk","<C-W>k","silent")
-nnoremap ("<leader>hh"," <C-W>h","silent")
-nnoremap ("<leader>ll","<C-W>l","silent")
-nnoremap ("<leader>vs",":vs<CR>")
-nnoremap ("<leader>hs",":sp<CR>")
+nnoremap ("<leader>j","<C-W>j","silent")
+nnoremap ("<leader>k","<C-W>k","silent")
+nnoremap ("<leader>h"," <C-W>h","silent")
+nnoremap ("<leader>l","<C-W>l","silent")
+nnoremap ("<leader>sv",":vs<CR>")
+nnoremap ("<leader>sh",":sp<CR>")
 nnoremap ("<leader><leader>",":WhichKey<CR>","silent")
 nnoremap ("<leader>xx","<cmd>TroubleToggle<cr>","silent")
 nnoremap ("<leader>xw","<cmd>TroubleToggle lsp_workspace_diagnostics<cr>")
