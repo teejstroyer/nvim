@@ -1,3 +1,4 @@
 # Neovim Config
+A Lua only neovim config. 
 
-An attempt at a completely lua neovim config
+A constant work in progress.
