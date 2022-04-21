@@ -8,6 +8,7 @@
         "packer_bootstrap",
         "use",
         "inoremap",
-        "nnoremap"
+        "nnoremap",
+        "tnoremap"
     ]
 }
