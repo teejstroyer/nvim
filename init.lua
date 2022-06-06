@@ -44,6 +44,7 @@ require('packer').startup({function()
   use 'kyazdani42/nvim-web-devicons'
   use 'stevearc/dressing.nvim'   -- Pretty UI middleware
   use 'kosayoda/nvim-lightbulb'  -- Code Action light bulb
+  use 'rcarriga/nvim-notify'     -- Pretty Notification UI
   ----------------------------------------------------
   use {'nvim-treesitter/nvim-treesitter', run = ':TSUpdate'}
   use { 'nvim-lualine/lualine.nvim', requires = {'kyazdani42/nvim-web-devicons', opt = true}, }
@@ -73,11 +74,20 @@ config = {
 -----------------------------------------------------------------
 -- PLUGIN_SETUP --------------------------------------------------------
 -----------------------------------------------------------------
+function loadmodule()
+
+end
 require('impatient').enable_profile()
 require('reach').setup({ notifications = true })
-require('nvim-window').setup {}
+
+local status, nw = pcall(require, 'nvim-window')
+if status then 
+  nw.setup{} 
+end
+
+vim.notify = require("notify")
 require('trouble').setup {}
-require('gitsigns').setup()
+require('gitsigns').setup{}
 require('nvim-tree').setup {}
 require('lualine').setup{ options = {theme = 'gruvbox'}}
 require'mapx'.setup{ global = true, whichkey=true }
