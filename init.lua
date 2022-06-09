@@ -153,7 +153,8 @@ wo.signcolumn = "yes"        -- Always show the signcolumn, otherwise it would s
 wo.wrap = false
 opt.syntax = "ON"
 ---- vim cmds
-vim.cmd('set colorcolumn=99999')      -- fix indentline for now
+vim.cmd('set ffs=unix,dos')      
+--vim.cmd('set colorcolumn=99999')    -- fix indentline for now
 vim.cmd('set inccommand=split')       -- Make substitution work in realtime
 vim.cmd('set iskeyword+=-')           -- treat dash separated words as a word text object"
 vim.cmd('set shortmess+=c')           -- Don't pass messages to |ins-completion-menu|.
