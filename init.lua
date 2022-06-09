@@ -10,7 +10,6 @@
 --* CMP *********************************************************
 --***************************************************************
 --***************************************************************
-
 -----------------------------------------------------------------
 -- PLUGINS ------------------------------------------------------
 -----------------------------------------------------------------
@@ -43,12 +42,13 @@ require('packer').startup({function()
   use 'windwp/nvim-autopairs'
   use 'kyazdani42/nvim-web-devicons'
   use 'stevearc/dressing.nvim'   -- Pretty UI middleware
-  use 'kosayoda/nvim-lightbulb'  -- Code Action light bulb
+  use 'rcarriga/nvim-notify'     -- Pretty Notification UI
   ----------------------------------------------------
   use {'nvim-treesitter/nvim-treesitter', run = ':TSUpdate'}
   use { 'nvim-lualine/lualine.nvim', requires = {'kyazdani42/nvim-web-devicons', opt = true}, }
   use { 'nvim-telescope/telescope.nvim', requires = 'nvim-lua/plenary.nvim' }
   use { 'kyazdani42/nvim-tree.lua', requires = 'kyazdani42/nvim-web-devicons', }
+  use { 'sindrets/diffview.nvim', requires = 'nvim-lua/plenary.nvim' }
 	use { 'lewis6991/gitsigns.nvim', requires = 'nvim-lua/plenary.nvim' , }
   use { 'romgrk/barbar.nvim', requires = {'kyazdani42/nvim-web-devicons'} }
   use 'toppair/reach.nvim'
@@ -75,13 +75,18 @@ config = {
 -----------------------------------------------------------------
 require('impatient').enable_profile()
 require('reach').setup({ notifications = true })
-require('nvim-window').setup {}
+
+local status, nw = pcall(require, 'nvim-window')
+if status then 
+  nw.setup{} 
+end
+
+vim.notify = require("notify")
 require('trouble').setup {}
-require('gitsigns').setup()
+require('gitsigns').setup{}
 require('nvim-tree').setup {}
 require('lualine').setup{ options = {theme = 'gruvbox'}}
 require'mapx'.setup{ global = true, whichkey=true }
-require'nvim-lightbulb'.setup {}
 require("which-key").setup {
   key_labels = {
     ["<space>"] = "SPC",
@@ -144,7 +149,7 @@ go.termguicolors = true      -- set term giu colors most terminals support this
 go.timeoutlen = 400          -- By default timeoutlen is 1000 ms
 go.title = true
 go.titlestring="%<%F%=%l/%L - nvim"
-go.updatetime = 300          -- Faster completion
+go.updatetime = 200          -- Faster completion
 go.writebackup = false       -- This is recommended by coc
 wo.cursorline = false         -- Enable highlighting of the current line
 wo.number = true
@@ -161,8 +166,9 @@ vim.cmd('set shortmess+=c')           -- Don't pass messages to |ins-completion-
 vim.cmd('set sw=2')                   -- Change the number of space characters inserted for indentation
 vim.cmd('set ts=2')                   -- Insert 2 spaces for a tab
 vim.cmd('set whichwrap+=<,>,[,],h,l') -- move to next line with theses keys
-vim.cmd("autocmd CursorHold <buffer> lua vim.diagnostic.open_float({ focusable = false, focus=false })")
-vim.cmd [[autocmd CursorHold,CursorHoldI * lua require'nvim-lightbulb'.update_lightbulb()]]
+--vim.cmd("autocmd CursorHold <buffer> lua vim.diagnostic.open_float({ focusable = false, focus=false })")
+--vim.cmd [[autocmd CursorHold,CursorHoldI * lua require'nvim-lightbulb'.update_lightbulb()]]
+
 ------------------------------------------------------------------
 -- LSP_ -----------------------------------------------------------
 ------------------------------------------------------------------
@@ -172,14 +178,88 @@ lsp_installer.on_server_ready(function(server)
   local opts = { capabilities = capabilities }
   server:setup(opts)
 end)
+local icons = {
+  Class = " ",
+  Color = " ",
+  Constant = " ",
+  Constructor = " ",
+  Enum = "了 ",
+  EnumMember = " ",
+  Field = " ",
+  File = " ",
+  Folder = " ",
+  Function = " ",
+  Interface = "ﰮ ",
+  Keyword = " ",
+  Method = "ƒ ",
+  Module = " ",
+  Property = " ",
+  Snippet = "﬌ ",
+  Struct = " ",
+  Text = " ",
+  Unit = " ",
+  Value = " ",
+  Variable = " ",
+}
 
+local kinds = vim.lsp.protocol.CompletionItemKind
+for i, kind in ipairs(kinds) do
+  kinds[i] = icons[kind] or kind
+end
+
+vim.diagnostic.config({
+  virtual_text = true,
+  signs = true,
+  underline = true,
+  update_in_insert = false,
+  severity_sort = false,
+})
+
+local signs = { Error = " ", Warn = " ", Hint = " ", Info = " " }
+for type, icon in pairs(signs) do
+  local hl = "DiagnosticSign" .. type
+  vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = hl })
+end
+
+function PrintDiagnostics(opts, bufnr, line_nr, client_id)
+  bufnr = bufnr or 0
+  line_nr = line_nr or (vim.api.nvim_win_get_cursor(0)[1] - 1)
+  opts = opts or {['lnum'] = line_nr}
+
+  local line_diagnostics = vim.diagnostic.get(bufnr, opts)
+  if vim.tbl_isempty(line_diagnostics) then return end
+
+  local diagnostic_message = ""
+  for i, diagnostic in ipairs(line_diagnostics) do
+    diagnostic_message = diagnostic_message .. string.format("%d: %s", i, diagnostic.message or "")
+    print(diagnostic_message)
+    if i ~= #line_diagnostics then
+      diagnostic_message = diagnostic_message .. "\n"
+    end
+  end
+  vim.api.nvim_echo({{diagnostic_message, "Normal"}}, false, {})
+end
+
+vim.api.nvim_create_autocmd("CursorHold", {
+  buffer = bufnr,
+  callback = function()
+    local opts = {
+      focusable = false,
+      close_events = { "BufLeave", "CursorMoved", "InsertEnter", "FocusLost" },
+      border = 'rounded',
+      source = 'always',
+      prefix = ' ',
+      scope = 'cursor',
+    }
+    vim.diagnostic.open_float(nil, opts)
+  end
+})
 ------------------------------------------------------------------
 -- CMP -----------------------------------------------------------
 ------------------------------------------------------------------
 local cmp = require 'cmp'
 cmp.setup({
     snippet = {
-      -- REQUIRED - you must specify a snippet engine
       expand = function(args)
         require('luasnip').lsp_expand(args.body)
       end,
@@ -188,18 +268,13 @@ cmp.setup({
       ['J'] = cmp.mapping(cmp.mapping.scroll_docs(-4), { 'i', 'c' }),
       ['K'] = cmp.mapping(cmp.mapping.scroll_docs(4), { 'i', 'c' }),
       ['<S-CR>'] = cmp.mapping(cmp.mapping.complete(), { 'i', 'c' }),
-      --['<C-y>'] = cmp.config.disable, -- Specify `cmp.config.disable` if you want to remove the default `<C-y>` mapping.
-      --['<C-e>'] = cmp.mapping({
-      --    i = cmp.mapping.abort(),
-      --    c = cmp.mapping.close(),
-      --}),
       ['<CR>'] = cmp.mapping.confirm({ select = true }),
       ['<Tab>'] = cmp.mapping(cmp.mapping.select_next_item(), { 'i', 's' }),
       ['<S-Tab>'] = cmp.mapping(cmp.mapping.select_prev_item(), { 'i', 's' })
     },
     sources = cmp.config.sources({
       { name = 'nvim_lsp' },
-      { name = 'luasnip' }, -- For luasnip users.
+      { name = 'luasnip' }, 
     }, {
       { name = 'buffer' },
     })
