@@ -41,6 +41,7 @@ require('packer').startup({function()
   use 'junegunn/gv.vim'          -- commit history
   use 'windwp/nvim-autopairs'
   use 'kyazdani42/nvim-web-devicons'
+  use { 'yamatsum/nvim-nonicons', requires = {'kyazdani42/nvim-web-devicons'} }
   use 'stevearc/dressing.nvim'   -- Pretty UI middleware
   use 'rcarriga/nvim-notify'     -- Pretty Notification UI
   ----------------------------------------------------
@@ -77,10 +78,9 @@ require('impatient').enable_profile()
 require('reach').setup({ notifications = true })
 
 local status, nw = pcall(require, 'nvim-window')
-if status then 
-  nw.setup{} 
+if status then
+  nw.setup{}
 end
-
 vim.notify = require("notify")
 require('trouble').setup {}
 require('gitsigns').setup{}
@@ -96,23 +96,13 @@ require("which-key").setup {
 }
 
 require'nvim-treesitter.configs'.setup {
+  ensure_installed = { "c", "lua", "rust", "c_sharp" },
+  sync_install = false,
+  ignore_install = { "javascript" },
   highlight = {
-    enable = true,
-    custom_captures = {
-      ["foo.bar"] = "Identifier", -- Highlight the @foo.bar capture group with the "Identifier" highlight group.
-    },
-  },
-  incremental_selection = {
-    enable = true,
-    keymaps = {
-      init_selection = "gnn",
-      node_incremental = "grn",
-      scope_incremental = "grc",
-      node_decremental = "grm",
-    },
-  },
-  indent = {
-    enable = true
+    enable = true, -- `false` will disable the whole extension
+    disable = { "c", "rust", "c_sharp" },
+    additional_vim_regex_highlighting = false,
   }
 }
 
@@ -158,7 +148,7 @@ wo.signcolumn = "yes"        -- Always show the signcolumn, otherwise it would s
 wo.wrap = false
 opt.syntax = "ON"
 ---- vim cmds
-vim.cmd('set ffs=unix,dos')      
+vim.cmd('set ffs=unix,dos')
 --vim.cmd('set colorcolumn=99999')    -- fix indentline for now
 vim.cmd('set inccommand=split')       -- Make substitution work in realtime
 vim.cmd('set iskeyword+=-')           -- treat dash separated words as a word text object"
@@ -178,34 +168,6 @@ lsp_installer.on_server_ready(function(server)
   local opts = { capabilities = capabilities }
   server:setup(opts)
 end)
-local icons = {
-  Class = " ",
-  Color = " ",
-  Constant = " ",
-  Constructor = " ",
-  Enum = "了 ",
-  EnumMember = " ",
-  Field = " ",
-  File = " ",
-  Folder = " ",
-  Function = " ",
-  Interface = "ﰮ ",
-  Keyword = " ",
-  Method = "ƒ ",
-  Module = " ",
-  Property = " ",
-  Snippet = "﬌ ",
-  Struct = " ",
-  Text = " ",
-  Unit = " ",
-  Value = " ",
-  Variable = " ",
-}
-
-local kinds = vim.lsp.protocol.CompletionItemKind
-for i, kind in ipairs(kinds) do
-  kinds[i] = icons[kind] or kind
-end
 
 vim.diagnostic.config({
   virtual_text = true,
@@ -274,7 +236,7 @@ cmp.setup({
     },
     sources = cmp.config.sources({
       { name = 'nvim_lsp' },
-      { name = 'luasnip' }, 
+      { name = 'luasnip' },
     }, {
       { name = 'buffer' },
     })
@@ -341,3 +303,4 @@ nnoremap ("<leader>grn","<cmd>lua vim.lsp.buf.rename()<CR>")
 nnoremap ("<leader>gt" ,"<cmd>lua vim.lsp.buf.type_definition()<CR>")
 --Terminal
 tnoremap ("<Esc>","<C-\\><C-n>")
+

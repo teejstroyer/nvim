@@ -9,6 +9,7 @@
         "use",
         "inoremap",
         "nnoremap",
-        "tnoremap"
+        "tnoremap",
+        "bufnr"
     ]
 }
