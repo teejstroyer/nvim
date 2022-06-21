@@ -28,20 +28,17 @@ end
 require('packer').startup({function()
   use 'wbthomason/packer.nvim' --Packer manages itself
   ----------------------------------------------------
-  use 'lewis6991/impatient.nvim'
+  use 'lewis6991/impatient.nvim'  --Improves startup speed
   ----------------------------------------------------
   use 'folke/which-key.nvim'
   use "b0o/mapx.nvim"            --Functions for setting mappings
   use 'mhinz/vim-startify'       --Start screen
   use 'lilydjwg/colorizer'       --Colors hex
   use 'ellisonleao/gruvbox.nvim' --Colorscheme
-  use 'majutsushi/tagbar'        -- code structure
   use 'Yggdroot/indentLine'      -- see indentation
   use 'tpope/vim-fugitive'       -- git integration
-  use 'junegunn/gv.vim'          -- commit history
   use 'windwp/nvim-autopairs'
   use 'kyazdani42/nvim-web-devicons'
-  use { 'yamatsum/nvim-nonicons', requires = {'kyazdani42/nvim-web-devicons'} }
   use 'stevearc/dressing.nvim'   -- Pretty UI middleware
   use 'rcarriga/nvim-notify'     -- Pretty Notification UI
   ----------------------------------------------------
@@ -58,10 +55,25 @@ require('packer').startup({function()
   -- LSP_ ----------------------------------------
   use 'hrsh7th/nvim-cmp'
   use { 'neovim/nvim-lspconfig', requires = {'hrsh7th/nvim-cmp'}, }
-  use 'williamboman/nvim-lsp-installer'
   use 'hrsh7th/cmp-nvim-lsp'
+  use {'hrsh7th/cmp-path'}
+  use 'williamboman/nvim-lsp-installer'
   use 'L3MON4D3/LuaSnip'
   use {'folke/trouble.nvim', requires = 'kyazdani42/nvim-web-devicons'}
+  --use {"github/copilot.vim"}
+  use {
+    "zbirenbaum/copilot.lua",
+    event = {"VimEnter"},
+    config = function()
+      vim.defer_fn(function()
+        require("copilot").setup()
+      end, 100)
+    end,
+  }
+  use {
+    "zbirenbaum/copilot-cmp",
+    module = "copilot_cmp",
+  }
   --Auto install/setup packer
   if packer_bootstrap then require('packer').sync() end
 end,
@@ -75,36 +87,27 @@ config = {
 -- PLUGIN_SETUP --------------------------------------------------------
 -----------------------------------------------------------------
 require('impatient').enable_profile()
-require('reach').setup({ notifications = true })
 
 local status, nw = pcall(require, 'nvim-window')
 if status then
   nw.setup{}
 end
-vim.notify = require("notify")
-require('trouble').setup {}
-require('gitsigns').setup{}
-require('nvim-tree').setup {}
-require('lualine').setup{ options = {theme = 'gruvbox'}}
-require'mapx'.setup{ global = true, whichkey=true }
-require("which-key").setup {
-  key_labels = {
-    ["<space>"] = "SPC",
-    ["<CR>"] = "RET",
-    ["<tab>"] = "TAB",
-  }
-}
 
-require'nvim-treesitter.configs'.setup {
+vim.notify = require("notify")
+require('reach').setup({notifications=true})
+require('trouble').setup({})
+require('gitsigns').setup({})
+require('nvim-tree').setup({})
+require('lualine').setup({ options = {theme = 'gruvbox'}})
+require('mapx').setup({ global = true, whichkey=true })
+require("which-key").setup({})
+require('nvim-treesitter.configs').setup({
   ensure_installed = { "c", "lua", "rust", "c_sharp" },
   sync_install = false,
-  ignore_install = { "javascript" },
   highlight = {
     enable = true, -- `false` will disable the whole extension
-    disable = { "c", "rust", "c_sharp" },
-    additional_vim_regex_highlighting = false,
   }
-}
+})
 
 ------------------------------------------------------------------
 -- SETTINGS ------------------------------------------------------
@@ -135,7 +138,6 @@ go.smartcase = true
 go.splitbelow = true         -- Horizontal splits will automatically be below
 go.splitright = true         -- Vertical splits will automatically be to the right
 go.swapfile = false
-go.termguicolors = true      -- set term giu colors most terminals support this
 go.timeoutlen = 400          -- By default timeoutlen is 1000 ms
 go.title = true
 go.titlestring="%<%F%=%l/%L - nvim"
@@ -150,12 +152,16 @@ opt.syntax = "ON"
 ---- vim cmds
 vim.cmd('set ffs=unix,dos')
 --vim.cmd('set colorcolumn=99999')    -- fix indentline for now
+vim.cmd('set termguicolors')
 vim.cmd('set inccommand=split')       -- Make substitution work in realtime
 vim.cmd('set iskeyword+=-')           -- treat dash separated words as a word text object"
 vim.cmd('set shortmess+=c')           -- Don't pass messages to |ins-completion-menu|.
 vim.cmd('set sw=2')                   -- Change the number of space characters inserted for indentation
 vim.cmd('set ts=2')                   -- Insert 2 spaces for a tab
 vim.cmd('set whichwrap+=<,>,[,],h,l') -- move to next line with theses keys
+
+
+
 --vim.cmd("autocmd CursorHold <buffer> lua vim.diagnostic.open_float({ focusable = false, focus=false })")
 --vim.cmd [[autocmd CursorHold,CursorHoldI * lua require'nvim-lightbulb'.update_lightbulb()]]
 
@@ -235,8 +241,12 @@ cmp.setup({
       ['<S-Tab>'] = cmp.mapping(cmp.mapping.select_prev_item(), { 'i', 's' })
     },
     sources = cmp.config.sources({
-      { name = 'nvim_lsp' },
-      { name = 'luasnip' },
+      -- Copilot Source
+      { name = "copilot", group_index = 2 },
+      -- Other Sources
+      { name = "nvim_lsp", group_index = 2 },
+      { name = "path", group_index = 2 },
+      { name = "luasnip", group_index = 2 },
     }, {
       { name = 'buffer' },
     })
@@ -303,4 +313,3 @@ nnoremap ("<leader>grn","<cmd>lua vim.lsp.buf.rename()<CR>")
 nnoremap ("<leader>gt" ,"<cmd>lua vim.lsp.buf.type_definition()<CR>")
 --Terminal
 tnoremap ("<Esc>","<C-\\><C-n>")
-
