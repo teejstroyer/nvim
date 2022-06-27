@@ -39,7 +39,6 @@ require('packer').startup({function()
   use 'tpope/vim-fugitive'       -- git integration
   use 'windwp/nvim-autopairs'
   use 'kyazdani42/nvim-web-devicons'
-  use 'stevearc/dressing.nvim'   -- Pretty UI middleware
   use 'rcarriga/nvim-notify'     -- Pretty Notification UI
   ----------------------------------------------------
   use {'nvim-treesitter/nvim-treesitter', run = ':TSUpdate'}
@@ -47,16 +46,16 @@ require('packer').startup({function()
   use { 'nvim-telescope/telescope.nvim', requires = 'nvim-lua/plenary.nvim' }
   use { 'kyazdani42/nvim-tree.lua', requires = 'kyazdani42/nvim-web-devicons', }
   use { 'sindrets/diffview.nvim', requires = 'nvim-lua/plenary.nvim' }
-	use { 'lewis6991/gitsigns.nvim', requires = 'nvim-lua/plenary.nvim' , }
+  use { 'lewis6991/gitsigns.nvim', requires = 'nvim-lua/plenary.nvim' , }
   use { 'romgrk/barbar.nvim', requires = {'kyazdani42/nvim-web-devicons'} }
   use 'toppair/reach.nvim'
   use 'https://gitlab.com/yorickpeterse/nvim-window.git'
   use 'sindrets/winshift.nvim'
   -- LSP_ ----------------------------------------
   use 'hrsh7th/nvim-cmp'
-  use { 'neovim/nvim-lspconfig', requires = {'hrsh7th/nvim-cmp'}, }
   use 'hrsh7th/cmp-nvim-lsp'
-  use {'hrsh7th/cmp-path'}
+  use 'hrsh7th/cmp-path'
+  use { 'neovim/nvim-lspconfig', requires = {'hrsh7th/nvim-cmp'}, }
   use 'williamboman/nvim-lsp-installer'
   use 'L3MON4D3/LuaSnip'
   use {'folke/trouble.nvim', requires = 'kyazdani42/nvim-web-devicons'}
@@ -112,29 +111,10 @@ require('nvim-treesitter.configs').setup({
 ------------------------------------------------------------------
 -- SETTINGS ------------------------------------------------------
 ------------------------------------------------------------------
-vim.o.background = "dark"    -- or "light" for light mode
 vim.cmd([[colorscheme gruvbox]])
 --
-bo.expandtab = true
-bo.smartindent = true        -- Makes indenting smart
-go.backup = false            -- This is recommended by coc
 go.clipboard = "unnamedplus" -- Copy paste between vim and everything else
-go.cmdheight = 2             -- More space for displaying messages
-go.completeopt = "menu,menuone,noselect"
-go.conceallevel = 0          -- So that I can see `` in markdown files
-go.dir = '/tmp'
-go.fileencoding = "utf-8"    -- The encoding written to file
-go.hidden = true             -- Required to keep multiple buffers open multiple buffers
-go.hlsearch = true
-go.ignorecase = true
-go.incsearch = true
-go.laststatus = 2
 go.mouse = "a"               -- Enable your mouse
-go.pumheight = 10            -- Makes popup menu smaller
-go.scrolloff = 12
-go.showmode = false          -- We don't need to see things like -- INSERT -- anymore
-go.showtabline = 2           -- Always show tabs
-go.smartcase = true
 go.splitbelow = true         -- Horizontal splits will automatically be below
 go.splitright = true         -- Vertical splits will automatically be to the right
 go.swapfile = false
@@ -142,26 +122,18 @@ go.timeoutlen = 400          -- By default timeoutlen is 1000 ms
 go.title = true
 go.titlestring="%<%F%=%l/%L - nvim"
 go.updatetime = 200          -- Faster completion
-go.writebackup = false       -- This is recommended by coc
-wo.cursorline = false         -- Enable highlighting of the current line
 wo.number = true
 wo.relativenumber = true
 wo.signcolumn = "yes"        -- Always show the signcolumn, otherwise it would shift the text each time
 wo.wrap = false
-opt.syntax = "ON"
----- vim cmds
-vim.cmd('set ffs=unix,dos')
---vim.cmd('set colorcolumn=99999')    -- fix indentline for now
-vim.cmd('set termguicolors')
+
+--vim.cmd('set termguicolors')
 vim.cmd('set inccommand=split')       -- Make substitution work in realtime
-vim.cmd('set iskeyword+=-')           -- treat dash separated words as a word text object"
+vim.cmd('set iskeyword+=-')           -- Treat dash separated words as a word text object"
 vim.cmd('set shortmess+=c')           -- Don't pass messages to |ins-completion-menu|.
 vim.cmd('set sw=2')                   -- Change the number of space characters inserted for indentation
 vim.cmd('set ts=2')                   -- Insert 2 spaces for a tab
 vim.cmd('set whichwrap+=<,>,[,],h,l') -- move to next line with theses keys
-
-
-
 --vim.cmd("autocmd CursorHold <buffer> lua vim.diagnostic.open_float({ focusable = false, focus=false })")
 --vim.cmd [[autocmd CursorHold,CursorHoldI * lua require'nvim-lightbulb'.update_lightbulb()]]
 
@@ -282,33 +254,34 @@ nnoremap ("<leader>sv",":vs<CR>")
 nnoremap ("<leader>w" ,":lua require('nvim-window').pick()<CR>")
 nnoremap ("<leader>ws","<Cmd>WinShift<CR>")
 --NvimTree
-nnoremap ("<leader>t" ,":NvimTreeToggle<CR>")
-nnoremap ("<leader>tr",":NvimTreeRefresh<CR>")
-nnoremap ("<leader>ts",":NvimTreeFindFile<CR>")
+nnoremap ("<leader>e" ,":NvimTreeToggle<CR>")
+nnoremap ("<leader>er",":NvimTreeRefresh<CR>")
+nnoremap ("<leader>ef",":NvimTreeFindFile<CR>")
 --Trouble
-nnoremap ("<leader>xd","<cmd>TroubleToggle lsp_document_diagnostics<CR>")
-nnoremap ("<leader>xl","<cmd>TroubleToggle loclist<CR>")
-nnoremap ("<leader>xq","<cmd>TroubleToggle quickfix<CR>")
-nnoremap ("<leader>xw","<cmd>TroubleToggle lsp_workspace_diagnostics<CR>")
-nnoremap ("<leader>xx","<cmd>TroubleToggle<CR>","silent")
+nnoremap ("<leader>t","<cmd>TroubleToggle lsp_document_diagnostics<CR>")
+nnoremap ("<leader>tl","<cmd>TroubleToggle loclist<CR>")
+nnoremap ("<leader>tq","<cmd>TroubleToggle quickfix<CR>")
+nnoremap ("<leader>tw","<cmd>TroubleToggle lsp_workspace_diagnostics<CR>")
+nnoremap ("<leader>tx","<cmd>TroubleToggle<CR>","silent")
+nnoremap ("<leader>tr" ,"<cmd>TroubleToggle lsp_references<CR>")
 --Telescope
+nnoremap ("<leader>f","<cmd>Telescope<CR>")
 nnoremap ("<leader>fb","<cmd>Telescope buffers<CR>")
 nnoremap ("<leader>ff","<cmd>Telescope find_files<CR>")
 nnoremap ("<leader>fg","<cmd>Telescope live_grep<CR>")
 nnoremap ("<leader>fh","<cmd>Telescope help_tags<CR>")
 --LSP
-nnoremap ("<leader>fm" ,"<cmd>lua vim.lsp.buf.formatting()<CR>")
-nnoremap ("<leader>gD" ,"<cmd>lua vim.lsp.buf.declaration()<CR>")
 nnoremap ("K" ,"<cmd>lua vim.lsp.buf.hover()<CR>")
-nnoremap ("<leader>gk" ,"<cmd>lua vim.lsp.buf.signature_help()<CR>")
-nnoremap ("<leader>gR" ,"<cmd>TroubleToggle lsp_references<CR>")
 nnoremap ("<leader>ga" ,"<cmd>lua vim.lsp.buf.code_action()<CR>")
 nnoremap ("<leader>gd" ,"<cmd>lua vim.lsp.buf.definition()<CR>")
+nnoremap ("<leader>gdc" ,"<cmd>lua vim.lsp.buf.declaration()<CR>")
+nnoremap ("<leader>gf" ,"<cmd>lua vim.lsp.buf.formatting()<CR>")
 nnoremap ("<leader>gfa","<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>")
-nnoremap ("<leader>gfl","<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>")
-nnoremap ("<leader>gfr","<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>")
 nnoremap ("<leader>gi" ,"<cmd>lua vim.lsp.buf.implementation()<CR>")
+nnoremap ("<leader>gk" ,"<cmd>lua vim.lsp.buf.signature_help()<CR>")
+nnoremap ("<leader>glf","<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>")
 nnoremap ("<leader>gr" ,"<cmd>lua vim.lsp.buf.references()<CR>")
+nnoremap ("<leader>grf","<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>")
 nnoremap ("<leader>grn","<cmd>lua vim.lsp.buf.rename()<CR>")
 nnoremap ("<leader>gt" ,"<cmd>lua vim.lsp.buf.type_definition()<CR>")
 --Terminal
