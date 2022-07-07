@@ -40,6 +40,7 @@ require('packer').startup({ function()
 	use 'windwp/nvim-autopairs'
 	use 'kyazdani42/nvim-web-devicons'
 	use 'rcarriga/nvim-notify' -- Pretty Notification UI
+	use 'onsails/lspkind.nvim'
 	----------------------------------------------------
 	use { 'nvim-treesitter/nvim-treesitter', run = ':TSUpdate' }
 	use { 'nvim-lualine/lualine.nvim', requires = { 'kyazdani42/nvim-web-devicons', opt = true }, }
@@ -117,20 +118,6 @@ require("telescope").setup {
 			require("telescope.themes").get_dropdown {
 				-- even more opts
 			}
-
-			-- pseudo code / specification for writing custom displays, like the one
-			-- for "codeactions"
-			-- specific_opts = {
-			--   [kind] = {
-			--     make_indexed = function(items) -> indexed_items, width,
-			--     make_displayer = function(widths) -> displayer
-			--     make_display = function(displayer) -> function(e)
-			--     make_ordinal = function(e) -> string
-			--   },
-			--   -- for example to disable the custom builtin "codeactions" display
-			--      do the following
-			--   codeactions = false,
-			-- }
 		}
 	}
 }
@@ -172,35 +159,30 @@ vim.cmd('set completeopt=menu,menuone,noselect')
 -- LSP_ -----------------------------------------------------------
 ------------------------------------------------------------------
 local lsp_installer = require("nvim-lsp-installer")
-local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
-lsp_installer.on_server_ready(function(server)
-	local opts = { capabilities = capabilities }
-	server:setup(opts)
-end)
+local lspconfig = require("lspconfig")
 
-local lspconf = require("lspconfig")
-lspconf.omnisharp.setup {
-	use_mono = true,
-	capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities()),
-	on_attach = function(_, bufnr)
-		vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
-	end,
-	cmd = { "/usr/local/bin/omnisharp", "--languageserver", "--hostPID", tostring(pid) },
+lsp_installer.setup {
+	automatic_installation = true,
+	ui = {
+		icons = {
+			server_installed = "✓",
+			server_pending = "➜",
+			server_uninstalled = "✗"
+		}
+	}
 }
+
+for _, server in ipairs(lsp_installer.get_installed_servers()) do
+	lspconfig[server.name].setup {}
+end
 
 vim.diagnostic.config({
 	virtual_text = true,
 	severity_sort = true,
 	underline = true,
 	update_in_insert = true,
-	float = {
-		border = 'rounded',
-		source = 'always',
-		header = '',
-		prefix = ''
-	}
+	float = { border = 'rounded', source = 'always', header = '', prefix = '' }
 })
-
 
 local signs = { Error = " ", Warn = " ", Hint = " ", Info = " " }
 for type, icon in pairs(signs) do
@@ -226,7 +208,8 @@ vim.api.nvim_create_autocmd("CursorHold", {
 ------------------------------------------------------------------
 -- CMP -----------------------------------------------------------
 ------------------------------------------------------------------
-local cmp = require 'cmp'
+local lspkind = require('lspkind')
+local cmp = require('cmp')
 cmp.setup({
 	snippet = {
 		expand = function(args)
@@ -245,16 +228,23 @@ cmp.setup({
 		['<Tab>'] = cmp.mapping(cmp.mapping.select_next_item(), { 'i', 's' }),
 		['<S-Tab>'] = cmp.mapping(cmp.mapping.select_prev_item(), { 'i', 's' })
 	},
-	--formatting = { },
+	formatting = {
+		format = lspkind.cmp_format({
+			mode = 'symbol', -- show only symbol annotations
+			maxwidth = 50, -- prevent the popup from showing more than provided characters (e.g 50 will not show more than 50 characters)
+			before = function(entry, vim_item)
+				return vim_item
+			end
+		})
+	},
 	sources = cmp.config.sources({
-		-- Copilot Source
 		{ name = 'copilot', },
 		{ name = 'nvim_lsp' },
 		{ name = 'path' },
 		{ name = 'cmdline' },
-		{ name = 'nvim-lsp' },
 		{ name = 'luasnip' },
-	}, {
+	},
+	{
 		{ name = 'buffer' },
 	})
 })
@@ -275,38 +265,34 @@ require 'cmp'.setup.cmdline('/', {
 -- KEYBINDINGS ---------------------------------------------------
 ------------------------------------------------------------------
 vim.cmd([[let mapleader ="\<Space>"]])
-nnoremap("<Space>", "<NOP>")
-inoremap("<S-Tab>", [[pumvisible() ? "\<C-p>" : "\<S-Tab>"]], "silent", "expr")
-inoremap("<Tab>", [[pumvisible() ? "\<C-n>" : "\<Tab>"]], "silent", "expr")
-------------------------------------------------------------------
---****************************************************************
+nnoremap("<Space>","<NOP>")
+inoremap("<S-Tab>",[[pumvisible() ? "\<C-p>" : "\<S-Tab>"]], "silent", "expr")
+inoremap("<Tab>",  [[pumvisible() ? "\<C-n>" : "\<Tab>"]], "silent", "expr")
 ------------------------------------------------------------------
 nnoremap('<leader><leader>', ':WhichKey<CR>', 'silent')
-nnoremap('<leader>rj', ':resize -2<CR>', 'silent')
-nnoremap('<leader>rk', ':resize +2<CR>', 'silent')
-nnoremap('<leader>rh', ':vertical resize +2<CR>', 'silent')
-nnoremap('<leader>rl', ':vertical resize -2<CR>', 'silent')
+nnoremap('<leader>rj',':resize -2<CR>', 'silent')
+nnoremap('<leader>rk',':resize +2<CR>', 'silent')
+nnoremap('<leader>rh',':vertical resize +2<CR>', 'silent')
+nnoremap('<leader>rl',':vertical resize -2<CR>', 'silent')
 nnoremap('<leader>j', '<C-W>j', 'silent')
 nnoremap('<leader>k', '<C-W>k', 'silent')
 nnoremap('<leader>h', '<C-W>h', 'silent')
 nnoremap('<leader>l', '<C-W>l', 'silent')
 ------------------------------------------------------------------
---****************************************************************
-------------------------------------------------------------------
 --Window
 nnoremap('<c-h>', ':tabprevious<CR>')
 nnoremap('<c-l>', ':tabnext<CR>')
-nnoremap('<leader>b', ':tabnew<CR>')
+nnoremap('<leader>b',  ':tabnew<CR>')
 nnoremap('<leader>sh', ':sp<CR>')
 nnoremap('<leader>sv', ':vs<CR>')
-nnoremap('<leader>w', ":lua require('nvim-window').pick()<CR>")
+nnoremap('<leader>w',  ":lua require('nvim-window').pick()<CR>")
 nnoremap('<leader>ws', '<Cmd>WinShift<CR>')
 --NvimTree
-nnoremap('<leader>e', ':NvimTreeToggle<CR>')
+nnoremap('<leader>e',  ':NvimTreeToggle<CR>')
 nnoremap('<leader>er', ':NvimTreeRefresh<CR>')
 nnoremap('<leader>ef', ':NvimTreeFindFile<CR>')
 --Telescope
-nnoremap('<leader>t', '<cmd>Telescope<CR>')
+nnoremap('<leader>t',  '<cmd>Telescope<CR>')
 nnoremap('<leader>tb', '<cmd>Telescope buffers<CR>')
 nnoremap('<leader>tf', '<cmd>Telescope find_files<CR>')
 nnoremap('<leader>tg', '<cmd>Telescope live_grep<CR>')
@@ -316,15 +302,15 @@ nnoremap('<leader>td', '<cmd>Telescope diagnostics<CR>')
 nnoremap('K', '<cmd>lua vim.lsp.buf.hover()<CR>')
 nnoremap('<leader>ga', '<cmd>lua vim.lsp.buf.code_action()<CR>')
 nnoremap('<leader>gd', '<cmd>lua vim.lsp.buf.definition()<CR>')
-nnoremap('<leader>gdc', '<cmd>lua vim.lsp.buf.declaration()<CR>')
+nnoremap('<leader>gdc','<cmd>lua vim.lsp.buf.declaration()<CR>')
 nnoremap('<leader>gf', '<cmd>lua vim.lsp.buf.formatting()<CR>')
-nnoremap('<leader>gfa', '<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>')
+nnoremap('<leader>gfa','<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>')
 nnoremap('<leader>gi', '<cmd>lua vim.lsp.buf.implementation()<CR>')
 nnoremap('<leader>gk', '<cmd>lua vim.lsp.buf.signature_help()<CR>')
-nnoremap('<leader>glf', '<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>')
+nnoremap('<leader>glf','<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>')
 nnoremap('<leader>gr', '<cmd>lua vim.lsp.buf.references()<CR>')
-nnoremap('<leader>grf', '<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>')
-nnoremap('<leader>grn', '<cmd>lua vim.lsp.buf.rename()<CR>')
+nnoremap('<leader>grf','<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>')
+nnoremap('<leader>grn','<cmd>lua vim.lsp.buf.rename()<CR>')
 nnoremap('<leader>gt', '<cmd>lua vim.lsp.buf.type_definition()<CR>')
 --Terminal
 tnoremap('<Esc>', '<C-\\><C-n>')
