@@ -13,7 +13,7 @@
 -----------------------------------------------------------------
 -- PLUGINS ------------------------------------------------------
 -----------------------------------------------------------------
-local go = vim.o -- global option
+local o = vim.o -- global option
 local wo = vim.wo -- window option
 local bo = vim.bo -- buffer option
 local fn = vim.fn
@@ -36,7 +36,6 @@ require('packer').startup({ function()
 	use 'lilydjwg/colorizer' --Colors hex
 	use 'ellisonleao/gruvbox.nvim' --Colorscheme
 	use 'Yggdroot/indentLine' -- see indentation
-	use 'tpope/vim-fugitive' -- git integration
 	use 'windwp/nvim-autopairs'
 	use 'kyazdani42/nvim-web-devicons'
 	use 'rcarriga/nvim-notify' -- Pretty Notification UI
@@ -54,6 +53,7 @@ require('packer').startup({ function()
 	use 'sindrets/winshift.nvim'
 	use 'nvim-telescope/telescope-ui-select.nvim'
 	-- LSP_ ----------------------------------------
+	use 'tjdevries/nlua.nvim' --Improved neovim lua completion
 	use 'neovim/nvim-lspconfig'
 	use 'williamboman/nvim-lsp-installer'
 	--
@@ -130,51 +130,47 @@ require("telescope").load_extension("ui-select")
 ------------------------------------------------------------------
 vim.cmd([[colorscheme gruvbox]])
 --
-go.clipboard = "unnamedplus" -- Copy paste between vim and everything else
-go.mouse = "a" -- Enable your mouse
-go.splitbelow = true -- Horizontal splits will automatically be below
-go.splitright = true -- Vertical splits will automatically be to the right
-go.swapfile = false
-go.timeoutlen = 400 -- By default timeoutlen is 1000 ms
-go.title = true
-go.titlestring = "%<%F%=%l/%L - nvim"
-go.updatetime = 200 -- Faster completion
+bo.shiftwidth=2
+bo.softtabstop=2
+bo.tabstop=2
+o.clipboard = "unnamedplus" -- Copy paste between vim and everything else
+o.completeopt="menu,menuone,noselect"
+o.inccommand='split'
+o.mouse = "a" -- Enable your mouse
+o.shortmess = o.shortmess.."c"
+o.splitbelow = true -- Horizontal splits will automatically be below
+o.splitright = true -- Vertical splits will automatically be to the right
+o.swapfile = false
+o.timeoutlen = 400 -- By default timeoutlen is 1000 ms
+o.title = true
+o.titlestring = "%<%F%=%l/%L - nvim"
+o.updatetime = 200 -- Faster completion
+opt.hlsearch=true
+opt.iskeyword:append("-")
+opt.showmatch = true
+opt.termguicolors =true
 wo.number = true
 wo.relativenumber = true
 wo.signcolumn = "yes" -- Always show the signcolumn, otherwise it would shift the text each time
 wo.wrap = false
-
---vim.cmd('set termguicolors')
-vim.cmd('set inccommand=split') -- Make substitution work in realtime
-vim.cmd('set iskeyword+=-') -- Treat dash separated words as a word text object"
-vim.cmd('set shortmess+=c') -- Don't pass messages to |ins-completion-menu|.
-vim.cmd('set sw=2') -- Change the number of space characters inserted for indentation
-vim.cmd('set ts=2') -- Insert 2 spaces for a tab
-vim.cmd('set whichwrap+=<,>,[,],h,l') -- move to next line with theses keys
-vim.cmd('set completeopt=menu,menuone,noselect')
---vim.cmd("autocmd CursorHold <buffer> lua vim.diagnostic.open_float({ focusable = false, focus=false })")
---vim.cmd [[autocmd CursorHold,CursorHoldI * lua require'nvim-lightbulb'.update_lightbulb()]]
-
+--vim.cmd('set iskeyword+=-') -- Treat dash separated words as a word text object"
+--vim.cmd('set shortmess+=c') -- Don't pass messages to |ins-completion-menu|.
 ------------------------------------------------------------------
 -- LSP_ -----------------------------------------------------------
 ------------------------------------------------------------------
 local lsp_installer = require("nvim-lsp-installer")
 local lspconfig = require("lspconfig")
 
-lsp_installer.setup {
-	automatic_installation = true,
-	ui = {
-		icons = {
-			server_installed = "✓",
-			server_pending = "➜",
-			server_uninstalled = "✗"
-		}
-	}
-}
+lsp_installer.setup { automatic_installation = true }
+
+local pid = vim.fn.getpid()
 
 for _, server in ipairs(lsp_installer.get_installed_servers()) do
 	lspconfig[server.name].setup {}
 end
+
+lspconfig.omnisharp.setup { use_mono = true }
+
 
 vim.diagnostic.config({
 	virtual_text = true,
