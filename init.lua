@@ -42,6 +42,7 @@ require('packer').startup({ function()
 	use 'onsails/lspkind.nvim'
 	----------------------------------------------------
 	use { 'nvim-treesitter/nvim-treesitter', run = ':TSUpdate' }
+  use 'nvim-treesitter/nvim-treesitter-context'
 	use { 'nvim-lualine/lualine.nvim', requires = { 'kyazdani42/nvim-web-devicons', opt = true }, }
 	use { 'nvim-telescope/telescope.nvim', requires = 'nvim-lua/plenary.nvim' }
 	use { 'kyazdani42/nvim-tree.lua', requires = 'kyazdani42/nvim-web-devicons', }
@@ -130,9 +131,6 @@ require("telescope").load_extension("ui-select")
 ------------------------------------------------------------------
 vim.cmd([[colorscheme gruvbox]])
 --
-bo.shiftwidth=2
-bo.softtabstop=2
-bo.tabstop=2
 o.clipboard = "unnamedplus" -- Copy paste between vim and everything else
 o.completeopt="menu,menuone,noselect"
 o.inccommand='split'
@@ -149,6 +147,10 @@ opt.hlsearch=true
 opt.iskeyword:append("-")
 opt.showmatch = true
 opt.termguicolors =true
+opt.shiftwidth=2
+opt.softtabstop=2
+opt.tabstop=2
+opt.expandtab=true
 wo.number = true
 wo.relativenumber = true
 wo.signcolumn = "yes" -- Always show the signcolumn, otherwise it would shift the text each time
@@ -169,7 +171,7 @@ for _, server in ipairs(lsp_installer.get_installed_servers()) do
 	lspconfig[server.name].setup {}
 end
 
-lspconfig.omnisharp.setup { use_mono = true }
+--lspconfig.omnisharp.setup { use_mono = true }
 
 
 vim.diagnostic.config({
