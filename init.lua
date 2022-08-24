@@ -35,7 +35,6 @@ require('packer').startup({ function()
 	use 'mhinz/vim-startify' --Start screen
 	use 'lilydjwg/colorizer' --Colors hex
 	use 'ellisonleao/gruvbox.nvim' --Colorscheme
-	use 'Yggdroot/indentLine' -- see indentation
 	use 'windwp/nvim-autopairs'
 	use 'kyazdani42/nvim-web-devicons'
 	use 'rcarriga/nvim-notify' -- Pretty Notification UI
@@ -172,7 +171,6 @@ for _, server in ipairs(lsp_installer.get_installed_servers()) do
 end
 
 --lspconfig.omnisharp.setup { use_mono = true }
-
 
 vim.diagnostic.config({
 	virtual_text = true,
