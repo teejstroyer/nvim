@@ -61,23 +61,12 @@ require('packer').startup({ function()
 	use 'hrsh7th/cmp-cmdline'
 	use 'hrsh7th/cmp-nvim-lsp'
 	use 'hrsh7th/cmp-path'
+	use 'hrsh7th/cmp-copilot'
 	use 'hrsh7th/nvim-cmp'
 	use 'saadparwaiz1/cmp_luasnip'
 	use 'L3MON4D3/LuaSnip'
-	--use {"github/copilot.vim"}
-	use {
-		"zbirenbaum/copilot.lua",
-		event = { "VimEnter" },
-		config = function()
-			vim.defer_fn(function()
-				require("copilot").setup()
-			end, 100)
-		end,
-	}
-	use {
-		"zbirenbaum/copilot-cmp",
-		module = "copilot_cmp",
-	}
+	use {"github/copilot.vim"}
+
 	--Auto install/setup packer
 	if packer_bootstrap then require('packer').sync() end
 end,
