@@ -1,20 +1,6 @@
---***************************************************************
---***************************************************************
---* Table of Contents *******************************************
---* Neovim single file configuration ****************************
---* KEYBINDINGS *************************************************
---* PLUGINS *****************************************************
---* PLUGIN_SETUP ************************************************
---* SETTINGS ****************************************************
---* LSP_ ********************************************************
---* CMP *********************************************************
---***************************************************************
---***************************************************************
+-- NEOVIM Configuration
 -- Windows > Treesitter needs gcc so run the following command
 -- choco install mingw as admin should work
------------------------------------------------------------------
--- PLUGINS ------------------------------------------------------
------------------------------------------------------------------
 
 local ensure_packer = function()
     local intall_path = vim.fn.stdpath('data') .. '/site/pack/packer/start/packer.nvim'
@@ -32,41 +18,49 @@ require('packer').startup({ function()
     use 'wbthomason/packer.nvim' --Packer manages itself
     use 'lewis6991/impatient.nvim' --Improves startup speed
     use 'folke/which-key.nvim' --Shows keybinds
-    use "b0o/mapx.nvim" --Functions for setting mappings
+    use 'b0o/mapx.nvim' --Functions for setting mappings
     use 'mhinz/vim-startify' --Start screen
     use 'lilydjwg/colorizer' --Colors hex
-    use "EdenEast/nightfox.nvim" --Colorscheme
-    use { "windwp/nvim-autopairs", config = function() require("nvim-autopairs").setup {} end } --Auto pair braces
-    use 'kyazdani42/nvim-web-devicons' --Bettter Icons
+    use 'EdenEast/nightfox.nvim' --Colorscheme
+    use { 'windwp/nvim-autopairs' } --Auto pair braces
     use 'rcarriga/nvim-notify' --Pretty Notification UI
     use 'onsails/lspkind.nvim' --Icons for popups
     ----------------------------------------------------
-    use { 'nvim-treesitter/nvim-treesitter', run = ':TSUpdate' }
-    use 'nvim-treesitter/nvim-treesitter-context'
-    use { 'nvim-lualine/lualine.nvim', requires = { 'kyazdani42/nvim-web-devicons', opt = true }, }
-    use { 'nvim-telescope/telescope.nvim', requires = 'nvim-lua/plenary.nvim' }
-    use { 'kyazdani42/nvim-tree.lua', requires = 'kyazdani42/nvim-web-devicons', }
+    use { 'nvim-treesitter/nvim-treesitter', run = ':TSUpdate',
+        requires = { 'nvim-treesitter/nvim-treesitter-context' }
+    }
+    use { 'nvim-lualine/lualine.nvim', requires = { 'kyazdani42/nvim-web-devicons' } }
+    use { 'nvim-telescope/telescope.nvim',
+        requires = {
+            'nvim-lua/plenary.nvim',
+            'nvim-telescope/telescope-ui-select.nvim'
+        }
+    }
+    use { 'kyazdani42/nvim-tree.lua', requires = 'kyazdani42/nvim-web-devicons' }
     use { 'sindrets/diffview.nvim', requires = 'nvim-lua/plenary.nvim' }
-    use { 'lewis6991/gitsigns.nvim', requires = 'nvim-lua/plenary.nvim', }
-    use { 'romgrk/barbar.nvim', requires = { 'kyazdani42/nvim-web-devicons' } }
-    use 'toppair/reach.nvim'
+    use { 'lewis6991/gitsigns.nvim', requires = 'nvim-lua/plenary.nvim' }
+    use { 'romgrk/barbar.nvim', requires = 'kyazdani42/nvim-web-devicons' }
     use 'sindrets/winshift.nvim'
-    use 'nvim-telescope/telescope-ui-select.nvim'
     --LSP_----------------------------------------
-    use 'tjdevries/nlua.nvim' --Improved neovim lua completion
-    use 'neovim/nvim-lspconfig' --Default LSP Configurations
-    use { "williamboman/mason.nvim" } --Package Manager
-    use { "williamboman/mason-lspconfig.nvim" } --LSP Auto Configurations
-    --CMP Requirements (Completion Plugin)
-    use 'hrsh7th/cmp-buffer'
-    use 'hrsh7th/cmp-cmdline'
-    use 'hrsh7th/cmp-nvim-lsp'
-    use 'hrsh7th/cmp-path'
-    use 'hrsh7th/cmp-copilot'
-    use 'hrsh7th/nvim-cmp'
-    use 'saadparwaiz1/cmp_luasnip'
-    use 'L3MON4D3/LuaSnip'
-    use { "github/copilot.vim" }
+    use { 'neovim/nvim-lspconfig', --Preconfigured LSPs
+        requires = {
+            'williamboman/mason.nvim', --LSP installer
+            'williamboman/mason-lspconfig.nvim', --Autoconfigure lsp
+            'tjdevries/nlua.nvim' --Better Lua support
+        }
+    }
+    use { 'hrsh7th/nvim-cmp',
+        requires = {
+            'hrsh7th/cmp-buffer',
+            'hrsh7th/cmp-cmdline',
+            'hrsh7th/cmp-nvim-lsp',
+            'hrsh7th/cmp-path',
+            'hrsh7th/cmp-copilot',
+            'saadparwaiz1/cmp_luasnip',
+            'L3MON4D3/LuaSnip',
+            'github/copilot.vim'
+        }
+    }
     --Auto install/setup packer
     if packer_bootstrap then
         require('packer').sync()
@@ -92,25 +86,23 @@ require('nightfox').setup({
     }
 })
 
-require('reach').setup({ notifications = true })
-require('gitsigns').setup({})
-require('nvim-tree').setup({})
+require("nvim-autopairs").setup()
+require('gitsigns').setup()
+require('nvim-tree').setup()
 require('lualine').setup({ options = { theme = 'nightfox' } })
 require('mapx').setup({ global = "force", whichkey = true })
-require("which-key").setup({})
+require("which-key").setup()
 require('nvim-treesitter.configs').setup({
     ensure_installed = { "c", "lua", "rust", "c_sharp" },
     sync_install = false,
     highlight = {
-        enable = true, -- `false` will disable the whole extension
+        enable = true,
     }
 })
 require("telescope").setup {
     extensions = {
         ["ui-select"] = {
-            require("telescope.themes").get_dropdown {
-                -- even more opts
-            }
+            require("telescope.themes").get_dropdown()
         }
     }
 }
@@ -135,7 +127,6 @@ vim.go.titlestring = "%<%F%=%l/%L - nvim"
 vim.go.updatetime = 200 -- Faster completion
 vim.opt.backup = false
 vim.opt.cmdheight = 1
-vim.opt.cmdheight = 1 -- Give more space for displaying messages.
 vim.opt.colorcolumn = "80"
 vim.opt.errorbells = false
 vim.opt.expandtab = true
@@ -164,21 +155,16 @@ vim.opt.wrap = false
 ------------------------------------------------------------------
 require('mason').setup()
 require("mason-lspconfig").setup {
-    ensure_installed = { "sumneko_lua", "omnisharp", "rust_analyzer", "tsserver" },
+    ensure_installed = { "sumneko_lua", "omnisharp", "rust_analyzer", "tsserver" }
 }
 
 local lspconfig = require("lspconfig")
 
 require("mason-lspconfig").setup_handlers({
-    -- The first entry (without a key) will be the default handler
     function(server_name) -- default handler (optional)
         require("lspconfig")[server_name].setup {}
     end,
-    -- Next, you can provide targeted overrides for specific servers.
-    --["rust_analyzer"] = function ()
-    --    require("rust-tools").setup {}
-    --end,
-    ["sumneko_lua"] = function()
+    ["sumneko_lua"] = function() --Per lsp config
         lspconfig.sumneko_lua.setup {
             settings = {
                 Lua = {
@@ -299,10 +285,14 @@ nnoremap('<leader>k', '<C-W>k', 'silent')
 nnoremap('<leader>h', '<C-W>h', 'silent')
 nnoremap('<leader>l', '<C-W>l', 'silent')
 ------------------------------------------------------------------
+--Buffer
+nnoremap('<leader>b', ':bnext<CR>')
+nnoremap('<leader>B', ':bNext<CR>')
+nnoremap('<leader>bl', ':blast<CR>')
+nnoremap('<leader>bd', ':bdelete<CR>')
 --Window
 nnoremap('<c-h>', ':tabprevious<CR>')
 nnoremap('<c-l>', ':tabnext<CR>')
-nnoremap('<leader>b', ':tabnew<CR>')
 nnoremap('<leader>sh', ':sp<CR>')
 nnoremap('<leader>sv', ':vs<CR>')
 nnoremap('<leader>ws', '<Cmd>WinShift<CR>')
@@ -311,7 +301,6 @@ nnoremap('<leader>e', ':NvimTreeToggle<CR>')
 nnoremap('<leader>er', ':NvimTreeRefresh<CR>')
 nnoremap('<leader>ef', ':NvimTreeFindFile<CR>')
 nnoremap('<leader>em', ':help nvim-tree.view.mappings<CR>')
-
 --Telescope
 nnoremap('<leader>t', '<cmd>Telescope<CR>')
 nnoremap('<leader>tb', '<cmd>Telescope buffers<CR>')
