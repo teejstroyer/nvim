@@ -18,7 +18,6 @@ require('packer').startup({ function()
     use 'wbthomason/packer.nvim' --Packer manages itself
     use 'lewis6991/impatient.nvim' --Improves startup speed
     use 'folke/which-key.nvim' --Shows keybinds
-    use 'b0o/mapx.nvim' --Functions for setting mappings
     use 'mhinz/vim-startify' --Start screen
     use 'lilydjwg/colorizer' --Colors hex
     use 'EdenEast/nightfox.nvim' --Colorscheme
@@ -61,6 +60,9 @@ require('packer').startup({ function()
             'github/copilot.vim'
         }
     }
+    --DAP_----------------------------------------
+    use { 'mfussenegger/nvim-dap' }
+    use { "rcarriga/nvim-dap-ui", requires = { "mfussenegger/nvim-dap" } }
     --Auto install/setup packer
     if packer_bootstrap then
         require('packer').sync()
@@ -90,7 +92,6 @@ require("nvim-autopairs").setup()
 require('gitsigns').setup()
 require('nvim-tree').setup()
 require('lualine').setup({ options = { theme = 'nightfox' } })
-require('mapx').setup({ global = "force", whichkey = true })
 require("which-key").setup()
 require('nvim-treesitter.configs').setup({
     ensure_installed = { "c", "lua", "rust", "c_sharp" },
@@ -176,6 +177,18 @@ require("mason-lspconfig").setup_handlers({
         }
     end,
 })
+
+local dap, dapui = require('dap'), require('dapui')
+dapui.setup()
+dap.listeners.after.event_initialized["dapui_config"] = function()
+  dapui.open()
+end
+dap.listeners.before.event_terminated["dapui_config"] = function()
+  dapui.close()
+end
+dap.listeners.before.event_exited["dapui_config"] = function()
+  dapui.close()
+end
 
 vim.diagnostic.config({
     virtual_text = true,
@@ -268,59 +281,67 @@ cmp.setup.cmdline('/', {
 -- KEYBINDINGS ---------------------------------------------------
 ------------------------------------------------------------------
 vim.cmd([[let mapleader ="\<Space>"]])
-nnoremap("<Space>", "<NOP>")
-inoremap("<S-Tab>", [[pumvisible() ? "\<C-p>" : "\<S-Tab>"]], "silent", "expr")
-inoremap("<Tab>", [[pumvisible() ? "\<C-n>" : "\<Tab>"]], "silent", "expr")
-nnoremap('<leader>d', '"_d')
-vnoremap('<leader>d', '"_d')
-vnoremap('<leader>p', '"_dP')
+vim.keymap.set('n', "<Space>", "<NOP>")
+vim.keymap.set('i', '<S-Tab>', [[pumvisible() ? '\<C-p>' : '\<S-Tab>']], { silent = true, expr = true })
+vim.keymap.set('i', '<Tab>', [[pumvisible() ? '\<C-n>' : '\<Tab>']], { silent = true, expr = true })
+vim.keymap.set('n', '<leader>d', '"_d')
+vim.keymap.set('v', '<leader>d', '"_d')
+vim.keymap.set('v', '<leader>p', '"_dP')
 ------------------------------------------------------------------
-nnoremap('<leader><leader>', ':WhichKey<CR>', 'silent')
-nnoremap('<leader>rj', ':resize -2<CR>', 'silent')
-nnoremap('<leader>rk', ':resize +2<CR>', 'silent')
-nnoremap('<leader>rh', ':vertical resize +2<CR>', 'silent')
-nnoremap('<leader>rl', ':vertical resize -2<CR>', 'silent')
-nnoremap('<leader>j', '<C-W>j', 'silent')
-nnoremap('<leader>k', '<C-W>k', 'silent')
-nnoremap('<leader>h', '<C-W>h', 'silent')
-nnoremap('<leader>l', '<C-W>l', 'silent')
-------------------------------------------------------------------
+vim.keymap.set('n', '<leader><leader>', ':WhichKey<CR>', { silent = true })
+vim.keymap.set('n', '<leader>rj', ':resize -2<CR>', { silent = true })
+vim.keymap.set('n', '<leader>rk', ':resize +2<CR>', { silent = true })
+vim.keymap.set('n', '<leader>rh', ':vertical resize +2<CR>', { silent = true })
+vim.keymap.set('n', '<leader>rl', ':vertical resize -2<CR>', { silent = true })
+vim.keymap.set('n', '<leader>j', '<C-W>j', { silent = true })
+vim.keymap.set('n', '<leader>k', '<C-W>k', { silent = true })
+vim.keymap.set('n', '<leader>h', '<C-W>h', { silent = true })
+vim.keymap.set('n', '<leader>l', '<C-W>l', { silent = true })
 --Buffer
-nnoremap('<leader>b', ':bnext<CR>')
-nnoremap('<leader>B', ':bNext<CR>')
-nnoremap('<leader>bl', ':blast<CR>')
-nnoremap('<leader>bd', ':bdelete<CR>')
+vim.keymap.set('n', '<leader>[', ':bnext<CR>')
+vim.keymap.set('n', '<leader>]', ':bNext<CR>')
+vim.keymap.set('n', '<leader>[d', ':bdelete<CR>')
 --Window
-nnoremap('<c-h>', ':tabprevious<CR>')
-nnoremap('<c-l>', ':tabnext<CR>')
-nnoremap('<leader>sh', ':sp<CR>')
-nnoremap('<leader>sv', ':vs<CR>')
-nnoremap('<leader>ws', '<Cmd>WinShift<CR>')
+vim.keymap.set('n', '<c-h>', ':tabprevious<CR>')
+vim.keymap.set('n', '<c-l>', ':tabnext<CR>')
+vim.keymap.set('n', '<leader>sh', ':sp<CR>')
+vim.keymap.set('n', '<leader>sv', ':vs<CR>')
+vim.keymap.set('n', '<leader>ws', '<Cmd>WinShift<CR>')
 --NvimTree
-nnoremap('<leader>e', ':NvimTreeToggle<CR>')
-nnoremap('<leader>er', ':NvimTreeRefresh<CR>')
-nnoremap('<leader>ef', ':NvimTreeFindFile<CR>')
-nnoremap('<leader>em', ':help nvim-tree.view.mappings<CR>')
+vim.keymap.set('n', '<leader>e', ':NvimTreeToggle<CR>')
+vim.keymap.set('n', '<leader>er', ':NvimTreeRefresh<CR>')
+vim.keymap.set('n', '<leader>ef', ':NvimTreeFindFile<CR>')
+vim.keymap.set('n', '<leader>em', ':help nvim-tree.view.mappings<CR>')
 --Telescope
-nnoremap('<leader>t', '<cmd>Telescope<CR>')
-nnoremap('<leader>tb', '<cmd>Telescope buffers<CR>')
-nnoremap('<leader>tf', '<cmd>Telescope find_files<CR>')
-nnoremap('<leader>tg', '<cmd>Telescope live_grep<CR>')
-nnoremap('<leader>th', '<cmd>Telescope help_tags<CR>')
-nnoremap('<leader>td', '<cmd>Telescope diagnostics<CR>')
+vim.keymap.set('n', '<leader>t', '<cmd>Telescope<CR>')
+vim.keymap.set('n', '<leader>tb', '<cmd>Telescope buffers<CR>')
+vim.keymap.set('n', '<leader>tf', '<cmd>Telescope find_files<CR>')
+vim.keymap.set('n', '<leader>tg', '<cmd>Telescope live_grep<CR>')
+vim.keymap.set('n', '<leader>th', '<cmd>Telescope help_tags<CR>')
+vim.keymap.set('n', '<leader>td', '<cmd>Telescope diagnostics<CR>')
 --LSP
-nnoremap('K', '<cmd>lua vim.lsp.buf.hover()<CR>')
-nnoremap('<leader>ga', '<cmd>lua vim.lsp.buf.code_action()<CR>')
-nnoremap('<leader>gd', '<cmd>lua vim.lsp.buf.definition()<CR>')
-nnoremap('<leader>gdc', '<cmd>lua vim.lsp.buf.declaration()<CR>')
-nnoremap('<leader>gf', '<cmd>lua vim.lsp.buf.formatting()<CR>')
-nnoremap('<leader>gfa', '<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>')
-nnoremap('<leader>gi', '<cmd>lua vim.lsp.buf.implementation()<CR>')
-nnoremap('<leader>gk', '<cmd>lua vim.lsp.buf.signature_help()<CR>')
-nnoremap('<leader>glf', '<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>')
-nnoremap('<leader>gr', '<cmd>lua vim.lsp.buf.references()<CR>')
-nnoremap('<leader>grf', '<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>')
-nnoremap('<leader>grn', '<cmd>lua vim.lsp.buf.rename()<CR>')
-nnoremap('<leader>gt', '<cmd>lua vim.lsp.buf.type_definition()<CR>')
+vim.keymap.set('n', 'K', '<cmd>lua vim.lsp.buf.hover()<CR>')
+vim.keymap.set('n', '<leader>ga', '<cmd>lua vim.lsp.buf.code_action()<CR>')
+vim.keymap.set('n', '<leader>gd', '<cmd>lua vim.lsp.buf.definition()<CR>')
+vim.keymap.set('n', '<leader>gdc', '<cmd>lua vim.lsp.buf.declaration()<CR>')
+vim.keymap.set('n', '<leader>gf', '<cmd>lua vim.lsp.buf.formatting()<CR>')
+vim.keymap.set('n', '<leader>gfa', '<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>')
+vim.keymap.set('n', '<leader>gi', '<cmd>lua vim.lsp.buf.implementation()<CR>')
+vim.keymap.set('n', '<leader>gk', '<cmd>lua vim.lsp.buf.signature_help()<CR>')
+vim.keymap.set('n', '<leader>glf', '<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>')
+vim.keymap.set('n', '<leader>gr', '<cmd>lua vim.lsp.buf.references()<CR>')
+vim.keymap.set('n', '<leader>grf', '<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>')
+vim.keymap.set('n', '<leader>grn', '<cmd>lua vim.lsp.buf.rename()<CR>')
+vim.keymap.set('n', '<leader>gt', '<cmd>lua vim.lsp.buf.type_definition()<CR>')
+--DAP 
+vim.keymap.set('n','<F5>' ,      ":DapContinue<CR>", {noremap=true, silent=true})
+vim.keymap.set('n','<F10>' ,     ":DapStepOver<CR>", {noremap=true, silent=true})
+vim.keymap.set('n','<F11>' ,     ":DapStepInto()<CR>", {noremap=true, silent=true})
+vim.keymap.set('n','<F12>' ,     ":DapStepOut<CR>", {noremap=true, silent=true})
+vim.keymap.set('n','<Leader>b' , ":DapToggleBreakpoint<CR>", {noremap=true, silent=true})
+vim.keymap.set('n','<Leader>B' , "<cmd> lua require'DapSetBreakpoint(vim.fn.input('Breakpoint condition: '))<CR>", {noremap=true, silent=true})
+vim.keymap.set('n','<Leader>lp' ,"<cmd> lua require'DapSetBreakpoint(nil, nil, vim.fn.input('Log point message: '))<CR>", {noremap=true, silent=true})
+vim.keymap.set('n','<Leader>dr' ,"<cmd> lua require'DapRepl.open()<CR>", {noremap=true, silent=true})
+vim.keymap.set('n','<Leader>dl' ,"<cmd> lua require'DapRun_last()<CR>", {noremap=true, silent=true})
 --Terminal
-tnoremap('<Esc>', '<C-\\><C-n>')
+vim.keymap.set('t', '<Esc>', '<C-\\><C-n>')
