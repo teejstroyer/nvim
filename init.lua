@@ -181,27 +181,13 @@ require("mason-lspconfig").setup_handlers({
 local dap, dapui = require('dap'), require('dapui')
 dapui.setup()
 dap.listeners.after.event_initialized["dapui_config"] = function()
-  dapui.open()
+    dapui.open()
 end
 dap.listeners.before.event_terminated["dapui_config"] = function()
-  dapui.close()
+    dapui.close()
 end
 dap.listeners.before.event_exited["dapui_config"] = function()
-  dapui.close()
-end
-
-vim.diagnostic.config({
-    virtual_text = true,
-    severity_sort = true,
-    underline = true,
-    update_in_insert = true,
-    float = { border = 'rounded', source = 'always', header = '', prefix = '' }
-})
-
-local signs = { Error = " ", Warn = " ", Hint = " ", Info = " " }
-for type, icon in pairs(signs) do
-    local hl = "DiagnosticSign" .. type
-    vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = hl })
+    dapui.close()
 end
 
 vim.api.nvim_create_autocmd("CursorHold", {
@@ -289,21 +275,22 @@ vim.keymap.set('v', '<leader>d', '"_d')
 vim.keymap.set('v', '<leader>p', '"_dP')
 ------------------------------------------------------------------
 vim.keymap.set('n', '<leader><leader>', ':WhichKey<CR>', { silent = true })
-vim.keymap.set('n', '<leader>rj', ':resize -2<CR>', { silent = true })
-vim.keymap.set('n', '<leader>rk', ':resize +2<CR>', { silent = true })
-vim.keymap.set('n', '<leader>rh', ':vertical resize +2<CR>', { silent = true })
-vim.keymap.set('n', '<leader>rl', ':vertical resize -2<CR>', { silent = true })
+vim.keymap.set('n', '<leader>J', ':resize -2<CR>', { silent = true })
+vim.keymap.set('n', '<leader>K', ':resize +2<CR>', { silent = true })
+vim.keymap.set('n', '<leader>H', ':vertical resize +2<CR>', { silent = true })
+vim.keymap.set('n', '<leader>L', ':vertical resize -2<CR>', { silent = true })
 vim.keymap.set('n', '<leader>j', '<C-W>j', { silent = true })
 vim.keymap.set('n', '<leader>k', '<C-W>k', { silent = true })
 vim.keymap.set('n', '<leader>h', '<C-W>h', { silent = true })
 vim.keymap.set('n', '<leader>l', '<C-W>l', { silent = true })
 --Buffer
-vim.keymap.set('n', '<leader>[', ':bnext<CR>')
-vim.keymap.set('n', '<leader>]', ':bNext<CR>')
-vim.keymap.set('n', '<leader>[d', ':bdelete<CR>')
+vim.keymap.set('n', '<leader><Tab>', ':BufferNext<CR>')
+vim.keymap.set('n', '<leader><S-Tab>', ':BufferPrevious<CR>')
+vim.keymap.set('n', '<leader>q', ':BufferClose<CR>')
+vim.keymap.set('n', '<leader>qa', ':BufferCloseAllButCurrentOrPinned<CR>')
+vim.keymap.set('n', '<leader>;', ':BufferPick<CR>')
+vim.keymap.set('n', '<leader><Tab><Tab>', ':BufferPin<CR>')
 --Window
-vim.keymap.set('n', '<c-h>', ':tabprevious<CR>')
-vim.keymap.set('n', '<c-l>', ':tabnext<CR>')
 vim.keymap.set('n', '<leader>sh', ':sp<CR>')
 vim.keymap.set('n', '<leader>sv', ':vs<CR>')
 vim.keymap.set('n', '<leader>ws', '<Cmd>WinShift<CR>')
@@ -324,7 +311,7 @@ vim.keymap.set('n', 'K', '<cmd>lua vim.lsp.buf.hover()<CR>')
 vim.keymap.set('n', '<leader>ga', '<cmd>lua vim.lsp.buf.code_action()<CR>')
 vim.keymap.set('n', '<leader>gd', '<cmd>lua vim.lsp.buf.definition()<CR>')
 vim.keymap.set('n', '<leader>gdc', '<cmd>lua vim.lsp.buf.declaration()<CR>')
-vim.keymap.set('n', '<leader>gf', '<cmd>lua vim.lsp.buf.formatting()<CR>')
+vim.keymap.set('n', '<leader>gf', '<cmd>lua vim.lsp.buf.format()<CR>')
 vim.keymap.set('n', '<leader>gfa', '<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>')
 vim.keymap.set('n', '<leader>gi', '<cmd>lua vim.lsp.buf.implementation()<CR>')
 vim.keymap.set('n', '<leader>gk', '<cmd>lua vim.lsp.buf.signature_help()<CR>')
@@ -333,15 +320,15 @@ vim.keymap.set('n', '<leader>gr', '<cmd>lua vim.lsp.buf.references()<CR>')
 vim.keymap.set('n', '<leader>grf', '<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>')
 vim.keymap.set('n', '<leader>grn', '<cmd>lua vim.lsp.buf.rename()<CR>')
 vim.keymap.set('n', '<leader>gt', '<cmd>lua vim.lsp.buf.type_definition()<CR>')
---DAP 
-vim.keymap.set('n','<F5>' ,      ":DapContinue<CR>", {noremap=true, silent=true})
-vim.keymap.set('n','<F10>' ,     ":DapStepOver<CR>", {noremap=true, silent=true})
-vim.keymap.set('n','<F11>' ,     ":DapStepInto()<CR>", {noremap=true, silent=true})
-vim.keymap.set('n','<F12>' ,     ":DapStepOut<CR>", {noremap=true, silent=true})
-vim.keymap.set('n','<Leader>b' , ":DapToggleBreakpoint<CR>", {noremap=true, silent=true})
-vim.keymap.set('n','<Leader>B' , "<cmd> lua require'DapSetBreakpoint(vim.fn.input('Breakpoint condition: '))<CR>", {noremap=true, silent=true})
-vim.keymap.set('n','<Leader>lp' ,"<cmd> lua require'DapSetBreakpoint(nil, nil, vim.fn.input('Log point message: '))<CR>", {noremap=true, silent=true})
-vim.keymap.set('n','<Leader>dr' ,"<cmd> lua require'DapRepl.open()<CR>", {noremap=true, silent=true})
-vim.keymap.set('n','<Leader>dl' ,"<cmd> lua require'DapRun_last()<CR>", {noremap=true, silent=true})
+--DAP
+vim.keymap.set('n', '<F5>', ":DapContinue<CR>", { noremap = true, silent = true })
+vim.keymap.set('n', '<F10>', ":DapStepOver<CR>", { noremap = true, silent = true })
+vim.keymap.set('n', '<F11>', ":DapStepInto()<CR>", { noremap = true, silent = true })
+vim.keymap.set('n', '<F12>', ":DapStepOut<CR>", { noremap = true, silent = true })
+vim.keymap.set('n', '<F9>', ":DapToggleBreakpoint<CR>", { noremap = true, silent = true })
+vim.keymap.set('n', '<S-F9>', "<cmd> lua require'DapSetBreakpoint(vim.fn.input('Breakpoint condition: '))<CR>",
+    { noremap = true, silent = true })
+vim.keymap.set('n', '<Leader>dr', "<cmd> lua require'DapRepl.open()<CR>", { noremap = true, silent = true })
+vim.keymap.set('n', '<Leader>dl', "<cmd> lua require'DapRun_last()<CR>", { noremap = true, silent = true })
 --Terminal
 vim.keymap.set('t', '<Esc>', '<C-\\><C-n>')
