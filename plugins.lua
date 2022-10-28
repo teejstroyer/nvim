@@ -20,6 +20,17 @@ require('packer').startup({ function()
     use { 'windwp/nvim-autopairs' } --Auto pair braces
     use 'rcarriga/nvim-notify' --Pretty Notification UI
     use 'onsails/lspkind.nvim' --Icons for popups
+    use {"akinsho/toggleterm.nvim", tag = '*', config = function()
+        require("toggleterm").setup()
+    end}
+    use({
+        "folke/noice.nvim",
+        event = "VimEnter",
+        config = function()
+            require("noice").setup()
+        end,
+        requires = { "MunifTanjim/nui.nvim", "rcarriga/nvim-notify" }
+    })
     ----------------------------------------------------
     use { 'nvim-treesitter/nvim-treesitter', run = ':TSUpdate',
         requires = { 'nvim-treesitter/nvim-treesitter-context' }
@@ -68,4 +79,3 @@ end, config = {
         open_fn = require('packer.util').float,
     }
 } })
-

@@ -64,3 +64,4 @@ vim.keymap.set('n', '<S-F9>', function() require('dap').set_breakpoint(vim.fn.in
 vim.keymap.set('n', '<Leader>dr', function() require'dap'.repl.open() end, { noremap = true, silent = true })
 --Terminal
 vim.keymap.set('t', '<Esc>', '<C-\\><C-n>')
+vim.keymap.set('n', '<Leader>`', ':ToggleTerm<CR>')
