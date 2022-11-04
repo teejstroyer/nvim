@@ -1,4 +1,3 @@
-
 vim.cmd([[colorscheme nightfox]])
 vim.g.mapleader = " "
 vim.go.clipboard = "unnamedplus" -- Copy paste between vim and everything else

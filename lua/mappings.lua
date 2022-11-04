@@ -1,8 +1,8 @@
 
 vim.cmd([[let mapleader ="\<Space>"]])
 vim.keymap.set('n', "<Space>", "<NOP>")
-vim.keymap.set('i', '<S-Tab>', [[pumvisible() ? '\<C-p>' : '\<S-Tab>']], { silent = true, expr = true })
-vim.keymap.set('i', '<Tab>', [[pumvisible() ? '\<C-n>' : '\<Tab>']], { silent = true, expr = true })
+vim.keymap.set('i', '<S-Tab>', [[pumvisible() ? '\<C-p>' : '<S-Tab>']], { silent = true, expr = true })
+vim.keymap.set('i', '<Tab>', [[pumvisible() ? '\<C-n>' : '<Tab>']], { silent = true, expr = true })
 vim.keymap.set('n', '<leader>d', '"_d')
 vim.keymap.set('v', '<leader>d', '"_d')
 vim.keymap.set('v', '<leader>p', '"_dP')
