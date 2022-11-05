@@ -77,3 +77,9 @@ end, config = {
         open_fn = require('packer.util').float,
     }
 } })
+
+--Source Plugin Setup
+require('plugins.default')
+require('plugins.mason')
+require('plugins.cmp')
+require('plugins.dap')
