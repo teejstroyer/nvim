@@ -41,6 +41,7 @@ require('packer').startup({ function()
     use { 'nvim-treesitter/nvim-treesitter', run = ':TSUpdate',
         requires = { 'nvim-treesitter/nvim-treesitter-context' }
     }
+    use { 'jlcrochet/vim-razor' }
     use { 'nvim-lualine/lualine.nvim', requires = { 'kyazdani42/nvim-web-devicons' } }
     use { 'nvim-telescope/telescope.nvim',
         requires = {

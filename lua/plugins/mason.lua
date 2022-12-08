@@ -1,6 +1,6 @@
 require('mason').setup()
 require("mason-lspconfig").setup {
-    ensure_installed = { "sumneko_lua","csharp_ls" }
+    ensure_installed = { "sumneko_lua" }
 }
 
 local lspconfig = require("lspconfig")
