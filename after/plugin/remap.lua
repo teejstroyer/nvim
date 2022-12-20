@@ -15,7 +15,7 @@ vim.keymap.set("n", "<leader>Y", [["+Y]])
 vim.keymap.set({ "n", "v" }, "<leader>d", [["_d]])
 
 vim.keymap.set("n", "Q", "<nop>")
-vim.keymap.set("n", "<leader>f", vim.lsp.buf.format)
+vim.keymap.set("n", "<leader>f;", vim.lsp.buf.format)
 
 vim.keymap.set("n", "<C-k>", "<cmd>cnext<CR>zz")
 vim.keymap.set("n", "<C-j>", "<cmd>cprev<CR>zz")
@@ -27,15 +27,14 @@ vim.keymap.set("n", "<leader>e", ":NvimTreeToggle<CR>")
 --Helpful for moving between windows
 vim.keymap.set("n", "<leader>w", "<C-w>")
 
-vim.keymap.set("n", "<space>f", ":Telescope<CR>", { noremap = true })
-vim.keymap.set("n", "<space>ff", ":Telescope file_browser<CR>", { noremap = true })
+vim.keymap.set("n", "<space>ff", ":Telescope<CR>", { noremap = true })
+vim.keymap.set("n", "<space>fe", ":Telescope file_browser<CR>", { noremap = true })
 vim.keymap.set("n", "<space>fb", ":Telescope buffers<CR>", { noremap = true })
 
 local builtin = require('telescope.builtin')
-
-vim.keymap.set('n', '<leader>pf', builtin.find_files, {})
-vim.keymap.set('n', '<C-p>', builtin.git_files, {})
-vim.keymap.set('n', '<leader>ps', function()
+vim.keymap.set('n', '<leader>fs', builtin.find_files, {})
+vim.keymap.set('n', '<leader>fG', builtin.git_files, {})
+vim.keymap.set('n', '<leader>fg', function()
     builtin.grep_string({ search = vim.fn.input("Grep > ") })
 end)
 
@@ -48,13 +47,13 @@ require("lsp-zero").on_attach(function(client, bufnr)
 
     vim.keymap.set("n", "gd", vim.lsp.buf.definition, { buffer = bufnr, remap = false, desc = 'Goto Definition' })
     vim.keymap.set("n", "K", vim.lsp.buf.hover, { buffer = bufnr, remap = false, desc = 'Hover Details' })
-    vim.keymap.set("n", "<leader>;ws", vim.lsp.buf.workspace_symbol, { buffer = bufnr, remap = false,
-        desc = 'Workspace Symbols' })
+    vim.keymap.set("n", "<leader>;ws", vim.lsp.buf.workspace_symbol,
+        { buffer = bufnr, remap = false, desc = 'Workspace Symbols' })
     vim.keymap.set("n", "<leader>;d", vim.diagnostic.open_float, { buffer = bufnr, remap = false, desc = 'Diagnostics' })
     vim.keymap.set("n", "<leader>;dn", vim.diagnostic.goto_next,
         { buffer = bufnr, remap = false, desc = 'Diagnostics Next' })
-    vim.keymap.set("n", "<leader>;dp", vim.diagnostic.goto_prev, { buffer = bufnr, remap = false,
-        desc = 'Diagnostics Previous' })
+    vim.keymap.set("n", "<leader>;dp", vim.diagnostic.goto_prev,
+        { buffer = bufnr, remap = false, desc = 'Diagnostics Previous' })
     vim.keymap.set("n", "<leader>;a", vim.lsp.buf.code_action, { buffer = bufnr, remap = false, desc = 'Code Action' })
     vim.keymap.set("n", "<leader>;r", vim.lsp.buf.references, { buffer = bufnr, remap = false, desc = 'References' })
     vim.keymap.set("n", "<leader>;R", vim.lsp.buf.rename, { buffer = bufnr, remap = false, desc = 'Rename' })
