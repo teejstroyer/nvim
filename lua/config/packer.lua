@@ -13,18 +13,16 @@ local packer_bootstrap = ensure_packer()
 
 vim.cmd.packadd('packer.nvim')
 
-
 return require('packer').startup(function(use)
     -- Packer can manage itself
     use 'wbthomason/packer.nvim'
-
+    --
     use {
         'nvim-telescope/telescope.nvim',
         requires = { { 'nvim-lua/plenary.nvim' } }
     }
 
     use { "nvim-telescope/telescope-file-browser.nvim" }
-
     use({
         'EdenEast/nightfox.nvim',
         as = "nightfox",
@@ -69,10 +67,12 @@ return require('packer').startup(function(use)
 
     use({
         "https://git.sr.ht/~whynothugo/lsp_lines.nvim",
+        as = "lsp_lines",
         config = function()
             require("lsp_lines").setup()
         end,
     })
+
     use { 'akinsho/bufferline.nvim', tag = "v3.*", requires = 'nvim-tree/nvim-web-devicons' }
     use {
         'kosayoda/nvim-lightbulb',
