@@ -38,7 +38,7 @@ return { "stevearc/oil.nvim", config = function()
             ["<C-p>"] = "actions.preview",
             ["<C-c>"] = "actions.close",
             ["<C-l>"] = "actions.refresh",
-            ["-"] = "actions.parent",
+            ["<BS>"] = "actions.parent",
             ["_"] = "actions.open_cwd",
             ["`"] = "actions.cd",
             ["~"] = "actions.tcd",
@@ -48,7 +48,7 @@ return { "stevearc/oil.nvim", config = function()
         use_default_keymaps = true,
         view_options = {
             -- Show files and directories that start with "."
-            show_hidden = false,
+            show_hidden = true,
         },
         -- Configuration for the floating window in oil.open_float
         float = {
