@@ -40,7 +40,7 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 require("config.set")
-require("config.remap")
+require("config.keymap")
 
 vim.g.mapleader = " "
 require("lazy").setup("config.plugins")
