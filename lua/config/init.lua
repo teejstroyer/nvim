@@ -39,8 +39,7 @@ if not vim.loop.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
-require("config.set")
-require("config.keymap")
-
 vim.g.mapleader = " "
+require("config.set")
 require("lazy").setup("config.plugins")
+require("config.keymap") -- Must come after plugin setup
