@@ -57,6 +57,8 @@ return {
                 info = 'I'
             }
         })
+        --Fix Dart Language Server
+        lsp.setup_servers({'dartls', force=true})
         lsp.setup()
     end
 }
