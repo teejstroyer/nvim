@@ -3,7 +3,8 @@ return {
         "EdenEast/nightfox.nvim",
         name = "nightfox",
         config = function()
-            vim.cmd("colorscheme nordfox")
+            --nightfox,dayfox,dawnfox,duskfox,nordfox,terafox,carbonfox,
+            vim.cmd("colorscheme nightfox")
         end
     },
     "mbbill/undotree",
