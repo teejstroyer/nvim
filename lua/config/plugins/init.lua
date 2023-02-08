@@ -1,4 +1,5 @@
 return {
+    "mbbill/undotree",
     {
         "EdenEast/nightfox.nvim",
         name = "nightfox",
@@ -7,5 +8,4 @@ return {
             vim.cmd("colorscheme nightfox")
         end
     },
-    "mbbill/undotree",
 }
