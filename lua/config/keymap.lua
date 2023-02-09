@@ -81,4 +81,7 @@ vim.keymap.set("n", "<leader>xr", "<cmd>TroubleToggle lsp_references<cr>", { sil
 vim.keymap.set("n", "<C-`>", "<cmd>ToggleTerm<cr>", { silent = true, noremap = true })
 --":ToggleTerm size=40 dir=~/Desktop direction=horizontal"
 --":ToggleTerm size=40 dir=~/Desktop direction=horizontal"
-vim.keymap.set("n", "<leader>t", "<cmd>ToggleTerm size=40 dir=. direction=horizontal<cr>", { silent = true, noremap = true })
+--'vertical' | 'horizontal' | 'tab' | 'float',
+vim.keymap.set("n", "<leader>tt", "<cmd>ToggleTerm size=40 dir=. direction=horizontal<cr>", { silent = true, noremap = true })
+vim.keymap.set("n", "<leader>tf", "<cmd>ToggleTerm size=40 dir=. direction=float<cr>", { silent = true, noremap = true })
+vim.keymap.set("n", "<leader>tb", ":enew|terminal<cr>", { silent = true, noremap = true })
