@@ -1,16 +1,21 @@
 local M = {
     'nvim-telescope/telescope.nvim', branch = '0.1.x',
     dependencies = {
-        { 'nvim-lua/plenary.nvim', 'nvim-telescope/telescope-ui-select.nvim' }
+        {
+            'nvim-lua/plenary.nvim',
+            'nvim-telescope/telescope-ui-select.nvim',
+            "dimaportenko/telescope-simulators.nvim",
+        }
     },
-    cmd = { "Telescope", "Tel" }, -- lazy loads on these commands
-    keys = { "<leader>f"}, -- lazy loads on this pattern
+    --cmd = { "Telescope", "Tel" }, -- lazy loads on these commands
+    --keys = { "<leader>f" }, -- lazy loads on this pattern
 }
 
 function M.config()
     local telescope = require("telescope")
     telescope.setup()
 
+    require("telescope").load_extension("ui-select")
     local builtin = require('telescope.builtin')
     vim.keymap.set("n", "<space>f", ":Telescope<CR>", { noremap = true })
     vim.keymap.set('n', '<leader>ff', builtin.find_files, {})

@@ -22,13 +22,10 @@ vim.keymap.set({ "n", "v" }, "<leader>d", [["_d]])
 vim.keymap.set("n", "Q", "<nop>")
 vim.keymap.set("n", "<leader>;f", vim.lsp.buf.format)
 
-vim.keymap.set("n", "<leader>kk", "<cmd>cnext<CR>zz")
-vim.keymap.set("n", "<leader>jj", "<cmd>cprev<CR>zz")
-vim.keymap.set("n", "<leader>k", "<cmd>lnext<CR>zz")
-vim.keymap.set("n", "<leader>j", "<cmd>lprev<CR>zz")
-
 vim.keymap.set("n", "<leader>s", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]])
-vim.keymap.set("n", "<leader>e", ":NvimTreeToggle<CR>")
+--vim.keymap.set("n", "<leader>e", ":Telescope file_browser<CR>", { noremap = true })
+vim.keymap.set("n", "<leader>e", ":Lexplore<CR>", { noremap = true })
+
 --Helpful for moving between windows
 vim.keymap.set("n", "<leader>w", "<C-w>")
 
@@ -78,10 +75,16 @@ vim.keymap.set("n", "<leader>xl", "<cmd>TroubleToggle loclist<cr>", { silent = t
 vim.keymap.set("n", "<leader>xq", "<cmd>TroubleToggle quickfix<cr>", { silent = true, noremap = true })
 vim.keymap.set("n", "<leader>xr", "<cmd>TroubleToggle lsp_references<cr>", { silent = true, noremap = true })
 
+vim.keymap.set("n", "<leader>xk", "<cmd>cnext<CR>zz")
+vim.keymap.set("n", "<leader>xj", "<cmd>cprev<CR>zz")
+vim.keymap.set("n", "<leader>xK", "<cmd>lnext<CR>zz")
+vim.keymap.set("n", "<leader>xJ", "<cmd>lprev<CR>zz")
+
 vim.keymap.set("n", "<C-`>", "<cmd>ToggleTerm<cr>", { silent = true, noremap = true })
 --":ToggleTerm size=40 dir=~/Desktop direction=horizontal"
 --":ToggleTerm size=40 dir=~/Desktop direction=horizontal"
 --'vertical' | 'horizontal' | 'tab' | 'float',
-vim.keymap.set("n", "<leader>tt", "<cmd>ToggleTerm size=40 dir=. direction=horizontal<cr>", { silent = true, noremap = true })
+vim.keymap.set("n", "<leader>tt", "<cmd>ToggleTerm size=40 dir=. direction=horizontal<cr>",
+    { silent = true, noremap = true })
 vim.keymap.set("n", "<leader>tf", "<cmd>ToggleTerm size=40 dir=. direction=float<cr>", { silent = true, noremap = true })
 vim.keymap.set("n", "<leader>tb", ":enew|terminal<cr>", { silent = true, noremap = true })
