@@ -24,7 +24,8 @@ vim.keymap.set("n", "<leader>;f", vim.lsp.buf.format)
 
 vim.keymap.set("n", "<leader>s", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]])
 --vim.keymap.set("n", "<leader>e", ":Telescope file_browser<CR>", { noremap = true })
-vim.keymap.set("n", "<leader>e", ":Lexplore<CR>", { noremap = true })
+--vim.keymap.set("n", "<leader>e", ":Lexplore<CR>", { noremap = true })
+vim.keymap.set("n", "<leader>e", ":NeoTreeFocusToggle<CR>", { noremap = true })
 
 --Helpful for moving between windows
 vim.keymap.set("n", "<leader>w", "<C-w>")
