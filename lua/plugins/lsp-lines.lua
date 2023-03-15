@@ -1,7 +1,7 @@
 return {
     "https://git.sr.ht/~whynothugo/lsp_lines.nvim",
     name = "lsp_lines",
-    enabled=true,
+    enabled=false,
     config=function()
         require("lsp_lines").setup()
         vim.diagnostic.config({

@@ -1,91 +1,73 @@
 vim.g.mapleader = " "
 
-vim.keymap.set("n", "<leader>b", ":bnext<CR>")
-vim.keymap.set("n", "<leader>bp", ":bprevious<CR>")
+--noremap = not recursive map | a -> b && and b -> a infinite loop
+local silentOpt = { silent = true, noremap = true }
+local function map(mode, lhs, rhs, opt)
+    vim.keymap.set(mode, lhs, rhs, opt)
+end
 
-vim.keymap.set("v", "<C-j>", ":m '>+1<cr>gv=gv")
-vim.keymap.set("v", "<C-k>", ":m '<-2<cr>gv=gv")
-
-vim.keymap.set("n", "n", "nzzzv")
-vim.keymap.set("n", "<C-d>", "<C-d>zz")
-vim.keymap.set("n", "<C-u>", "<C-u>zz")
-vim.keymap.set("n", "N", "Nzzzv")
---vim.keymap.set("n", "J", "mzJ`z")
-
-vim.keymap.set("x", "<leader>p", [["_dP]])
-
-vim.keymap.set({ "n", "v" }, "<leader>y", [["+y]])
-vim.keymap.set("n", "<leader>Y", [["+Y]])
-
-vim.keymap.set({ "n", "v" }, "<leader>d", [["_d]])
-
-vim.keymap.set("n", "Q", "<nop>")
-vim.keymap.set("n", "<leader>;f", vim.lsp.buf.format)
-
-vim.keymap.set("n", "<leader>s", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]])
---vim.keymap.set("n", "<leader>e", ":Telescope file_browser<CR>", { noremap = true })
---vim.keymap.set("n", "<leader>e", ":Lexplore<CR>", { noremap = true })
-vim.keymap.set("n", "<leader>e", ":NeoTreeFocusToggle<CR>", { noremap = true })
-
---Helpful for moving between windows
-vim.keymap.set("n", "<leader>w", "<C-w>")
-
-vim.keymap.set("n", "<leader>\\", ":vsplit<CR>")
-vim.keymap.set("n", "<leader>-", ":split<CR>")
-
-vim.keymap.set("n", "<Up>", ":resize -2<CR>")
-vim.keymap.set("n", "<Down>", ":resize +2<CR>")
-vim.keymap.set("n", "<Left>", ":vertical resize -2<CR>")
-vim.keymap.set("n", "<Right>", ":vertical resize +2<CR>")
-vim.keymap.set("t", "<Esc>", "<c-\\><c-n>")
-
-require("lsp-zero").on_attach(function(client, bufnr)
-
-    if client.name == "eslint" then
-        vim.cmd.LspStop('eslint')
-        return
-    end
-
-    vim.keymap.set("n", "gd", vim.lsp.buf.definition, { buffer = bufnr, remap = false, desc = 'Goto Definition' })
-    vim.keymap.set("n", "gt", vim.lsp.buf.type_definition, { buffer = bufnr, remap = false, desc = 'Goto Definition' })
-    vim.keymap.set("n", "K", vim.lsp.buf.hover, { buffer = bufnr, remap = false, desc = 'Hover Details' })
-    vim.keymap.set("n", "<leader>;ws", vim.lsp.buf.workspace_symbol,
-        { buffer = bufnr, remap = false, desc = 'Workspace Symbols' })
-    vim.keymap.set("n", "<leader>;d", vim.diagnostic.open_float, { buffer = bufnr, remap = false, desc = 'Diagnostics' })
-    vim.keymap.set("n", "<leader>;dn", vim.diagnostic.goto_next,
-        { buffer = bufnr, remap = false, desc = 'Diagnostics Next' })
-    vim.keymap.set("n", "<leader>;dp", vim.diagnostic.goto_prev,
-        { buffer = bufnr, remap = false, desc = 'Diagnostics Previous' })
-    vim.keymap.set("n", "<leader>;a", vim.lsp.buf.code_action, { buffer = bufnr, remap = false, desc = 'Code Action' })
-    vim.keymap.set("n", "<leader>;r", vim.lsp.buf.references, { buffer = bufnr, remap = false, desc = 'References' })
-    vim.keymap.set("n", "<leader>;R", vim.lsp.buf.rename, { buffer = bufnr, remap = false, desc = 'Rename' })
-    vim.keymap.set("i", "<leader>;h", vim.lsp.buf.signature_help, { buffer = bufnr, remap = false, desc = '' })
-end)
-
-vim.keymap.set("n", "<leader>u", vim.cmd.UndotreeToggle)
-
-vim.keymap.set("n", "<leader>zz", function()
-    require("zen-mode").toggle()
-    vim.wo.wrap = false
-end)
-
-vim.keymap.set("n", "<leader>xx", "<cmd>TroubleToggle<cr>", { silent = true, noremap = true })
-vim.keymap.set("n", "<leader>xw", "<cmd>TroubleToggle workspace_diagnostics<cr>", { silent = true, noremap = true })
-vim.keymap.set("n", "<leader>xd", "<cmd>TroubleToggle document_diagnostics<cr>", { silent = true, noremap = true })
-vim.keymap.set("n", "<leader>xl", "<cmd>TroubleToggle loclist<cr>", { silent = true, noremap = true })
-vim.keymap.set("n", "<leader>xq", "<cmd>TroubleToggle quickfix<cr>", { silent = true, noremap = true })
-vim.keymap.set("n", "<leader>xr", "<cmd>TroubleToggle lsp_references<cr>", { silent = true, noremap = true })
-
-vim.keymap.set("n", "<leader>xk", "<cmd>cnext<CR>zz")
-vim.keymap.set("n", "<leader>xj", "<cmd>cprev<CR>zz")
-vim.keymap.set("n", "<leader>xK", "<cmd>lnext<CR>zz")
-vim.keymap.set("n", "<leader>xJ", "<cmd>lprev<CR>zz")
-
-vim.keymap.set("n", "<C-`>", "<cmd>ToggleTerm<cr>", { silent = true, noremap = true })
---":ToggleTerm size=40 dir=~/Desktop direction=horizontal"
---":ToggleTerm size=40 dir=~/Desktop direction=horizontal"
---'vertical' | 'horizontal' | 'tab' | 'float',
-vim.keymap.set("n", "<leader>tt", "<cmd>ToggleTerm size=40 dir=. direction=horizontal<cr>",
-    { silent = true, noremap = true })
-vim.keymap.set("n", "<leader>tf", "<cmd>ToggleTerm size=40 dir=. direction=float<cr>", { silent = true, noremap = true })
-vim.keymap.set("n", "<leader>tb", ":enew|terminal<cr>", { silent = true, noremap = true })
+map("n", "<leader>k", function() vim.diagnostic.open_float({ focusable = true }) end)
+--UNMAP to prevent hard quit
+map("n", "Q", "<nop>")
+--TERMINAL NORMAL MODE
+map("t", "<Esc>", "<c-\\><c-n>")
+--UNDO TREE
+map("n", "<leader>u", vim.cmd.UndotreeToggle, { desc = "Undo Tree Toggle" })
+--BUFFER
+map("n", "<leader>q", ":bdelete<CR>", silentOpt)
+map("n", "<leader>bn", ":bnext<CR>", silentOpt)
+map("n", "<leader>bp", ":bprevious<CR>", silentOpt)
+--Move selection up or down
+map("v", "<C-j>", ":m '>+1<cr>gv=gv", silentOpt)
+map("v", "<C-k>", ":m '<-2<cr>gv=gv", silentOpt)
+-- COPY/PASTE/DELETE To buffer
+map("n", "<leader>Y", [["+Y]])
+map("x", "<leader>p", [["_dP]])
+map({ "n", "v" }, "<leader>d", [["_d]])
+map({ "n", "v" }, "<leader>y", [["+y]])
+--SEARCH AND REPLACE UNDER CURSOR
+map("n", "<leader>s", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]])
+--FILE Explorer
+map("n", "<leader>e", ":NeoTreeFocusToggle<CR>", { noremap = true })
+--MOVE BETWEEN WINDOW PREFIX
+map("n", "<leader>w", "<C-w>") --Helpful for moving between windows
+--WINDOW SPLITS
+map("n", "<leader>\\", ":vsplit<CR>")
+map("n", "<leader>-", ":split<CR>")
+map("n", "<Up>", ":resize -2<CR>")
+map("n", "<Down>", ":resize +2<CR>")
+map("n", "<Left>", ":vertical resize -2<CR>")
+map("n", "<Right>", ":vertical resize +2<CR>")
+--DIAGNOSTICS
+map("n", "<leader>xJ", "<cmd>lprev<CR>zz")
+map("n", "<leader>xK", "<cmd>lnext<CR>zz")
+map("n", "<leader>xd", "<cmd>TroubleToggle document_diagnostics<cr>", silentOpt)
+map("n", "<leader>xj", "<cmd>cprev<CR>zz")
+map("n", "<leader>xk", "<cmd>cnext<CR>zz")
+map("n", "<leader>xl", "<cmd>TroubleToggle loclist<cr>", silentOpt)
+map("n", "<leader>xq", "<cmd>TroubleToggle quickfix<cr>", silentOpt)
+map("n", "<leader>xr", "<cmd>TroubleToggle lsp_references<cr>", silentOpt)
+map("n", "<leader>xw", "<cmd>TroubleToggle workspace_diagnostics<cr>", silentOpt)
+map("n", "<leader>xx", "<cmd>TroubleToggle<cr>", silentOpt)
+--TOGGLE TERM
+map("n", "<C-`>", "<cmd>ToggleTerm<cr>", silentOpt)
+map("n", "<leader>tt", "<cmd>ToggleTerm size=40 dir=. direction=horizontal<cr>", silentOpt)
+map("n", "<leader>tf", "<cmd>ToggleTerm size=40 dir=. direction=float<cr>", silentOpt)
+map("n", "<leader>tb", ":enew|terminal<cr>", silentOpt)
+--TELESCOPE
+local builtin = require('telescope.builtin')
+map("n", "<leader>ff", ":Telescope<CR>", silentOpt)
+map("n", "<leader>fe", builtin.find_files, silentOpt)
+map("n", "<leader>fg", builtin.live_grep, silentOpt)
+map("n", "<leader>fb", builtin.buffers, silentOpt)
+map("n", "<leader>fh", builtin.help_tags, silentOpt)
+--DAP - DEBUG
+local dap = require "dap"
+map("n", "<F5>", dap.continue, { desc = "Continue" })
+map("n", "<F11>", dap.step_into, { desc = "Step Into" })
+map("n", "<F10>", dap.step_over, { desc = "Step Over" })
+map("n", "<S-F11>", dap.step_out, { desc = "Steop Out" })
+map("n", "<F9>", dap.toggle_breakpoint, { desc = "Breakpoint" })
+map("n", "<C-F9>", function()
+    dap.set_breakpoint(vim.fn.input "Breakpoint condition: ")
+end, { desc = "Conditional Breakpoint" })

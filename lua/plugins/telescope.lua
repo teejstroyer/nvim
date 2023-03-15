@@ -1,10 +1,13 @@
 local M = {
-    'nvim-telescope/telescope.nvim', branch = '0.1.x',
+    'nvim-telescope/telescope.nvim',
+    branch = '0.1.x',
     dependencies = {
         {
             'nvim-lua/plenary.nvim',
             'nvim-telescope/telescope-ui-select.nvim',
             "dimaportenko/telescope-simulators.nvim",
+            "kdheepak/lazygit.nvim",
+            "nvim-telescope/telescope-file-browser.nvim",
         }
     },
     --cmd = { "Telescope", "Tel" }, -- lazy loads on these commands
@@ -13,16 +16,18 @@ local M = {
 
 function M.config()
     local telescope = require("telescope")
-    telescope.setup()
+    telescope.setup({
+        extensions = {
+            file_browser = {
+                theme = "ivy",
+                hijack_netrw = false,
+            },
+        },
+    })
 
-    require("telescope").load_extension("ui-select")
-    local builtin = require('telescope.builtin')
-    vim.keymap.set("n", "<space>f", ":Telescope<CR>", { noremap = true })
-    vim.keymap.set('n', '<leader>ff', builtin.find_files, {})
-    vim.keymap.set('n', '<leader>fg', builtin.live_grep, {})
-    vim.keymap.set('n', '<leader>fb', builtin.buffers, {})
-    vim.keymap.set('n', '<leader>fh', builtin.help_tags, {})
-    vim.keymap.set("n", "<space>fe", ":Telescope file_browser<CR>", { noremap = true })
+    telescope.load_extension("lazygit")
+    telescope.load_extension("ui-select")
+    telescope.load_extension("file_browser")
 end
 
 return M
