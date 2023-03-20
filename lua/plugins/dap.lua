@@ -12,9 +12,9 @@ return {
         local dapui = require 'dapui'
 
         require("mason-nvim-dap").setup({
-            automatic_setup = true,
+            automatic_setup = false,
         })
-        require 'mason-nvim-dap'.setup_handlers {}
+        --require 'mason-nvim-dap'.setup_handlers {}
 
         -- Dap UI setup
         dapui.setup {
@@ -36,7 +36,6 @@ return {
         dap.listeners.after.event_initialized['dapui_config'] = dapui.open
         dap.listeners.before.event_terminated['dapui_config'] = dapui.close
         dap.listeners.before.event_exited['dapui_config'] = dapui.close
-
         -- Install golang specific config
         --require('dap-go').setup()
     end,
