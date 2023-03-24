@@ -16,6 +16,9 @@ return {
         -- Snippets
         { 'L3MON4D3/LuaSnip' },
         { 'rafamadriz/friendly-snippets' },
+        -- Copilot
+        --{ 'zbirenbaum/copilot.lua' },
+        --{ 'zbirenbaum/copilot-cmp' }
     },
     config = function()
         local lsp = require("lsp-zero")
@@ -35,11 +38,27 @@ return {
             lsp.default_keymaps({ buffer = bufnr })
         end)
 
-        local cmp = require("cmp")
+        --require("copilot").setup({
+        --    suggestion = { enabled = true },
+        --    panel = { enabled = true },
+        --    --suggestion = { enabled = false },
+        --    --panel = { enabled = false },
+        --})
+        --require("copilot_cmp").setup()
+
+        local cmp = require('cmp')
         cmp.setup({
-            mapping = cmp.mapping.preset.insert({
-                ['<CR>'] = cmp.mapping.confirm({ select = false }),
-            })
+            sources = {
+                --{ name = 'copilot' },
+                { name = 'nvim_lsp' },
+            },
+            mapping = {
+                ['<CR>'] = cmp.mapping.confirm({
+                    -- Copilot documentation says this is important.
+                    behavior = cmp.ConfirmBehavior.Replace,
+                    select = false,
+                }),
+            }
         })
 
         -- (Optional) Configure lua language server for neovim
