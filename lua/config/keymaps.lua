@@ -15,8 +15,10 @@ map("t", "<Esc>", "<c-\\><c-n>")
 map("n", "<leader>u", vim.cmd.UndotreeToggle, { desc = "Undo Tree Toggle" })
 --BUFFER
 map("n", "<leader>q", ":bdelete<CR>", silentOpt)
-map("n", "<leader>bn", ":bnext<CR>", silentOpt)
-map("n", "<leader>bp", ":bprevious<CR>", silentOpt)
+map("n", "<leader>l", ":bnext<CR>", silentOpt)
+map("n", "<leader>h", ":bprevious<CR>", silentOpt)
+map("n", "<leader>B", "<Cmd>BufferLineTogglePin<CR>", { desc = "Toggle pin" })
+map("n", "<leader>bq", "<Cmd>BufferLineGroupClose ungrouped<CR>", { desc = "Delete non-pinned buffers" })
 --Move selection up or down
 map("v", "<C-j>", ":m '>+1<cr>gv=gv", silentOpt)
 map("v", "<C-k>", ":m '<-2<cr>gv=gv", silentOpt)
