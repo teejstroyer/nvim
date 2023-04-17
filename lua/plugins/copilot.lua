@@ -22,10 +22,10 @@ return {
             suggestion = {
                 enabled = true,
                 auto_trigger = true,
-                debounce = 75,
+                debounce = 50,
                 keymap = {
                     accept = "<C-CR>",
-                    accept_word = false,
+                    accept_word = "<S-Space>",
                     accept_line = "<S-CR>",
                     next = "<C-j>",
                     prev = "<C-k>",

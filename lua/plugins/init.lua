@@ -30,5 +30,14 @@ return {
                 desc = "Replace in files (Spectre)"
             }
         }
-    }
+    },
+    {
+        "Fildo7525/pretty_hover",
+        config = function()
+            require("pretty_hover").setup(options)
+        end
+    },
+    {'lommix/godot.nvim'}
+
+
 }

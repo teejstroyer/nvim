@@ -8,3 +8,8 @@ if vim.fn.exists("g:vscode") == 0 then
     require("config.autocmds")
     require("config.keymaps")
 end
+
+if vim.g.neovide then
+    vim.o.guifont = "FiraCode Nerd Font Mono:h16"
+end
+

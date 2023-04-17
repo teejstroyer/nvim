@@ -61,6 +61,7 @@ map("n", "<leader>fe", builtin.find_files, silentOpt)
 map("n", "<leader>fg", builtin.live_grep, silentOpt)
 map("n", "<leader>fb", builtin.buffers, silentOpt)
 map("n", "<leader>fh", builtin.help_tags, silentOpt)
+map("n", "<leader>fr", builtin.resume, silentOpt)
 --DAP - DEBUG
 local dap = require "dap"
 map("n", "<F5>", dap.continue, { desc = "Continue" })
