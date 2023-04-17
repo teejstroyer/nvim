@@ -32,7 +32,7 @@ return {
         })
 
         lsp.on_attach(function(client, bufnr)
-            lsp.default_keymaps({ buffer = bufnr })
+            lsp.default_keymaps({ buffer = bufnr})
         end)
 
         local cmp = require('cmp')
@@ -43,8 +43,7 @@ return {
             },
             mapping = {
                 ['<CR>'] = cmp.mapping.confirm({
-                    -- Copilot documentation says this is important.
-                    behavior = cmp.ConfirmBehavior.Replace,
+                    behavior = cmp.ConfirmBehavior.Replace, -- Copilot documentation says this is important.
                     select = false,
                 }),
             }
