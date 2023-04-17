@@ -11,16 +11,7 @@ return {
         end,
     },
     {
-        "EdenEast/nightfox.nvim",
-        name = "nightfox",
-        config = function()
-            --nightfox,dayfox,dawnfox,duskfox,nordfox,terafox,carbonfox,
-            --vim.cmd("colorscheme nightfox")
-        end,
-    },
-    -- search and replace in multiple files
-    {
-        "windwp/nvim-spectre",
+        "windwp/nvim-spectre", -- search and replace in multiple files
         keys = {
             {
                 "<leader>/",

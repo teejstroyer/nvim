@@ -16,9 +16,6 @@ return {
         -- Snippets
         { 'L3MON4D3/LuaSnip' },
         { 'rafamadriz/friendly-snippets' },
-        -- Copilot
-        --{ 'zbirenbaum/copilot.lua' },
-        --{ 'zbirenbaum/copilot-cmp' }
     },
     config = function()
         local lsp = require("lsp-zero")
@@ -37,14 +34,6 @@ return {
         lsp.on_attach(function(client, bufnr)
             lsp.default_keymaps({ buffer = bufnr })
         end)
-
-        --require("copilot").setup({
-        --    suggestion = { enabled = true },
-        --    panel = { enabled = true },
-        --    --suggestion = { enabled = false },
-        --    --panel = { enabled = false },
-        --})
-        --require("copilot_cmp").setup()
 
         local cmp = require('cmp')
         cmp.setup({
