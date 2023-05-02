@@ -20,3 +20,10 @@ autocmd({ "BufWritePre" }, {
     pattern = "*",
     command = [[%s/\s\+$//e]],
 })
+
+--Term open auto command
+autocmd({ "TermOpen" }, {
+    group = auGroupConfig,
+    pattern = "*",
+    command = [[setlocal nonumber norelativenumber | startinsert]],
+})
