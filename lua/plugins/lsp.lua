@@ -4,7 +4,12 @@ return {
     dependencies = {
         -- LSP Support
         { 'neovim/nvim-lspconfig' },
-        { 'williamboman/mason.nvim' },
+        {
+            'williamboman/mason.nvim',
+            build = function()
+                pcall(vim.cmd, 'MasonUpdate')
+            end
+        },
         { 'williamboman/mason-lspconfig.nvim' },
         -- Autocompletion
         { 'hrsh7th/nvim-cmp' },
@@ -15,38 +20,38 @@ return {
         { 'hrsh7th/cmp-nvim-lua' },
         -- Snippets
         { 'L3MON4D3/LuaSnip' },
-        { 'rafamadriz/friendly-snippets' },
     },
     config = function()
         local lsp = require("lsp-zero")
 
-        lsp.preset("recommended")
-        lsp.set_preferences({
-            suggest_lsp_servers = true,
-            sign_icons = {
-                error = '',
-                warn = '⚠',
-                hint = '',
-                info = ''
-            }
+        lsp.preset({
+            name = 'recommended',
+            call_servers = 'local'
         })
 
         lsp.on_attach(function(client, bufnr)
-            lsp.default_keymaps({ buffer = bufnr})
+            lsp.default_keymaps({ buffer = bufnr })
         end)
 
+        lsp.set_sign_icons({
+            error = '✘',
+            warn = '▲',
+            hint = '⚑',
+            info = '»'
+        })
+
         local cmp = require('cmp')
+        local cmp_action = require('lsp-zero').cmp_action()
+
         cmp.setup({
-            sources = {
-                --{ name = 'copilot' },
-                { name = 'nvim_lsp' },
-            },
             mapping = {
                 ['<CR>'] = cmp.mapping.confirm({
-                    behavior = cmp.ConfirmBehavior.Replace, -- Copilot documentation says this is important.
+                    behavior = cmp.ConfirmBehavior.Replace,
                     select = false,
                 }),
-            }
+                ['<Tab>'] = cmp_action.luasnip_supertab(),
+                ['<S-Tab>'] = cmp_action.luasnip_shift_supertab(),
+            },
         })
 
         -- (Optional) Configure lua language server for neovim

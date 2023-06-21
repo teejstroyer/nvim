@@ -2,12 +2,13 @@ return {
     { 'folke/neodev.nvim', config = true },
     "mbbill/undotree",
     {
-        "folke/tokyonight.nvim",
-        lazy = false,    -- make sure we load this during startup if it is your main colorscheme
-        priority = 1000, -- make sure to load this before all the other start plugins
+        "ellisonleao/gruvbox.nvim",
+        --"folke/tokyonight.nvim",
+        lazy = false,
+        priority = 1000,
         config = function()
             -- load the colorscheme here
-            vim.cmd([[colorscheme tokyonight]])
+            vim.cmd([[colorscheme gruvbox]])
         end,
     },
     {
@@ -25,10 +26,9 @@ return {
     {
         "Fildo7525/pretty_hover",
         config = function()
-            require("pretty_hover").setup(options)
+            require("pretty_hover").setup {}
         end
     },
-    { 'lommix/godot.nvim' },
     {
         "folke/todo-comments.nvim",
         dependencies = { "nvim-lua/plenary.nvim" },
@@ -38,7 +38,7 @@ return {
     },
     {
         "lukas-reineke/indent-blankline.nvim",
-        enabled=true,
+        enabled = true,
         config = function()
             vim.opt.list = true
             vim.opt.listchars:append "space:⋅"
@@ -49,6 +49,12 @@ return {
                 show_current_context = true,
                 show_current_context_start = false,
             }
+        end
+    },
+    {
+        "HampusHauffman/block.nvim",
+        config = function()
+            require("block").setup({})
         end
     },
     "nvim-lualine/lualine.nvim",
