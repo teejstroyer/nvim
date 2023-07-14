@@ -74,3 +74,7 @@ map("n", "<F9>", dap.toggle_breakpoint, { desc = "Breakpoint" })
 map("n", "<C-F9>", function()
     dap.set_breakpoint(vim.fn.input "Breakpoint condition: ")
 end, { desc = "Conditional Breakpoint" })
+-- Open compiler
+vim.api.nvim_buf_set_keymap(0, 'n', '<F6>', "<cmd>CompilerOpen<cr>", { noremap = true, silent = true })
+-- Toggle output resume
+vim.api.nvim_buf_set_keymap(0, 'n', '<S-F6>', "<cmd>CompilerToggleResults<cr>", { noremap = true, silent = true })
