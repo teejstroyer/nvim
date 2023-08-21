@@ -51,11 +51,6 @@ return {
             }
         end
     },
-    {
-        "HampusHauffman/block.nvim",
-        config = function()
-            require("block").setup({})
-        end
-    },
     "nvim-lualine/lualine.nvim",
+    {"ellisonleao/glow.nvim", config = true, cmd = "Glow"}
 }
