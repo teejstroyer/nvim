@@ -1,9 +1,14 @@
 return {
-    { 'folke/neodev.nvim', config = true },
+    { 'folke/neodev.nvim',     config = true },
+    {
+        'stevearc/oil.nvim',
+        opts = {},
+        -- Optional dependencies
+        dependencies = { "nvim-tree/nvim-web-devicons" },
+    },
     "mbbill/undotree",
     {
         "ellisonleao/gruvbox.nvim",
-        --"folke/tokyonight.nvim",
         lazy = false,
         priority = 1000,
         config = function()
@@ -30,13 +35,6 @@ return {
         end
     },
     {
-        "folke/todo-comments.nvim",
-        dependencies = { "nvim-lua/plenary.nvim" },
-        config = function()
-            require("todo-comments").setup {}
-        end
-    },
-    {
         "lukas-reineke/indent-blankline.nvim",
         enabled = true,
         config = function()
@@ -52,5 +50,11 @@ return {
         end
     },
     "nvim-lualine/lualine.nvim",
-    {"ellisonleao/glow.nvim", config = true, cmd = "Glow"}
+    { "ellisonleao/glow.nvim", config = true, cmd = "Glow" },
+    {
+        "lewis6991/gitsigns.nvim",
+        config = function()
+            require("gitsigns").setup()
+        end
+    }
 }

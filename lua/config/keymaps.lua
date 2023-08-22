@@ -17,11 +17,9 @@ map("n", "<leader>u", vim.cmd.UndotreeToggle, { desc = "Undo Tree Toggle" })
 map("n", "<leader>q", ":bdelete<CR>", silentOpt)
 map("n", "<leader>l", ":bnext<CR>", silentOpt)
 map("n", "<leader>h", ":bprevious<CR>", silentOpt)
-map("n", "<leader>B", "<Cmd>BufferLineTogglePin<CR>", { desc = "Toggle pin" })
-map("n", "<leader>bq", "<Cmd>BufferLineGroupClose ungrouped<CR>", { desc = "Delete non-pinned buffers" })
 --Move selection up or down
-map("v", "<C-j>", ":m '>+1<cr>gv=gv", silentOpt)
 map("v", "<C-k>", ":m '<-2<cr>gv=gv", silentOpt)
+map("v", "<C-j>", ":m '>+1<cr>gv=gv", silentOpt)
 -- COPY/PASTE/DELETE To buffer
 map("n", "<leader>Y", [["+Y]])
 map("x", "<leader>p", [["_dP]])
@@ -74,7 +72,3 @@ map("n", "<F9>", dap.toggle_breakpoint, { desc = "Breakpoint" })
 map("n", "<C-F9>", function()
     dap.set_breakpoint(vim.fn.input "Breakpoint condition: ")
 end, { desc = "Conditional Breakpoint" })
--- Open compiler
-vim.api.nvim_buf_set_keymap(0, 'n', '<F6>', "<cmd>CompilerOpen<cr>", { noremap = true, silent = true })
--- Toggle output resume
-vim.api.nvim_buf_set_keymap(0, 'n', '<S-F6>', "<cmd>CompilerToggleResults<cr>", { noremap = true, silent = true })
