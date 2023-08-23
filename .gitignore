@@ -4,3 +4,5 @@
 .netrwhist
 .vscode
 .DS_Store
+lazy-lock.json
+.undodir/
