@@ -13,4 +13,3 @@ if vim.g.neovide then
     vim.o.guifont = "FiraCode Nerd Font Mono:h16"
     vim.g.neovide_cursor_vfx_mode = "railgun"
 end
-
