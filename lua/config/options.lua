@@ -25,11 +25,7 @@ vim.opt.softtabstop = 4
 vim.opt.swapfile = false
 vim.opt.tabstop = 4
 vim.opt.termguicolors = true
-vim.opt.undodir = ".undodir//"
+vim.opt.undodir = vim.fn.expand('~/.vim-undodir')
 vim.opt.undofile = true
 vim.opt.updatetime = 50
 vim.opt.wrap = false
-vim.diagnostic.config({
-    virtual_text = false,
-    virtual_lines = { only_current_line = true }
-})
