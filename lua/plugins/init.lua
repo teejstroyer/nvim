@@ -50,11 +50,15 @@ return {
         end
     },
     "nvim-lualine/lualine.nvim",
+    {
+        "wintermute-cell/gitignore.nvim",
+        dependencies = { "nvim-telescope/telescope.nvim" }, -- optional: for multi-select
+    },
     { "ellisonleao/glow.nvim", config = true, cmd = "Glow" },
     {
         "lewis6991/gitsigns.nvim",
         config = function()
-            require("gitsigns").setup()
+            require("gitsigns").setup({})
         end
     }
 }
