@@ -12,7 +12,9 @@ return {
         local dapui = require 'dapui'
 
         require("mason-nvim-dap").setup({
-            automatic_setup = false,
+            automatic_setup = true,
+            ensure_installed = {},
+            handlers = {}
         })
         --require 'mason-nvim-dap'.setup_handlers {}
 
@@ -40,5 +42,3 @@ return {
         --require('dap-go').setup()
     end,
 }
-
-
