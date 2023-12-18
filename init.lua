@@ -18,15 +18,16 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 require('lazy').setup({
-  "tpope/vim-sleuth",                                                            -- Detect tabstop and shiftwidth automatically
-  "mbbill/undotree",                                                             --Visual undo tree
-  { 'folke/which-key.nvim',                opts = {} },                          --Helpful popup for keymaps
-  { 'lewis6991/gitsigns.nvim',             opts = {} },                          --Git signs in gutters
-  { 'lukas-reineke/indent-blankline.nvim', main = 'ibl',  opts = {}, },          -- Add indentation guides even on blank lines
-  { 'numToStr/Comment.nvim',               opts = {},     lazy = false, },       -- "gc" to comment visual regions/lines
-  { 'NvChad/nvim-colorizer.lua',           opts = {}, },                         --Colors text in editor (#FFF)
-  { 'akinsho/toggleterm.nvim',             version = "*", opts = {} },           --Makes interacting with terminal easier
+  "tpope/vim-sleuth",                                                      -- Detect tabstop and shiftwidth automatically
+  "mbbill/undotree",                                                       --Visual undo tree
+  { 'folke/which-key.nvim',                opts = {} },                    --Helpful popup for keymaps
+  { 'lewis6991/gitsigns.nvim',             opts = {} },                    --Git signs in gutters
+  { 'lukas-reineke/indent-blankline.nvim', main = 'ibl',  opts = {}, },    -- Add indentation guides even on blank lines
+  { 'numToStr/Comment.nvim',               opts = {},     lazy = false, }, -- "gc" to comment visual regions/lines
+  { 'NvChad/nvim-colorizer.lua',           opts = {}, },                   --Colors text in editor (#FFF)
+  { 'akinsho/toggleterm.nvim',             version = "*", opts = {} },     --Makes interacting with terminal easier
   { 'stevearc/dressing.nvim',              opts = {}, },
+  { "klen/nvim-test",                      opts = {} },
   ---------------------------------
   --Colorscheme
   ---------------------------------
@@ -277,7 +278,6 @@ mason_lspconfig.setup {
   ensure_installed = vim.tbl_keys(servers),
 }
 
--- [[ Configure nvim-cmp ]]
 local cmp = require('cmp')
 local luasnip = require('luasnip')
 require('luasnip.loaders.from_vscode').lazy_load()
