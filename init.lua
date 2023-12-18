@@ -22,11 +22,10 @@ require('lazy').setup({
   "mbbill/undotree",                                                             --Visual undo tree
   { 'folke/which-key.nvim',                opts = {} },                          --Helpful popup for keymaps
   { 'lewis6991/gitsigns.nvim',             opts = {} },                          --Git signs in gutters
-  { "Fildo7525/pretty_hover",              event = "LspAttach", opts = {} },     --Better hover
-  { 'lukas-reineke/indent-blankline.nvim', main = 'ibl',        opts = {}, },    -- Add indentation guides even on blank lines
-  { 'numToStr/Comment.nvim',               opts = {},           lazy = false, }, -- "gc" to comment visual regions/lines
+  { 'lukas-reineke/indent-blankline.nvim', main = 'ibl',  opts = {}, },          -- Add indentation guides even on blank lines
+  { 'numToStr/Comment.nvim',               opts = {},     lazy = false, },       -- "gc" to comment visual regions/lines
   { 'NvChad/nvim-colorizer.lua',           opts = {}, },                         --Colors text in editor (#FFF)
-  { 'akinsho/toggleterm.nvim',             version = "*",       opts = {} },     --Makes interacting with terminal easier
+  { 'akinsho/toggleterm.nvim',             version = "*", opts = {} },           --Makes interacting with terminal easier
   { 'stevearc/dressing.nvim',              opts = {}, },
   ---------------------------------
   --Colorscheme
@@ -451,10 +450,9 @@ local on_lsp_attach = function(_, bufnr) --  This function gets run when an LSP 
   vim.keymap.set('n', '<leader>cd', require('telescope.builtin').lsp_document_symbols,
     { buffer = bufnr, desc = 'LSP: [C]ode [D]ocument Symbols' })
   vim.keymap.set('n', '<leader>cw', require('telescope.builtin').lsp_dynamic_workspace_symbols,
-    { buffer = bufnr, desc = 'LSP:[C]ode [W]orkspace Symbols' })
+    { buffer = bufnr, desc = 'LSP: [C]ode [W]orkspace Symbols' })
 
   vim.keymap.set('n', 'K', vim.lsp.buf.hover, { buffer = bufnr, desc = 'LSP: Hover Documentation' })
-
   vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, { buffer = bufnr, desc = 'LSP: [G]oto [D]eclaration' })
   vim.keymap.set('n', 'gI', require('telescope.builtin').lsp_implementations,
     { buffer = bufnr, desc = 'LSP: [G]oto [I]mplementation' })
