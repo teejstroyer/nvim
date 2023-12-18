@@ -1,11 +1,5 @@
 -- NEOVIM Configuration
 -- Windows > Treesitter needs gcc so run the following command choco install mingw as admin should work
---if vim.fn.exists("g:vscode") == 0 then
---    require("config.lazy")
---    require("config.options")
---    require("config.autocmds")
---    require("config.keymaps")
---end
 
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
@@ -24,16 +18,19 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 require('lazy').setup({
-  "tpope/vim-sleuth", -- Detect tabstop and shiftwidth automatically
-  "mbbill/undotree",
-  {
-    'navarasu/onedark.nvim',
-    enabled = false,
-    priority = 1000,
-    config = function()
-      vim.cmd.colorscheme 'onedark'
-    end,
-  },
+  "tpope/vim-sleuth",                                                            -- Detect tabstop and shiftwidth automatically
+  "mbbill/undotree",                                                             --Visual undo tree
+  { 'folke/which-key.nvim',                opts = {} },                          --Helpful popup for keymaps
+  { 'lewis6991/gitsigns.nvim',             opts = {} },                          --Git signs in gutters
+  { "Fildo7525/pretty_hover",              event = "LspAttach", opts = {} },     --Better hover
+  { 'lukas-reineke/indent-blankline.nvim', main = 'ibl',        opts = {}, },    -- Add indentation guides even on blank lines
+  { 'numToStr/Comment.nvim',               opts = {},           lazy = false, }, -- "gc" to comment visual regions/lines
+  { 'NvChad/nvim-colorizer.lua',           opts = {}, },                         --Colors text in editor (#FFF)
+  { 'akinsho/toggleterm.nvim',             version = "*",       opts = {} },     --Makes interacting with terminal easier
+  { 'stevearc/dressing.nvim',              opts = {}, },
+  ---------------------------------
+  --Colorscheme
+  ---------------------------------
   {
     "ellisonleao/gruvbox.nvim",
     enabled = true,
@@ -42,6 +39,11 @@ require('lazy').setup({
       vim.cmd.colorscheme 'gruvbox'
     end,
   },
+
+  { 'nvim-lualine/lualine.nvim', opts = { options = { icons_enabled = false, theme = 'gruvbox', component_separators = '|', section_separators = '' } } },
+  ---------------------------------
+  --File Tree
+  ---------------------------------
   {
     "nvim-neo-tree/neo-tree.nvim",
     branch = "v3.x",
@@ -53,13 +55,13 @@ require('lazy').setup({
     },
     opts = { source_selector = { winbar = true } }
   },
+  ---------------------------------
   -- LSP
+  ---------------------------------
   {
-    -- LSP Configuration & Plugins
     'neovim/nvim-lspconfig',
     dependencies = {
-      -- Automatically install LSPs to stdpath for neovim
-      'williamboman/mason.nvim',
+      'williamboman/mason.nvim',          -- Automatically install LSPs to stdpath for neovim
       'williamboman/mason-lspconfig.nvim',
       { 'j-hui/fidget.nvim', opts = {} }, -- Useful status updates for LSP NOTE: `opts = {}` is the same as calling `require('fidget').setup({})`
       -- Additional lua configuration, makes nvim stuff amazing!
@@ -67,42 +69,14 @@ require('lazy').setup({
     },
   },
   {
-    "Fildo7525/pretty_hover",
-    event = "LspAttach",
-    opts = {}
-  },
-  {
-    -- Autocompletion
-    'hrsh7th/nvim-cmp',
+    'hrsh7th/nvim-cmp', -- Autocompletion
     dependencies = {
-      -- Snippet Engine & its associated nvim-cmp source
       'L3MON4D3/LuaSnip',
       'saadparwaiz1/cmp_luasnip',
-      'hrsh7th/cmp-nvim-lsp',         -- Adds LSP completion capabilities
+      'hrsh7th/cmp-nvim-lsp',
       'hrsh7th/cmp-path',
-      'rafamadriz/friendly-snippets', -- Adds a number of user-friendly snippets
+      'rafamadriz/friendly-snippets',
     },
-  },
-  { 'folke/which-key.nvim',    opts = {} },
-  { 'lewis6991/gitsigns.nvim', opts = {}, },
-  {
-    'nvim-lualine/lualine.nvim',
-    opts = {
-      options = {
-        icons_enabled = false,
-        theme = 'onedark',
-        component_separators = '|',
-        section_separators = '',
-      },
-    },
-  },
-  { 'lukas-reineke/indent-blankline.nvim', main = 'ibl', opts = {}, },    -- Add indentation guides even on blank lines
-  { 'numToStr/Comment.nvim',               opts = {},    lazy = false, }, -- "gc" to comment visual regions/lines
-  {
-    'NvChad/nvim-colorizer.lua',
-    config = function()
-      require 'colorizer'.setup({})
-    end
   },
   {
     'nvim-telescope/telescope.nvim',
@@ -130,7 +104,6 @@ require('lazy').setup({
       --pcall(telescope.load_extension, 'file_browser')
     end
   },
-  { 'akinsho/toggleterm.nvim', version = "*", opts = {} },
   {
     'nvim-treesitter/nvim-treesitter',
     dependencies = {
@@ -156,29 +129,27 @@ require('lazy').setup({
     cmd = "Copilot",
     event = "InsertEnter",
     enabled = true,
-    config = function()
-      require('copilot').setup({
-        panel = { enabled = false },
-        suggestion = {
-          enabled = true,
-          auto_trigger = true,
-          debounce = 50,
-          keymap = {
-            accept = "<C-CR>",
-            accept_word = "<S-Space>",
-            accept_line = "<S-CR>",
-            next = "<C-j>",
-            prev = "<C-k>",
-            dismiss = "<C-.>",
-          },
+    opts = {
+      panel = { enabled = false },
+      suggestion = {
+        enabled = true,
+        auto_trigger = true,
+        debounce = 50,
+        keymap = {
+          accept = "<C-CR>",
+          accept_word = "<S-Space>",
+          accept_line = "<S-CR>",
+          next = "<C-j>",
+          prev = "<C-k>",
+          dismiss = "<C-.>",
         },
-      })
-    end,
+      },
+
+    },
   }
 }, {})
 
 vim.o.hlsearch = false                 -- Set highlight on search
-vim.wo.number = true                   -- Make line numbers default
 vim.o.mouse = 'a'                      -- Enable mouse mode
 vim.o.clipboard = 'unnamedplus'        -- Sync clipboard between OS and Neovim.
 vim.o.undofile = true                  -- Save undo history
@@ -216,7 +187,7 @@ vim.opt.wrap = true
 vim.opt.linebreak = true --Wrap lines at convenient points like spaces
 vim.opt.breakindent = true --Indent wrapped lines
 vim.opt.showbreak = "↳" --Symbol for wrapped lines
-vim.opt.list = true --shows chars like whitespace
+vim.opt.list = true --Shows chars like whitespace
 
 -- [[ Highlight on yank ]]
 local highlight_group = vim.api.nvim_create_augroup('YankHighlight', { clear = true })
@@ -261,19 +232,13 @@ local function live_grep_git_root()
   end
 end
 
-local function fuzzyFindBuffer()
+local function fuzzy_find_buffer()
   require('telescope.builtin').current_buffer_fuzzy_find(require('telescope.themes').get_dropdown {
     winblend = 10,
     previewer = false,
   })
 end
--- function()
---  require('telescope.builtin').current_buffer_fuzzy_find(require('telescope.themes').get_dropdown {
---    winblend = 10,
---    previewer = false,
---  })
---end
---
+
 local function telescope_live_grep_open_files()
   require('telescope.builtin').live_grep {
     grep_open_files = true,
@@ -282,6 +247,8 @@ local function telescope_live_grep_open_files()
 end
 
 vim.api.nvim_create_user_command('LiveGrepGitRoot', live_grep_git_root, {})
+vim.api.nvim_create_user_command('FuzzyFindBuffer', fuzzy_find_buffer, {})
+vim.api.nvim_create_user_command('TelescopeLiveGrepOpenFiles', telescope_live_grep_open_files, {})
 
 -- mason-lspconfig requires that these setup functions are called in this order
 -- before setting up the servers.
@@ -295,7 +262,6 @@ local servers = {
     Lua = {
       workspace = { checkThirdParty = false },
       telemetry = { enable = false },
-      -- NOTE: toggle below to ignore Lua_LS's noisy `missing-fields` warnings
       diagnostics = { disable = { 'missing-fields' } },
     },
   },
@@ -306,16 +272,15 @@ local capabilities = vim.lsp.protocol.make_client_capabilities()
 capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
 
 -- Ensure the servers above are installed
-local mason_lspconfig = require 'mason-lspconfig'
+local mason_lspconfig = require('mason-lspconfig')
 
 mason_lspconfig.setup {
   ensure_installed = vim.tbl_keys(servers),
 }
 
 -- [[ Configure nvim-cmp ]]
--- See `:help cmp`
-local cmp = require 'cmp'
-local luasnip = require 'luasnip'
+local cmp = require('cmp')
+local luasnip = require('luasnip')
 require('luasnip.loaders.from_vscode').lazy_load()
 luasnip.config.setup {}
 
@@ -409,16 +374,13 @@ require('which-key').register({
 ----------------------------------------------------
 -- KEYMAPS
 ----------------------------------------------------
-
 vim.keymap.set({ 'n', 'v' }, '<Space>', '<Nop>', { silent = true })
 vim.keymap.set('n', 'k', "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true }) -- Word Wrap Fix
 vim.keymap.set('n', 'j', "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = true }) -- Word Wrap Fix
 vim.keymap.set("n", "Q", "<nop>")                                                     --UNMAP to prevent hard quit
 vim.keymap.set("t", "<Esc>", "<c-\\><c-n>")                                           -- Excap enters normal mode for terminal
-
 --UNDO TREE
 vim.keymap.set("n", "<leader>u", vim.cmd.UndotreeToggle, { desc = "Undo Tree Toggle" })
-
 --BUFFER
 vim.keymap.set("n", "<leader>q", ":bdelete<CR>")
 vim.keymap.set("n", "<leader>l", ":bnext<CR>")
@@ -444,25 +406,22 @@ vim.keymap.set("n", "<Up>", ":resize -2<CR>")
 vim.keymap.set("n", "<Down>", ":resize +2<CR>")
 vim.keymap.set("n", "<Left>", ":vertical resize -2<CR>")
 vim.keymap.set("n", "<Right>", ":vertical resize +2<CR>")
-
 --DIAGNOSTICS
 vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = 'Go to previous diagnostic message' })
 vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { desc = 'Go to next diagnostic message' })
 vim.keymap.set('n', '<leader>k', vim.diagnostic.open_float, { desc = 'Open floating diagnostic message' })
-
 --TOGGLE TERM
 vim.keymap.set("n", "<C-`>", "<cmd>ToggleTerm<cr>")
 vim.keymap.set("n", "<leader>tt", "<cmd>ToggleTerm size=40 dir=. direction=horizontal<cr>")
 vim.keymap.set("n", "<leader>tf", "<cmd>ToggleTerm size=40 dir=. direction=float<cr>")
 vim.keymap.set("n", "<leader>tb", ":enew|terminal<cr>")
-
 --TELESCOPE
---vim.keymap.set("n", "<leader>ff", ":Telescope<CR>", silentOpt)
+vim.keymap.set("n", "<leader>/", fuzzy_find_buffer, { desc = "[/] Fuzzily search in current buffer" })
 vim.keymap.set("n", "<leader><space>", require("telescope.builtin").buffers, { desc = "[ ] Find existing buffers" })
-vim.keymap.set("n", "<leader>/", fuzzyFindBuffer, { desc = "[/] Fuzzily search in current buffer" })
 vim.keymap.set("n", "<leader>?", require("telescope.builtin").oldfiles, { desc = "[?] Find recently opened files" })
 vim.keymap.set("n", "<leader>f.", require("telescope.builtin").git_files, { desc = "[F]ind [G]it [F]iles" })
 vim.keymap.set("n", "<leader>f/", telescope_live_grep_open_files, { desc = "[F]ind [/] in Open Files" })
+vim.keymap.set("n", "<leader>f<space>", require("telescope.builtin").builtin, { desc = "[F]ind [S]elect Telescope" })
 vim.keymap.set("n", "<leader>fG", live_grep_git_root, { desc = "[F]ind by [G]rep on Git Root" })
 vim.keymap.set("n", "<leader>fb", require("telescope.builtin").buffers, { desc = "[F]ind [B]uffer" })
 vim.keymap.set("n", "<leader>fd", require("telescope.builtin").diagnostics, { desc = "[F]ind [D]iagnostics" })
@@ -470,7 +429,6 @@ vim.keymap.set("n", "<leader>ff", require("telescope.builtin").find_files, { des
 vim.keymap.set("n", "<leader>fg", require("telescope.builtin").live_grep, { desc = "[F]ind by [G]rep (Live)" })
 vim.keymap.set("n", "<leader>fh", require("telescope.builtin").help_tags, { desc = "[F]ind [H]elp Tags" })
 vim.keymap.set("n", "<leader>fr", require("telescope.builtin").resume, { desc = "[F]ind [R]esume" })
-vim.keymap.set("n", "<leader>fs", require("telescope.builtin").builtin, { desc = "[F]ind [S]elect Telescope" })
 vim.keymap.set("n", "<leader>fw", require("telescope.builtin").grep_string, { desc = "[F]ind current [W]ord" })
 
 --DAP - DEBUG
@@ -488,12 +446,13 @@ local on_lsp_attach = function(_, bufnr) --  This function gets run when an LSP 
   vim.keymap.set('n', '<leader>ca', vim.lsp.buf.code_action, { buffer = bufnr, desc = 'LSP: [C]ode [A]ction' })
   vim.keymap.set('n', '<leader>cr', vim.lsp.buf.rename, { buffer = bufnr, desc = 'LSP: [C]ode [R]ename' })
   vim.keymap.set('n', '<leader>cf', vim.lsp.buf.format, { buffer = bufnr, desc = 'LSP: [C]ode [F]ormat' })
-  vim.keymap.set('n', '<leader>cds', require('telescope.builtin').lsp_document_symbols,
-    { buffer = bufnr, desc = 'LSP: [C]ode [D]ocument [S]ymbols' })
-  vim.keymap.set('n', '<leader>cws', require('telescope.builtin').lsp_dynamic_workspace_symbols,
-    { buffer = bufnr, desc = 'LSP:[C]ode [W]orkspace [S]ymbols' })
+  vim.keymap.set('n', '<leader>cs', vim.lsp.buf.signature_help,
+    { buffer = bufnr, desc = 'LSP: [C]ode [S]ignature Documentation' })
+  vim.keymap.set('n', '<leader>cd', require('telescope.builtin').lsp_document_symbols,
+    { buffer = bufnr, desc = 'LSP: [C]ode [D]ocument Symbols' })
+  vim.keymap.set('n', '<leader>cw', require('telescope.builtin').lsp_dynamic_workspace_symbols,
+    { buffer = bufnr, desc = 'LSP:[C]ode [W]orkspace Symbols' })
 
-  vim.keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, { buffer = bufnr, desc = 'LSP: Signature Documentation' })
   vim.keymap.set('n', 'K', vim.lsp.buf.hover, { buffer = bufnr, desc = 'LSP: Hover Documentation' })
 
   vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, { buffer = bufnr, desc = 'LSP: [G]oto [D]eclaration' })
@@ -505,9 +464,7 @@ local on_lsp_attach = function(_, bufnr) --  This function gets run when an LSP 
     { buffer = bufnr, desc = 'LSP: [G]oto [R]eferences' })
 
   -- Create a command `:Format` local to the LSP buffer
-  vim.api.nvim_buf_create_user_command(bufnr, 'Format', function(_)
-    vim.lsp.buf.format()
-  end, { desc = 'Format current buffer with LSP' })
+  vim.api.nvim_buf_create_user_command(bufnr, 'Format', vim.lsp.buf.format, { desc = 'Format current buffer with LSP' })
 end
 
 mason_lspconfig.setup_handlers {
