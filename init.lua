@@ -33,14 +33,24 @@ require('lazy').setup({
   ---------------------------------
   {
     "ellisonleao/gruvbox.nvim",
-    enabled = true,
+    enabled = false,
     priority = 1000,
     config = function()
       vim.cmd.colorscheme 'gruvbox'
     end,
   },
+  {
+    'projekt0n/github-nvim-theme',
+    enabled = true,
+    lazy = false,
+    priority = 1000,
+    config = function()
+      require('github-theme').setup({ })
+      vim.cmd.colorscheme 'github_dark'
+    end,
+  },
 
-  { 'nvim-lualine/lualine.nvim', opts = { options = { icons_enabled = false, theme = 'gruvbox', component_separators = '|', section_separators = '' } } },
+  { 'nvim-lualine/lualine.nvim', opts = { options = { icons_enabled = false, theme = 'github_dark', component_separators = '|', section_separators = '' } } },
   ---------------------------------
   --File Tree
   ---------------------------------
