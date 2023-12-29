@@ -19,15 +19,16 @@ vim.opt.rtp:prepend(lazypath)
 
 require('lazy').setup({
   "tpope/vim-sleuth",                                                      -- Detect tabstop and shiftwidth automatically
-  "mbbill/undotree",                                                       --Visual undo tree
-  { 'folke/which-key.nvim',                opts = {} },                    --Helpful popup for keymaps
-  { 'lewis6991/gitsigns.nvim',             opts = {} },                    --Git signs in gutters
+  "mbbill/undotree",                                                       -- Visual undo tree
+  { 'folke/which-key.nvim',                opts = {} },                    -- Helpful popup for keymaps
+  { 'lewis6991/gitsigns.nvim',             opts = {} },                    -- Git signs in gutters
   { 'lukas-reineke/indent-blankline.nvim', main = 'ibl',  opts = {}, },    -- Add indentation guides even on blank lines
   { 'numToStr/Comment.nvim',               opts = {},     lazy = false, }, -- "gc" to comment visual regions/lines
-  { 'NvChad/nvim-colorizer.lua',           opts = {}, },                   --Colors text in editor (#FFF)
-  { 'akinsho/toggleterm.nvim',             version = "*", opts = {} },     --Makes interacting with terminal easier
+  { 'NvChad/nvim-colorizer.lua',           opts = {}, },                   -- Colors text in editor (#FFF)
+  { 'akinsho/toggleterm.nvim',             version = "*", opts = {} },     -- Makes interacting with terminal easier
   { 'stevearc/dressing.nvim',              opts = {}, },
   { "klen/nvim-test",                      opts = {} },
+  { "David-Kunz/gen.nvim",                 opts = {} },
   ---------------------------------
   --Colorscheme
   ---------------------------------
@@ -45,7 +46,7 @@ require('lazy').setup({
     lazy = false,
     priority = 1000,
     config = function()
-      require('github-theme').setup({ })
+      require('github-theme').setup({})
       vim.cmd.colorscheme 'github_dark'
     end,
   },
@@ -89,6 +90,12 @@ require('lazy').setup({
     },
   },
   {
+    "ray-x/lsp_signature.nvim",
+    event = "VeryLazy",
+    opts = {},
+    config = function(_, opts) require 'lsp_signature'.setup(opts) end -- Doesn't need to be called on attach if not toggled
+  },
+  {
     'nvim-telescope/telescope.nvim',
     branch = '0.1.x',
     dependencies = {
@@ -105,6 +112,7 @@ require('lazy').setup({
       "kdheepak/lazygit.nvim",
       "nvim-telescope/telescope-file-browser.nvim",
     },
+
     config = function()
       local telescope = require("telescope")
       telescope.setup({ extensions = {} })
@@ -457,6 +465,9 @@ local on_lsp_attach = function(_, bufnr) --  This function gets run when an LSP 
   vim.keymap.set('n', '<leader>cf', vim.lsp.buf.format, { buffer = bufnr, desc = 'LSP: [C]ode [F]ormat' })
   vim.keymap.set('n', '<leader>cs', vim.lsp.buf.signature_help,
     { buffer = bufnr, desc = 'LSP: [C]ode [S]ignature Documentation' })
+  vim.keymap.set('i', '<c-k>', vim.lsp.buf.signature_help,
+    { buffer = bufnr, desc = 'LSP: [C]ode [S]ignature Documentation' })
+
   vim.keymap.set('n', '<leader>cd', require('telescope.builtin').lsp_document_symbols,
     { buffer = bufnr, desc = 'LSP: [C]ode [D]ocument Symbols' })
   vim.keymap.set('n', '<leader>cw', require('telescope.builtin').lsp_dynamic_workspace_symbols,
