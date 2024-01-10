@@ -51,7 +51,7 @@ require('lazy').setup({
     end,
   },
 
-  { 'nvim-lualine/lualine.nvim', opts = { options = { icons_enabled = false, theme = 'github_dark', component_separators = '|', section_separators = '' } } },
+  { 'nvim-lualine/lualine.nvim', opts = { options = { icons_enabled = false, theme = 'github_dark', component_separators = '|', section_separators = '' }, } },
   ---------------------------------
   --File Tree
   ---------------------------------
@@ -145,13 +145,14 @@ require('lazy').setup({
   {
     "zbirenbaum/copilot.lua",
     cmd = "Copilot",
+    build = ":Copilot auth",
     event = "InsertEnter",
     enabled = true,
     opts = {
       panel = { enabled = false },
       suggestion = {
         enabled = true,
-        auto_trigger = true,
+        auto_trigger = false,
         debounce = 50,
         keymap = {
           accept = "<C-CR>",
@@ -162,7 +163,6 @@ require('lazy').setup({
           dismiss = "<C-.>",
         },
       },
-
     },
   }
 }, {})
@@ -296,6 +296,16 @@ mason_lspconfig.setup {
   ensure_installed = vim.tbl_keys(servers),
 }
 
+mason_lspconfig.setup_handlers {
+  function(server_name)
+    require('lspconfig')[server_name].setup {
+      capabilities = capabilities,
+      settings = servers[server_name],
+      filetypes = (servers[server_name] or {}).filetypes,
+    }
+  end,
+}
+
 local cmp = require('cmp')
 local luasnip = require('luasnip')
 require('luasnip.loaders.from_vscode').lazy_load()
@@ -382,6 +392,7 @@ require('which-key').register {
   ['<leader>c'] = { name = '[C]ode', _ = 'which_key_ignore' },
   ['<leader>f'] = { name = '[F]ind', _ = 'which_key_ignore' },
   ['<leader>t'] = { name = '[T]oggle', _ = 'which_key_ignore' },
+  ['<leader>cw'] = { name = '[C]ode [W]orkspace', _ = 'which_key_ignore' },
 }
 -- register which-key VISUAL mode
 require('which-key').register({
@@ -423,10 +434,6 @@ vim.keymap.set("n", "<Up>", ":resize -2<CR>")
 vim.keymap.set("n", "<Down>", ":resize +2<CR>")
 vim.keymap.set("n", "<Left>", ":vertical resize -2<CR>")
 vim.keymap.set("n", "<Right>", ":vertical resize +2<CR>")
---DIAGNOSTICS
-vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = 'Go to previous diagnostic message' })
-vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { desc = 'Go to next diagnostic message' })
-vim.keymap.set('n', '<leader>k', vim.diagnostic.open_float, { desc = 'Open floating diagnostic message' })
 --TOGGLE TERM
 vim.keymap.set("n", "<C-`>", "<cmd>ToggleTerm<cr>")
 vim.keymap.set("n", "<leader>tt", "<cmd>ToggleTerm size=40 dir=. direction=horizontal<cr>")
@@ -447,7 +454,50 @@ vim.keymap.set("n", "<leader>fg", require("telescope.builtin").live_grep, { desc
 vim.keymap.set("n", "<leader>fh", require("telescope.builtin").help_tags, { desc = "[F]ind [H]elp Tags" })
 vim.keymap.set("n", "<leader>fr", require("telescope.builtin").resume, { desc = "[F]ind [R]esume" })
 vim.keymap.set("n", "<leader>fw", require("telescope.builtin").grep_string, { desc = "[F]ind current [W]ord" })
+--DIAGNOSTICS
+vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = 'Go to previous diagnostic message' })
+vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { desc = 'Go to next diagnostic message' })
+vim.keymap.set('n', '<leader>k', vim.diagnostic.open_float, { desc = 'Open floating diagnostic message' })
+--LSP ( Mapped only on attach)
+vim.api.nvim_create_autocmd('LspAttach', {
+  group = vim.api.nvim_create_augroup('UserLspConfig', {}),
+  callback = function(ev)
+    -- Enable completion triggered by <c-x><c-o>
+    vim.bo[ev.buf].omnifunc = 'v:lua.vim.lsp.omnifunc'
+    --Staple Keymap
+    vim.keymap.set('n', 'K', vim.lsp.buf.hover, { buffer = ev.buf, desc = 'Hover Documentation' })
+    --Code
+    vim.keymap.set({ 'n', 'v' }, '<leader>ca', vim.lsp.buf.code_action, { buffer = ev.buf, desc = '[C]ode [A]ction' })
+    vim.keymap.set('n', '<leader>cr', vim.lsp.buf.rename, { buffer = ev.buf, desc = '[C]ode [R]ename' })
+    vim.keymap.set('n', '<leader>cf', vim.lsp.buf.format, { buffer = ev.buf, desc = '[C]ode [F]ormat' })
+    vim.keymap.set('n', '<leader>cs', vim.lsp.buf.signature_help,
+      { buffer = ev.buf, desc = '[C]ode [S]ignature Documentation' })
+    vim.keymap.set('n', '<leader>cd', require('telescope.builtin').lsp_document_symbols,
+      { buffer = ev.buf, desc = '[C]ode [D]ocument Symbols' })
+    --Code Workspace
+    vim.keymap.set('n', '<leader>cws', require('telescope.builtin').lsp_dynamic_workspace_symbols,
+      { buffer = ev.buf, desc = '[C]ode [W]orkspace [S]ymbols' })
+    vim.keymap.set('n', '<space>cwfa', vim.lsp.buf.add_workspace_folder,
+      { buffer = ev.buf, desc = '[C]ode [W]orkspace [F]older [A]dd' })
+    vim.keymap.set('n', '<space>cwfr', vim.lsp.buf.remove_workspace_folder,
+      { buffer = ev.buf, desc = '[C]ode [W]orkspace [F]older [R]emove' })
+    vim.keymap.set('n', '<space>cwfl', function() print(vim.inspect(vim.lsp.buf.list_workspace_folders())) end,
+      { buffer = ev.buf, desc = '[C]ode [W]orkspace [F]olders [L]ist' })
+    -- GoTos
+    vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, { buffer = ev.buf, desc = '[G]oto [D]eclaration' })
+    vim.keymap.set('n', '<space>gd', vim.lsp.buf.type_definition, { buffer = ev.buf, desc = '[G]oto Type [D]efinition' })
+    vim.keymap.set('n', 'gI', require('telescope.builtin').lsp_implementations,
+      { buffer = ev.buf, desc = '[G]oto [I]mplementation' })
+    vim.keymap.set('n', 'gd', require('telescope.builtin').lsp_definitions,
+      { buffer = ev.buf, desc = '[G]oto [D]efinition' })
+    vim.keymap.set('n', 'gr', require('telescope.builtin').lsp_references,
+      { buffer = ev.buf, desc = '[G]oto [R]eferences' })
 
+    -- Create a command `:Format` local to the LSP buffer
+    vim.api.nvim_buf_create_user_command(ev.buf, 'Format', vim.lsp.buf.format,
+      { desc = 'Format current buffer with LSP' })
+  end,
+})
 --DAP - DEBUG
 -- local dap = require "dap"
 -- vim.keymap.set("n", "<F5>", dap.continue, { desc = "Continue" })
@@ -458,41 +508,3 @@ vim.keymap.set("n", "<leader>fw", require("telescope.builtin").grep_string, { de
 -- vim.keymap.set("n", "<C-F9>", function()
 --     dap.set_breakpoint(vim.fn.input "Breakpoint condition: ")
 -- end, { desc = "Conditional Breakpoint" })
-
-local on_lsp_attach = function(_, bufnr) --  This function gets run when an LSP connects to a particular buffer.
-  vim.keymap.set('n', '<leader>ca', vim.lsp.buf.code_action, { buffer = bufnr, desc = 'LSP: [C]ode [A]ction' })
-  vim.keymap.set('n', '<leader>cr', vim.lsp.buf.rename, { buffer = bufnr, desc = 'LSP: [C]ode [R]ename' })
-  vim.keymap.set('n', '<leader>cf', vim.lsp.buf.format, { buffer = bufnr, desc = 'LSP: [C]ode [F]ormat' })
-  vim.keymap.set('n', '<leader>cs', vim.lsp.buf.signature_help,
-    { buffer = bufnr, desc = 'LSP: [C]ode [S]ignature Documentation' })
-  vim.keymap.set('i', '<c-k>', vim.lsp.buf.signature_help,
-    { buffer = bufnr, desc = 'LSP: [C]ode [S]ignature Documentation' })
-
-  vim.keymap.set('n', '<leader>cd', require('telescope.builtin').lsp_document_symbols,
-    { buffer = bufnr, desc = 'LSP: [C]ode [D]ocument Symbols' })
-  vim.keymap.set('n', '<leader>cw', require('telescope.builtin').lsp_dynamic_workspace_symbols,
-    { buffer = bufnr, desc = 'LSP: [C]ode [W]orkspace Symbols' })
-
-  vim.keymap.set('n', 'K', vim.lsp.buf.hover, { buffer = bufnr, desc = 'LSP: Hover Documentation' })
-  vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, { buffer = bufnr, desc = 'LSP: [G]oto [D]eclaration' })
-  vim.keymap.set('n', 'gI', require('telescope.builtin').lsp_implementations,
-    { buffer = bufnr, desc = 'LSP: [G]oto [I]mplementation' })
-  vim.keymap.set('n', 'gd', require('telescope.builtin').lsp_definitions,
-    { buffer = bufnr, desc = 'LSP: [G]oto [D]efinition' })
-  vim.keymap.set('n', 'gr', require('telescope.builtin').lsp_references,
-    { buffer = bufnr, desc = 'LSP: [G]oto [R]eferences' })
-
-  -- Create a command `:Format` local to the LSP buffer
-  vim.api.nvim_buf_create_user_command(bufnr, 'Format', vim.lsp.buf.format, { desc = 'Format current buffer with LSP' })
-end
-
-mason_lspconfig.setup_handlers {
-  function(server_name)
-    require('lspconfig')[server_name].setup {
-      capabilities = capabilities,
-      on_attach = on_lsp_attach,
-      settings = servers[server_name],
-      filetypes = (servers[server_name] or {}).filetypes,
-    }
-  end,
-}
