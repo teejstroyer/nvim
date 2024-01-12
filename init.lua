@@ -96,6 +96,18 @@ require('lazy').setup({
     config = function(_, opts) require 'lsp_signature'.setup(opts) end -- Doesn't need to be called on attach if not toggled
   },
   {
+    "danymat/neogen",
+    dependencies = "nvim-treesitter/nvim-treesitter",
+    opts =
+    {
+      snippet_engine = "luasnip",
+      languages = {
+        cs = { template = { annotation_convention = "xmldoc" } }
+      }
+
+    }
+  },
+  {
     'nvim-telescope/telescope.nvim',
     branch = '0.1.x',
     dependencies = {
@@ -126,6 +138,7 @@ require('lazy').setup({
     'nvim-treesitter/nvim-treesitter',
     dependencies = {
       'nvim-treesitter/nvim-treesitter-textobjects',
+      'nvim-treesitter/playground'
     },
     build = ':TSUpdate',
     config = function()
@@ -138,6 +151,29 @@ require('lazy').setup({
           auto_install = false,
           highlight = { enable = true },
           indent = { enable = true },
+          playground = {
+            enable = true,
+            disable = {},
+            updatetime = 25,         -- Debounced time for highlighting nodes in the playground from source code
+            persist_queries = false, -- Whether the query persists across vim sessions
+            keybindings = {
+              toggle_query_editor = 'o',
+              toggle_hl_groups = 'i',
+              toggle_injected_languages = 't',
+              toggle_anonymous_nodes = 'a',
+              toggle_language_display = 'I',
+              focus_language = 'f',
+              unfocus_language = 'F',
+              update = 'R',
+              goto_node = '<cr>',
+              show_help = '?',
+            },
+          },
+          query_linter = {
+            enable = true,
+            use_virtual_text = true,
+            lint_events = { "BufWrite", "CursorHold" },
+          },
         }
       end, 0)
     end
@@ -262,6 +298,26 @@ local function telescope_live_grep_open_files()
     grep_open_files = true,
     prompt_title = 'Live Grep in Open Files',
   }
+end
+
+local function document_code()
+  local choices = {
+    { name = "1: Function", id = "func" },
+    { name = "2: File",     id = "file" },
+    { name = "3: Type",     id = "type" },
+    { name = "4: Class",    id = "class" },
+  }
+
+  vim.ui.select(choices, {
+    prompt = "Choose context type:",
+    format_item = function(item)
+      return item.name
+    end,
+  }, function(choice)
+    if choice then
+      require('neogen').generate({ type = choice.id })
+    end
+  end)
 end
 
 vim.api.nvim_create_user_command('LiveGrepGitRoot', live_grep_git_root, {})
@@ -440,25 +496,28 @@ vim.keymap.set("n", "<leader>tt", "<cmd>ToggleTerm size=40 dir=. direction=horiz
 vim.keymap.set("n", "<leader>tf", "<cmd>ToggleTerm size=40 dir=. direction=float<cr>")
 vim.keymap.set("n", "<leader>tb", ":enew|terminal<cr>")
 --TELESCOPE
+--
+local telescope_builtin = require('telescope.builtin')
 vim.keymap.set("n", "<leader>/", fuzzy_find_buffer, { desc = "[/] Fuzzily search in current buffer" })
-vim.keymap.set("n", "<leader><space>", require("telescope.builtin").buffers, { desc = "[ ] Find existing buffers" })
-vim.keymap.set("n", "<leader>?", require("telescope.builtin").oldfiles, { desc = "[?] Find recently opened files" })
-vim.keymap.set("n", "<leader>f.", require("telescope.builtin").git_files, { desc = "[F]ind [G]it [F]iles" })
+vim.keymap.set("n", "<leader><space>", telescope_builtin.buffers, { desc = "[ ] Find existing buffers" })
+vim.keymap.set("n", "<leader>?", telescope_builtin.oldfiles, { desc = "[?] Find recently opened files" })
+vim.keymap.set("n", "<leader>f.", telescope_builtin.git_files, { desc = "[F]ind [G]it [F]iles" })
 vim.keymap.set("n", "<leader>f/", telescope_live_grep_open_files, { desc = "[F]ind [/] in Open Files" })
-vim.keymap.set("n", "<leader>f<space>", require("telescope.builtin").builtin, { desc = "[F]ind [S]elect Telescope" })
+vim.keymap.set("n", "<leader>f<space>", telescope_builtin.builtin, { desc = "[F]ind [S]elect Telescope" })
 vim.keymap.set("n", "<leader>fG", live_grep_git_root, { desc = "[F]ind by [G]rep on Git Root" })
-vim.keymap.set("n", "<leader>fb", require("telescope.builtin").buffers, { desc = "[F]ind [B]uffer" })
-vim.keymap.set("n", "<leader>fd", require("telescope.builtin").diagnostics, { desc = "[F]ind [D]iagnostics" })
-vim.keymap.set("n", "<leader>ff", require("telescope.builtin").find_files, { desc = "[F]ind [F]iles" })
-vim.keymap.set("n", "<leader>fg", require("telescope.builtin").live_grep, { desc = "[F]ind by [G]rep (Live)" })
-vim.keymap.set("n", "<leader>fh", require("telescope.builtin").help_tags, { desc = "[F]ind [H]elp Tags" })
-vim.keymap.set("n", "<leader>fr", require("telescope.builtin").resume, { desc = "[F]ind [R]esume" })
-vim.keymap.set("n", "<leader>fw", require("telescope.builtin").grep_string, { desc = "[F]ind current [W]ord" })
+vim.keymap.set("n", "<leader>fb", telescope_builtin.buffers, { desc = "[F]ind [B]uffer" })
+vim.keymap.set("n", "<leader>fd", telescope_builtin.diagnostics, { desc = "[F]ind [D]iagnostics" })
+vim.keymap.set("n", "<leader>ff", telescope_builtin.find_files, { desc = "[F]ind [F]iles" })
+vim.keymap.set("n", "<leader>fg", telescope_builtin.live_grep, { desc = "[F]ind by [G]rep (Live)" })
+vim.keymap.set("n", "<leader>fh", telescope_builtin.help_tags, { desc = "[F]ind [H]elp Tags" })
+vim.keymap.set("n", "<leader>fr", telescope_builtin.resume, { desc = "[F]ind [R]esume" })
+vim.keymap.set("n", "<leader>fw", telescope_builtin.grep_string, { desc = "[F]ind current [W]ord" })
 --DIAGNOSTICS
 vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = 'Go to previous diagnostic message' })
 vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { desc = 'Go to next diagnostic message' })
 vim.keymap.set('n', '<leader>k', vim.diagnostic.open_float, { desc = 'Open floating diagnostic message' })
 --LSP ( Mapped only on attach)
+vim.keymap.set('n', '<leader>c/', document_code, { desc = '[C]ode Documentation [G]en' })
 vim.api.nvim_create_autocmd('LspAttach', {
   group = vim.api.nvim_create_augroup('UserLspConfig', {}),
   callback = function(ev)
@@ -472,10 +531,10 @@ vim.api.nvim_create_autocmd('LspAttach', {
     vim.keymap.set('n', '<leader>cf', vim.lsp.buf.format, { buffer = ev.buf, desc = '[C]ode [F]ormat' })
     vim.keymap.set('n', '<leader>cs', vim.lsp.buf.signature_help,
       { buffer = ev.buf, desc = '[C]ode [S]ignature Documentation' })
-    vim.keymap.set('n', '<leader>cd', require('telescope.builtin').lsp_document_symbols,
+    vim.keymap.set('n', '<leader>cd', telescope_builtin.lsp_document_symbols,
       { buffer = ev.buf, desc = '[C]ode [D]ocument Symbols' })
     --Code Workspace
-    vim.keymap.set('n', '<leader>cws', require('telescope.builtin').lsp_dynamic_workspace_symbols,
+    vim.keymap.set('n', '<leader>cws', telescope_builtin.lsp_dynamic_workspace_symbols,
       { buffer = ev.buf, desc = '[C]ode [W]orkspace [S]ymbols' })
     vim.keymap.set('n', '<space>cwfa', vim.lsp.buf.add_workspace_folder,
       { buffer = ev.buf, desc = '[C]ode [W]orkspace [F]older [A]dd' })
@@ -486,12 +545,9 @@ vim.api.nvim_create_autocmd('LspAttach', {
     -- GoTos
     vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, { buffer = ev.buf, desc = '[G]oto [D]eclaration' })
     vim.keymap.set('n', '<space>gd', vim.lsp.buf.type_definition, { buffer = ev.buf, desc = '[G]oto Type [D]efinition' })
-    vim.keymap.set('n', 'gI', require('telescope.builtin').lsp_implementations,
-      { buffer = ev.buf, desc = '[G]oto [I]mplementation' })
-    vim.keymap.set('n', 'gd', require('telescope.builtin').lsp_definitions,
-      { buffer = ev.buf, desc = '[G]oto [D]efinition' })
-    vim.keymap.set('n', 'gr', require('telescope.builtin').lsp_references,
-      { buffer = ev.buf, desc = '[G]oto [R]eferences' })
+    vim.keymap.set('n', 'gI', telescope_builtin.lsp_implementations, { buffer = ev.buf, desc = '[G]oto [I]mplementation' })
+    vim.keymap.set('n', 'gd', telescope_builtin.lsp_definitions, { buffer = ev.buf, desc = '[G]oto [D]efinition' })
+    vim.keymap.set('n', 'gr', telescope_builtin.lsp_references, { buffer = ev.buf, desc = '[G]oto [R]eferences' })
 
     -- Create a command `:Format` local to the LSP buffer
     vim.api.nvim_buf_create_user_command(ev.buf, 'Format', vim.lsp.buf.format,
