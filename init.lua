@@ -28,7 +28,32 @@ require('lazy').setup({
   { 'akinsho/toggleterm.nvim',             version = "*", opts = {} },     -- Makes interacting with terminal easier
   { 'stevearc/dressing.nvim',              opts = {}, },
   { "klen/nvim-test",                      opts = {} },
-  { "David-Kunz/gen.nvim",                 opts = {} },
+  {
+    "David-Kunz/gen.nvim",
+    opts = {
+      model = "mistral",      -- The default model to use.
+      display_mode = "split", -- The display mode. Can be "float" or "split".
+      show_prompt = true,     -- Shows the Prompt submitted to Ollama.
+      show_model = true,      -- Displays which model you are using at the beginning of your chat session.
+      no_auto_close = false,  -- Never closes the window automatically.
+    }
+  },
+  {
+    "ziontee113/ollama.nvim",
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+      "MunifTanjim/nui.nvim",
+    },
+    keys = { "<leader>;" },
+  },
+  { "folke/zen-mode.nvim", opts = {} },
+  {
+    "iamcco/markdown-preview.nvim",
+    cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
+    ft = { "markdown" },
+    build = function() vim.fn["mkdp#util#install"]() end,
+  },
+  { "lervag/vimtex" }, -- LaTex tools
   ---------------------------------
   --Colorscheme
   ---------------------------------
@@ -52,6 +77,24 @@ require('lazy').setup({
   },
 
   { 'nvim-lualine/lualine.nvim', opts = { options = { icons_enabled = false, theme = 'github_dark', component_separators = '|', section_separators = '' }, } },
+  {
+    "rest-nvim/rest.nvim",
+    dependencies = { { "nvim-lua/plenary.nvim" } },
+    config = function()
+      require("rest-nvim").setup()
+    end
+  },
+  ---------------------------------
+  -- CSV Viewer
+  ---------------------------------
+  {
+    'vidocqh/data-viewer.nvim',
+    opts = {},
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+      "kkharji/sqlite.lua", -- Optional, sqlite support
+    }
+  },
   ---------------------------------
   --File Tree
   ---------------------------------
@@ -64,7 +107,20 @@ require('lazy').setup({
       "MunifTanjim/nui.nvim",
       "3rd/image.nvim",              -- Optional image support in preview window: See `# Preview Mode` for more information
     },
-    opts = { source_selector = { winbar = true } }
+    --opts = {
+    --  source_selector = { winbar = true },
+    --  mappings = {
+    --    ["P"] = { "toggle_preview", config = { use_float = true, use_image_nvim = true } },
+    --  }
+    --},
+    config = function()
+      require("neo-tree").setup({
+        source_selector = { winbar = true },
+        mappings = {
+          ["P"] = { "toggle_preview", config = { use_float = false, use_image_nvim = true } },
+        }
+      })
+    end
   },
   ---------------------------------
   -- LSP
@@ -78,6 +134,19 @@ require('lazy').setup({
       -- Additional lua configuration, makes nvim stuff amazing!
       { 'folke/neodev.nvim', opts = {} }
     },
+  },
+  {
+    "jay-babu/mason-null-ls.nvim",
+    event = { "BufReadPre", "BufNewFile" },
+    dependencies = {
+      "williamboman/mason.nvim",
+      "nvimtools/none-ls.nvim",
+    },
+    config = function()
+      require("mason-null-ls").setup({
+        handlers = {},
+      })
+    end,
   },
   {
     'hrsh7th/nvim-cmp', -- Autocompletion
@@ -200,7 +269,7 @@ require('lazy').setup({
         },
       },
     },
-  }
+  },
 }, {})
 
 vim.o.hlsearch = false                 -- Set highlight on search
@@ -221,7 +290,7 @@ vim.g.netrw_liststyle = 3
 vim.g.netrw_localcopydircmd = "cp -r"
 vim.g.netrw_winsize = 30
 
-vim.opt.colorcolumn = "80"
+vim.opt.colorcolumn = "120"
 vim.opt.cursorline = true
 vim.opt.expandtab = true
 vim.opt.incsearch = true
@@ -242,6 +311,19 @@ vim.opt.linebreak = true --Wrap lines at convenient points like spaces
 vim.opt.breakindent = true --Indent wrapped lines
 vim.opt.showbreak = "↳" --Symbol for wrapped lines
 vim.opt.list = true --Shows chars like whitespace
+
+-- LaTex Configuration
+vim.g.tex_flavor = 'latex'                 -- Default tex file format
+vim.g.vimtex_compiler_progname = 'latexmk' -- Set compiler (optional)
+vim.g.vimtex_view_method = 'skim'          -- Set viewer (optional)
+vim.g.vimtex_view_skim_sync = 1
+vim.g.vimtex_view_skim_activate = 1        -- Value 1 allows change focus to skim after command `:VimtexView` is given
+vim.g.vimtex_continuous = 1                -- Enable continuous compilation
+vim.g.vimtex_view_automatic = 1            -- Automatically open PDF viewer
+vim.g.vimtex_snippets_enable_autoload = 1  -- Enable snippets for faster typing (optional)
+vim.g.vimtex_compiler_latexmk = {
+  out_dir = 'out'
+}
 
 -- [[ Highlight on yank ]]
 local highlight_group = vim.api.nvim_create_augroup('YankHighlight', { clear = true })
@@ -495,8 +577,10 @@ vim.keymap.set("n", "<C-`>", "<cmd>ToggleTerm<cr>")
 vim.keymap.set("n", "<leader>tt", "<cmd>ToggleTerm size=40 dir=. direction=horizontal<cr>")
 vim.keymap.set("n", "<leader>tf", "<cmd>ToggleTerm size=40 dir=. direction=float<cr>")
 vim.keymap.set("n", "<leader>tb", ":enew|terminal<cr>")
+-- ZEN MODE
+vim.keymap.set("n", "<leader>z", function() require("zen-mode").toggle({ window = { width = .85 } }) end,
+  { desc = "[Z]en" })
 --TELESCOPE
---
 local telescope_builtin = require('telescope.builtin')
 vim.keymap.set("n", "<leader>/", fuzzy_find_buffer, { desc = "[/] Fuzzily search in current buffer" })
 vim.keymap.set("n", "<leader><space>", telescope_builtin.buffers, { desc = "[ ] Find existing buffers" })
@@ -516,6 +600,12 @@ vim.keymap.set("n", "<leader>fw", telescope_builtin.grep_string, { desc = "[F]in
 vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = 'Go to previous diagnostic message' })
 vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { desc = 'Go to next diagnostic message' })
 vim.keymap.set('n', '<leader>k', vim.diagnostic.open_float, { desc = 'Open floating diagnostic message' })
+--GEN AI
+vim.keymap.set({ 'n', 'v' }, '<leader><', ':Gen<CR>')
+vim.keymap.set({ 'n', 'v' }, '<leader>>', ':Gen Chat<CR>')
+
+vim.keymap.set("n", "<leader>;", function() require("ollama").show() end, {})
+
 --LSP ( Mapped only on attach)
 vim.keymap.set('n', '<leader>c/', document_code, { desc = '[C]ode Documentation [G]en' })
 vim.api.nvim_create_autocmd('LspAttach', {
@@ -545,15 +635,16 @@ vim.api.nvim_create_autocmd('LspAttach', {
     -- GoTos
     vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, { buffer = ev.buf, desc = '[G]oto [D]eclaration' })
     vim.keymap.set('n', '<space>gd', vim.lsp.buf.type_definition, { buffer = ev.buf, desc = '[G]oto Type [D]efinition' })
-    vim.keymap.set('n', 'gI', telescope_builtin.lsp_implementations, { buffer = ev.buf, desc = '[G]oto [I]mplementation' })
+    vim.keymap.set('n', 'gI', telescope_builtin.lsp_implementations,
+      { buffer = ev.buf, desc = '[G]oto [I]mplementation' })
     vim.keymap.set('n', 'gd', telescope_builtin.lsp_definitions, { buffer = ev.buf, desc = '[G]oto [D]efinition' })
     vim.keymap.set('n', 'gr', telescope_builtin.lsp_references, { buffer = ev.buf, desc = '[G]oto [R]eferences' })
-
     -- Create a command `:Format` local to the LSP buffer
     vim.api.nvim_buf_create_user_command(ev.buf, 'Format', vim.lsp.buf.format,
       { desc = 'Format current buffer with LSP' })
   end,
 })
+
 --DAP - DEBUG
 -- local dap = require "dap"
 -- vim.keymap.set("n", "<F5>", dap.continue, { desc = "Continue" })
