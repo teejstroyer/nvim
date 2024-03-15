@@ -6,14 +6,7 @@ vim.g.maplocalleader = ' '
 
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
 if not vim.loop.fs_stat(lazypath) then
-  vim.fn.system {
-    'git',
-    'clone',
-    '--filter=blob:none',
-    'https://github.com/folke/lazy.nvim.git',
-    '--branch=stable', -- latest stable release
-    lazypath,
-  }
+  vim.fn.system { 'git', 'clone', '--filter=blob:none', 'https://github.com/folke/lazy.nvim.git', '--branch=stable' }
 end
 vim.opt.rtp:prepend(lazypath)
 
@@ -27,26 +20,6 @@ require('lazy').setup({
   { 'NvChad/nvim-colorizer.lua',           opts = {}, },                   -- Colors text in editor (#FFF)
   { 'akinsho/toggleterm.nvim',             version = "*", opts = {} },     -- Makes interacting with terminal easier
   { 'stevearc/dressing.nvim',              opts = {}, },
-  { "klen/nvim-test",                      opts = {} },
-  {
-    "David-Kunz/gen.nvim",
-    opts = {
-      model = "mistral",      -- The default model to use.
-      display_mode = "split", -- The display mode. Can be "float" or "split".
-      show_prompt = true,     -- Shows the Prompt submitted to Ollama.
-      show_model = true,      -- Displays which model you are using at the beginning of your chat session.
-      no_auto_close = false,  -- Never closes the window automatically.
-    }
-  },
-  {
-    "ziontee113/ollama.nvim",
-    dependencies = {
-      "nvim-lua/plenary.nvim",
-      "MunifTanjim/nui.nvim",
-    },
-    keys = { "<leader>;" },
-  },
-  { "folke/zen-mode.nvim", opts = {} },
   {
     "iamcco/markdown-preview.nvim",
     cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
@@ -57,44 +30,8 @@ require('lazy').setup({
   ---------------------------------
   --Colorscheme
   ---------------------------------
-  {
-    "ellisonleao/gruvbox.nvim",
-    enabled = false,
-    priority = 1000,
-    config = function()
-      vim.cmd.colorscheme 'gruvbox'
-    end,
-  },
-  {
-    'projekt0n/github-nvim-theme',
-    enabled = true,
-    lazy = false,
-    priority = 1000,
-    config = function()
-      require('github-theme').setup({})
-      vim.cmd.colorscheme 'github_dark'
-    end,
-  },
-
-  { 'nvim-lualine/lualine.nvim', opts = { options = { icons_enabled = false, theme = 'github_dark', component_separators = '|', section_separators = '' }, } },
-  {
-    "rest-nvim/rest.nvim",
-    dependencies = { { "nvim-lua/plenary.nvim" } },
-    config = function()
-      require("rest-nvim").setup()
-    end
-  },
-  ---------------------------------
-  -- CSV Viewer
-  ---------------------------------
-  {
-    'vidocqh/data-viewer.nvim',
-    opts = {},
-    dependencies = {
-      "nvim-lua/plenary.nvim",
-      "kkharji/sqlite.lua", -- Optional, sqlite support
-    }
-  },
+  { "catppuccin/nvim",           name = "catppuccin",                                                                                                              priority = 1000 },
+  { 'nvim-lualine/lualine.nvim', opts = { options = { icons_enabled = false, theme = 'catppuccin-frappe', component_separators = '|', section_separators = '' }, } },
   ---------------------------------
   --File Tree
   ---------------------------------
@@ -107,12 +44,6 @@ require('lazy').setup({
       "MunifTanjim/nui.nvim",
       "3rd/image.nvim",              -- Optional image support in preview window: See `# Preview Mode` for more information
     },
-    --opts = {
-    --  source_selector = { winbar = true },
-    --  mappings = {
-    --    ["P"] = { "toggle_preview", config = { use_float = true, use_image_nvim = true } },
-    --  }
-    --},
     config = function()
       require("neo-tree").setup({
         source_selector = { winbar = true },
@@ -131,8 +62,7 @@ require('lazy').setup({
       'williamboman/mason.nvim',          -- Automatically install LSPs to stdpath for neovim
       'williamboman/mason-lspconfig.nvim',
       { 'j-hui/fidget.nvim', opts = {} }, -- Useful status updates for LSP NOTE: `opts = {}` is the same as calling `require('fidget').setup({})`
-      -- Additional lua configuration, makes nvim stuff amazing!
-      { 'folke/neodev.nvim', opts = {} }
+      { 'folke/neodev.nvim', opts = {} }  -- Completions for neovim
     },
   },
   {
@@ -143,21 +73,21 @@ require('lazy').setup({
       "nvimtools/none-ls.nvim",
     },
     config = function()
-      require("mason-null-ls").setup({
-        handlers = {},
-      })
+      require("mason-null-ls").setup({ handlers = {}, ensure_installed = {}, automatic_installation = {} })
     end,
   },
   {
     'hrsh7th/nvim-cmp', -- Autocompletion
     dependencies = {
-      'L3MON4D3/LuaSnip',
-      'saadparwaiz1/cmp_luasnip',
-      'hrsh7th/cmp-nvim-lsp',
-      'hrsh7th/cmp-path',
-      'rafamadriz/friendly-snippets',
+      "L3MON4D3/LuaSnip",
+      "saadparwaiz1/cmp_luasnip",
+      "hrsh7th/cmp-nvim-lsp",
+      "hrsh7th/cmp-path",
+      "rafamadriz/friendly-snippets",
+      "zbirenbaum/copilot-cmp",
     },
   },
+  { "onsails/lspkind.nvim" },
   {
     "ray-x/lsp_signature.nvim",
     event = "VeryLazy",
@@ -193,14 +123,12 @@ require('lazy').setup({
       "kdheepak/lazygit.nvim",
       "nvim-telescope/telescope-file-browser.nvim",
     },
-
     config = function()
       local telescope = require("telescope")
       telescope.setup({ extensions = {} })
       pcall(telescope.load_extension, 'fzf')
       pcall(telescope.load_extension, 'ui-select')
       pcall(telescope.load_extension, 'lazygit')
-      --pcall(telescope.load_extension, 'file_browser')
     end
   },
   {
@@ -254,24 +182,13 @@ require('lazy').setup({
     event = "InsertEnter",
     enabled = true,
     opts = {
+      suggestion = { enabled = false },
       panel = { enabled = false },
-      suggestion = {
-        enabled = true,
-        auto_trigger = false,
-        debounce = 50,
-        keymap = {
-          accept = "<C-CR>",
-          accept_word = "<S-Space>",
-          accept_line = "<S-CR>",
-          next = "<C-j>",
-          prev = "<C-k>",
-          dismiss = "<C-.>",
-        },
-      },
     },
   },
 }, {})
 
+vim.cmd.colorscheme "catppuccin-frappe"
 vim.o.hlsearch = false                 -- Set highlight on search
 vim.o.mouse = 'a'                      -- Enable mouse mode
 vim.o.clipboard = 'unnamedplus'        -- Sync clipboard between OS and Neovim.
@@ -446,6 +363,8 @@ mason_lspconfig.setup_handlers {
 
 local cmp = require('cmp')
 local luasnip = require('luasnip')
+local lspkind = require('lspkind')
+require("copilot_cmp").setup()
 require('luasnip.loaders.from_vscode').lazy_load()
 luasnip.config.setup {}
 
@@ -458,40 +377,36 @@ cmp.setup {
   completion = {
     completeopt = 'menu,menuone,noinsert',
   },
+  -- No, but seriously. Please read `:help ins-completion`, it is really good!
   mapping = cmp.mapping.preset.insert {
     ['<C-n>'] = cmp.mapping.select_next_item(),
     ['<C-p>'] = cmp.mapping.select_prev_item(),
-    ['<C-d>'] = cmp.mapping.scroll_docs(-4),
-    ['<C-f>'] = cmp.mapping.scroll_docs(4),
+    ['<C-y>'] = cmp.mapping.confirm { select = true },
     ['<C-Space>'] = cmp.mapping.complete {},
-    ['<CR>'] = cmp.mapping.confirm {
-      behavior = cmp.ConfirmBehavior.Replace,
-      select = true,
-    },
-    ['<Tab>'] = cmp.mapping(function(fallback)
-      if cmp.visible() then
-        cmp.select_next_item()
-      elseif luasnip.expand_or_locally_jumpable() then
+    ['<C-l>'] = cmp.mapping(function() -- <c-l> will move you to the right of each of the expansion locations.
+      if luasnip.expand_or_locally_jumpable() then
         luasnip.expand_or_jump()
-      else
-        fallback()
       end
     end, { 'i', 's' }),
-    ['<S-Tab>'] = cmp.mapping(function(fallback)
-      if cmp.visible() then
-        cmp.select_prev_item()
-      elseif luasnip.locally_jumpable(-1) then
+    ['<C-h>'] = cmp.mapping(function() -- <c-h> is similar, except moving you backwards.
+      if luasnip.locally_jumpable(-1) then
         luasnip.jump(-1)
-      else
-        fallback()
       end
     end, { 'i', 's' }),
   },
   sources = {
-    { name = 'nvim_lsp' },
-    { name = 'luasnip' },
-    { name = 'path' },
+    { name = "copilot",  group_index = 2 },
+    { name = "nvim_lsp", group_index = 2 },
+    { name = "luasnip",  group_index = 2 },
+    { name = "path",     group_index = 2 },
   },
+  formatting = {
+    format = lspkind.cmp_format({
+      mode = "symbol",
+      max_width = 50,
+      symbol_map = { Copilot = "" }
+    })
+  }
 }
 
 --AUTO Commands
