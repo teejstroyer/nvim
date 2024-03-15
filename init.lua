@@ -515,11 +515,6 @@ vim.keymap.set("n", "<leader>fw", telescope_builtin.grep_string, { desc = "[F]in
 vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = 'Go to previous diagnostic message' })
 vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { desc = 'Go to next diagnostic message' })
 vim.keymap.set('n', '<leader>k', vim.diagnostic.open_float, { desc = 'Open floating diagnostic message' })
---GEN AI
-vim.keymap.set({ 'n', 'v' }, '<leader><', ':Gen<CR>')
-vim.keymap.set({ 'n', 'v' }, '<leader>>', ':Gen Chat<CR>')
-
-vim.keymap.set("n", "<leader>;", function() require("ollama").show() end, {})
 
 --LSP ( Mapped only on attach)
 vim.keymap.set('n', '<leader>c/', document_code, { desc = '[C]ode Documentation [G]en' })
