@@ -26,6 +26,23 @@ require('lazy').setup({
     ft = { "markdown" },
     build = function() vim.fn["mkdp#util#install"]() end,
   },
+  {
+    "LunarVim/bigfile.nvim",
+    opts = {
+      filesize = 2,      -- size of the file in MiB, the plugin round file sizes to the closest MiB
+      pattern = { "*" }, -- autocmd pattern or function see <### Overriding the detection of big files>
+      features = {       -- features to disable
+        "indent_blankline",
+        "illuminate",
+        --"lsp",
+        "treesitter",
+        --"syntax",
+        "matchparen",
+        "vimopts",
+        --"filetype",
+      },
+    }
+  },
   { "lervag/vimtex" }, -- LaTex tools
   ---------------------------------
   --Colorscheme
@@ -186,6 +203,12 @@ require('lazy').setup({
       panel = { enabled = false },
     },
   },
+  {
+    "David-Kunz/gen.nvim",
+    opts = {
+      display_mode = "split",
+    }
+  },
 }, {})
 
 vim.cmd.colorscheme "catppuccin-frappe"
@@ -326,7 +349,28 @@ vim.api.nvim_create_user_command('TelescopeLiveGrepOpenFiles', telescope_live_gr
 -- mason-lspconfig requires that these setup functions are called in this order
 -- before setting up the servers.
 require('mason').setup()
-require('mason-lspconfig').setup()
+require('mason-lspconfig').setup {
+  ensure_installed = {
+    "angularls",
+    "bashls",
+    "beautysh",
+    "black",
+    "dart-debug-adapter",
+    "eslint",
+    "gdtoolkit",
+    "grammarly",
+    "ltex",
+    "lua_ls",
+    "marksman",
+    "omnisharp",
+    "prettier",
+    "prettierd",
+    "pyright",
+    "tailwindcss",
+    "texlab",
+    "tsserver",
+  },
+}
 
 local servers = {
   -- tsserver = {},
