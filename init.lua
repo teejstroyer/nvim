@@ -135,6 +135,11 @@ now(function()
   })
 end)
 
+now(function()
+  add("iamcco/markdown-preview.nvim")
+  vim.fn["mkdp#util#install"]()
+end)
+
 later(function()
   add({
     source = 'nvim-treesitter/nvim-treesitter',
@@ -149,10 +154,6 @@ later(function()
   })
 end)
 later(function() add("lervag/vimtex") end)
-later(function()
-  add("iamcco/markdown-preview.nvim")
-  vim.fn["mkdp#util#install"]()
-end)
 
 --##############################################################################
 vim.cmd.colorscheme "minischeme"
