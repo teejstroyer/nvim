@@ -149,15 +149,9 @@ later(function()
   })
 end)
 later(function() add("lervag/vimtex") end)
-now(function()
-  add({
-    source = "iamcco/markdown-preview.nvim",
-    hooks = {
-      post_checkout = function()
-        vim.fn["mkdp#util#install"]()
-      end
-    }
-  })
+later(function()
+  add("iamcco/markdown-preview.nvim")
+  vim.fn["mkdp#util#install"]()
 end)
 
 --##############################################################################
@@ -242,10 +236,10 @@ autocmd({ "TermOpen" }, {
 -- KEYMAPS
 ----------------------------------------------------
 -- vim.keymap.del({ 'n', 'v' },'<Space>', '<Nop>', { silent = true })
-vim.keymap.set('n', 'k', 'gk')              -- Word Wrap Fix
-vim.keymap.set('n', 'j', 'gj')              -- Word Wrap Fix
-vim.keymap.set("n", "Q", "<nop>")           --UNMAP to prevent hard quit
-vim.keymap.set("t", "<Esc>", "<c-\\><c-n>") -- Excap enters normal mode for terminal
+vim.keymap.set('n', 'k', 'gk', { silent = true }) -- Word Wrap Fix
+vim.keymap.set('n', 'j', 'gj', { silent = true }) -- Word Wrap Fix
+vim.keymap.set("n", "Q", "<nop>")                 --UNMAP to prevent hard quit
+vim.keymap.set("t", "<Esc>", "<c-\\><c-n>")       -- Excap enters normal mode for terminal
 --UNDO TREE
 vim.keymap.set("n", "<leader>u", vim.cmd.UndotreeToggle, { desc = "Undo Tree Toggle" })
 --BUFFER
