@@ -46,3 +46,4 @@ A Lua only **single file** Neovim config.
 - plenary.nvim
 - vimtex
 - iamcco/markdown-preview.nvim
+- MeanderingProgrammer/markdown.nvim
