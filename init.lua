@@ -53,14 +53,12 @@ now(function()
       "angularls",
       "bashls",
       "eslint",
-      "grammarly",
       "ltex",
       "lua_ls",
       "marksman",
       "omnisharp",
       "pyright",
       "tailwindcss",
-      "texlab",
       "tsserver",
     },
   }
@@ -68,9 +66,16 @@ now(function()
     function(server_name) -- default handler (optional)
       require("lspconfig")[server_name].setup {}
     end,
-    -- ["rust_analyzer"] = function ()
-    --   require("rust-tools").setup {}
-    -- end
+
+    require("lspconfig").lua_ls.setup {
+      settings = {
+        Lua = {
+          hint = {
+            enable = true,
+          },
+        },
+      },
+    }
   }
 end)
 
@@ -115,7 +120,6 @@ later(function()
     },
   })
 end)
-later(function() require('mini.comment').setup() end)
 later(function() require('mini.diff').setup() end)
 later(function() require('mini.indentscope').setup() end)
 later(function() require('mini.splitjoin').setup() end)
@@ -145,18 +149,25 @@ later(function()
     source = 'nvim-treesitter/nvim-treesitter',
     checkout = 'master',
     monitor = 'main',
-    hooks = { post_checkout = function() vim.cmd('TSUpdate') end },
   })
+
+  vim.cmd('TSUpdate')
+
   ---@diagnostic disable-next-line: missing-fields
   require('nvim-treesitter.configs').setup({
-    ensure_installed = { 'lua', 'vimdoc' },
+    ensure_installed = { 'lua', 'vimdoc', 'c_sharp', 'angular' },
     highlight = { enable = true },
   })
 end)
+
 later(function() add("lervag/vimtex") end)
+later(function()
+  add('MeanderingProgrammer/markdown.nvim')
+  require('render-markdown').setup()
+end)
 
 --##############################################################################
-vim.cmd.colorscheme "minischeme"
+--vim.cmd.colorscheme "minischeme"
 vim.g.have_nerd_font = true
 vim.opt.breakindent = true               --Indent wrapped lines
 vim.opt.clipboard = 'unnamedplus'        -- Sync clipboard between OS and Neovim.
@@ -236,7 +247,6 @@ autocmd({ "TermOpen" }, {
 ----------------------------------------------------
 -- KEYMAPS
 ----------------------------------------------------
--- vim.keymap.del({ 'n', 'v' },'<Space>', '<Nop>', { silent = true })
 vim.keymap.set('n', 'k', 'gk', { silent = true }) -- Word Wrap Fix
 vim.keymap.set('n', 'j', 'gj', { silent = true }) -- Word Wrap Fix
 vim.keymap.set("n", "Q", "<nop>")                 --UNMAP to prevent hard quit
@@ -289,6 +299,19 @@ vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = 'Go to previous dia
 vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { desc = 'Go to next diagnostic message' })
 vim.keymap.set('n', '<leader>k', vim.diagnostic.open_float, { desc = 'Open floating diagnostic message' })
 
+--TOGGLES
+vim.keymap.set("n", "<leader>tw",
+  function()
+    vim.cmd('set wrap!')
+    vim.notify("Toggle Line Wrap")
+  end, { desc = "[T]oggle [W]rap Lines", silent = true })
+
+vim.keymap.set("n", "<leader>th",
+  function()
+    vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled({}))
+    vim.notify("LSP Inlay hint enabled: " .. tostring(vim.lsp.inlay_hint.is_enabled({})))
+  end, { desc = '[T]oggle [H]int (LSP)' })
+
 vim.api.nvim_create_autocmd('LspAttach', {
   group = vim.api.nvim_create_augroup('UserLspConfig', {}),
   callback = function(ev)
@@ -299,7 +322,6 @@ vim.api.nvim_create_autocmd('LspAttach', {
     local function references() MiniExtra.pickers.lsp({ scope = 'references' }) end
     local function type_definition() MiniExtra.pickers.lsp({ scope = 'type_definition' }) end
     local function workspace_symbol() MiniExtra.pickers.lsp({ scope = 'workspace_symbol' }) end
-
     -- Enable completion triggered by <c-x><c-o>
     vim.bo[ev.buf].omnifunc = 'v:lua.vim.lsp.omnifunc'
     --Staple Keymap
@@ -312,17 +334,16 @@ vim.api.nvim_create_autocmd('LspAttach', {
       { buffer = ev.buf, desc = '[C]ode [S]ignature Documentation' })
     vim.keymap.set('n', '<leader>cd', document_symbol, { buffer = ev.buf, desc = '[C]ode [D]ocument Symbols' })
     --Code Workspace
-    vim.keymap.set('n', '<leader>cws', workspace_symbol,
-      { buffer = ev.buf, desc = '[C]ode [W]orkspace [S]ymbols' })
-    vim.keymap.set('n', '<space>cwfa', vim.lsp.buf.add_workspace_folder,
+    vim.keymap.set('n', '<leader>cws', workspace_symbol, { buffer = ev.buf, desc = '[C]ode [W]orkspace [S]ymbols' })
+    vim.keymap.set('n', '<leader>cwfa', vim.lsp.buf.add_workspace_folder,
       { buffer = ev.buf, desc = '[C]ode [W]orkspace [F]older [A]dd' })
-    vim.keymap.set('n', '<space>cwfr', vim.lsp.buf.remove_workspace_folder,
+    vim.keymap.set('n', '<leader>cwfr', vim.lsp.buf.remove_workspace_folder,
       { buffer = ev.buf, desc = '[C]ode [W]orkspace [F]older [R]emove' })
-    vim.keymap.set('n', '<space>cwfl', function() print(vim.inspect(vim.lsp.buf.list_workspace_folders())) end,
+    vim.keymap.set('n', '<leader>cwfl', function() print(vim.inspect(vim.lsp.buf.list_workspace_folders())) end,
       { buffer = ev.buf, desc = '[C]ode [W]orkspace [F]olders [L]ist' })
     -- GoTos
     vim.keymap.set('n', 'gD', declaration, { buffer = ev.buf, desc = '[G]oto [D]eclaration' })
-    vim.keymap.set('n', '<space>gd', type_definition, { buffer = ev.buf, desc = '[G]oto Type [D]efinition' })
+    vim.keymap.set('n', '<leader>gd', type_definition, { buffer = ev.buf, desc = '[G]oto Type [D]efinition' })
     vim.keymap.set('n', 'gI', implementation, { buffer = ev.buf, desc = '[G]oto [I]mplementation' })
     vim.keymap.set('n', 'gd', definition, { buffer = ev.buf, desc = '[G]oto [D]efinition' })
     vim.keymap.set('n', 'gr', references, { buffer = ev.buf, desc = '[G]oto [R]eferences' })
