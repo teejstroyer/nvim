@@ -1,6 +1,6 @@
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
---###########################################################################################
+--##############################################################################
 local path_package = vim.fn.stdpath('data') .. '/site'
 local mini_path = path_package .. '/pack/deps/start/mini.nvim'
 if not vim.loop.fs_stat(mini_path) then
@@ -20,6 +20,8 @@ now(function()
   require('mini.notify').setup()
   vim.notify = require('mini.notify').make_notify()
 end)
+
+now(function() require('mini.colors').setup() end)
 now(function() require('mini.statusline').setup() end)
 now(function() require('mini.tabline').setup() end)
 now(function()
@@ -42,11 +44,37 @@ now(function()
       'folke/neodev.nvim',
       "jay-babu/mason-null-ls.nvim",
       "nvimtools/none-ls.nvim",
+      "jay-babu/mason-nvim-dap.nvim",
     }
   })
+
+  later(function()
+    add({
+      source = 'rcarriga/nvim-dap-ui',
+      depends = { "mfussenegger/nvim-dap", "nvim-neotest/nvim-nio" }
+    })
+
+    require('dapui').setup()
+    local dap, dapui = require("dap"), require("dapui")
+    dap.listeners.before.attach.dapui_config = function()
+      dapui.open()
+    end
+    dap.listeners.before.launch.dapui_config = function()
+      dapui.open()
+    end
+    dap.listeners.before.event_terminated.dapui_config = function()
+      dapui.close()
+    end
+    dap.listeners.before.event_exited.dapui_config = function()
+      dapui.close()
+    end
+  end)
+
   require('mason').setup()
   require("mason-null-ls").setup({ handlers = {}, ensure_installed = { 'black', 'prettierd' }, automatic_installation = {} })
-  require("neodev").setup()
+  require("neodev").setup({
+    library = { plugins = { "nvim-dap-ui" }, types = true }
+  })
   local mason_lspconfig = require('mason-lspconfig')
   mason_lspconfig.setup {
     ensure_installed = {
@@ -59,6 +87,7 @@ now(function()
       "omnisharp",
       "pyright",
       "tailwindcss",
+      "texlab",
       "tsserver",
     },
   }
@@ -80,6 +109,7 @@ now(function()
 end)
 
 later(function() require('mini.ai').setup() end)
+-- later(function() require('mini.animate').setup() end)
 later(function()
   local miniclue = require('mini.clue')
   miniclue.setup({
@@ -160,6 +190,7 @@ later(function()
   })
 end)
 
+
 later(function() add("lervag/vimtex") end)
 later(function()
   add('MeanderingProgrammer/markdown.nvim')
@@ -167,7 +198,7 @@ later(function()
 end)
 
 --##############################################################################
---vim.cmd.colorscheme "minischeme"
+vim.cmd.colorscheme "minischeme"
 vim.g.have_nerd_font = true
 vim.opt.breakindent = true               --Indent wrapped lines
 vim.opt.clipboard = 'unnamedplus'        -- Sync clipboard between OS and Neovim.
