@@ -12,9 +12,10 @@ if not vim.loop.fs_stat(mini_path) then
   vim.fn.system(clone_cmd)
   vim.cmd('packadd mini.nvim | helptags ALL')
 end
-
 require('mini.deps').setup({ path = { package = path_package } })
 local add, now, later = MiniDeps.add, MiniDeps.now, MiniDeps.later
+
+now(function() add("catppuccin/nvim") end)
 now(function() add('nvim-lua/plenary.nvim') end)
 now(function()
   require('mini.notify').setup()
@@ -198,7 +199,7 @@ later(function()
 end)
 
 --##############################################################################
-vim.cmd.colorscheme "minischeme"
+vim.cmd.colorscheme "catppuccin-frappe"
 vim.g.have_nerd_font = true
 vim.opt.breakindent = true               --Indent wrapped lines
 vim.opt.clipboard = 'unnamedplus'        -- Sync clipboard between OS and Neovim.
