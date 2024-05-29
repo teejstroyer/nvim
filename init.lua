@@ -12,6 +12,7 @@ if not vim.loop.fs_stat(mini_path) then
   vim.fn.system(clone_cmd)
   vim.cmd('packadd mini.nvim | helptags ALL')
 end
+
 require('mini.deps').setup({ path = { package = path_package } })
 local add, now, later = MiniDeps.add, MiniDeps.now, MiniDeps.later
 
@@ -182,15 +183,23 @@ later(function()
     monitor = 'main',
   })
 
+
+  add('nvim-treesitter/nvim-treesitter-context')
+  add('nvim-treesitter/nvim-treesitter-textobjects')
   vim.cmd('TSUpdate')
 
   ---@diagnostic disable-next-line: missing-fields
   require('nvim-treesitter.configs').setup({
-    ensure_installed = { 'lua', 'vimdoc', 'c_sharp', 'angular' },
-    highlight = { enable = true },
-  })
+    ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'vim', 'vimdoc', 'c_sharp', 'angular' },
+    auto_install = true,
+    highlight = {
+      enable = true,
+      additional_vim_regex_highlighting = { 'ruby' },
+    },
+    indent = { enable = true, disable = { 'ruby' } },
+  }
+  )
 end)
-
 
 later(function() add("lervag/vimtex") end)
 later(function()
