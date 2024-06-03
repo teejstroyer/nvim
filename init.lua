@@ -240,6 +240,9 @@ vim.opt.timeoutlen = 300
 vim.opt.undofile = true  -- Save undo history
 vim.opt.updatetime = 300 -- Decrease update time
 vim.opt.wrap = true
+vim.opt.spelllang = 'en_us'
+vim.opt.spelloptions = "camel"
+
 
 -- LaTex Configuration
 vim.g.tex_flavor = 'latex'                 -- Default tex file format
@@ -292,12 +295,10 @@ vim.keymap.set('n', 'k', 'gk', { silent = true }) -- Word Wrap Fix
 vim.keymap.set('n', 'j', 'gj', { silent = true }) -- Word Wrap Fix
 vim.keymap.set("n", "Q", "<nop>")                 --UNMAP to prevent hard quit
 vim.keymap.set("t", "<Esc>", "<c-\\><c-n>")       -- Excap enters normal mode for terminal
---UNDO TREE
-vim.keymap.set("n", "<leader>u", vim.cmd.UndotreeToggle, { desc = "Undo Tree Toggle" })
 --BUFFER
-vim.keymap.set("n", "<leader>q", ":bdelete<CR>", { desc = "[B]uffer delete" })
-vim.keymap.set("n", "<leader>l", ":bnext<CR>", { desc = "[B]uffer next" })
-vim.keymap.set("n", "<leader>h", ":bprevious<CR>", { desc = "[B]uffer previous" })
+vim.keymap.set("n", "<leader>q", ":bdelete<CR>", { desc = "[B]buffer delete" })
+vim.keymap.set("n", "<leader>l", ":bnext<CR>", { desc = "[B]buffer next" })
+vim.keymap.set("n", "<leader>h", ":bprevious<CR>", { desc = "[B]buffer previous" })
 --Move selection up or down
 vim.keymap.set("v", "<C-k>", ":m '<-2<cr>gv=gv")
 vim.keymap.set("v", "<C-j>", ":m '>+1<cr>gv=gv")
@@ -328,7 +329,7 @@ vim.keymap.set("n", "<leader><space>", MiniPick.builtin.files, { desc = "Find Fi
 vim.keymap.set("n", "<leader>f.", MiniExtra.pickers.git_files, { desc = "[F]ind [G]it [F]iles" })
 vim.keymap.set("n", "<leader>fG", function() MiniPick.builtin.grep_live({ tool = 'git' }) end,
   { desc = "[F]ind by [G]rep on Git Root" })
-vim.keymap.set("n", "<leader>fb", MiniPick.builtin.buffers, { desc = "[F]ind [b]uffers" })
+vim.keymap.set("n", "<leader>fb", MiniPick.builtin.buffers, { desc = "[F]ind [b]buffers" })
 vim.keymap.set("n", "<leader>fc", MiniExtra.pickers.commands, { desc = "[F]ind [C]ommands" })
 vim.keymap.set("n", "<leader>fd", MiniExtra.pickers.diagnostic, { desc = "[F]ind [D]iagnostics" })
 vim.keymap.set("n", "<leader>fg", MiniPick.builtin.grep_live, { desc = "[F]ind by [G]rep" })
@@ -352,6 +353,12 @@ vim.keymap.set("n", "<leader>th",
     vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled({}))
     vim.notify("LSP Inlay hint enabled: " .. tostring(vim.lsp.inlay_hint.is_enabled({})))
   end, { desc = '[T]oggle [H]int (LSP)' })
+
+vim.keymap.set("n", "<leader>ts",
+  function()
+    vim.opt.spell = not(vim.opt.spell:get())
+    vim.notify("Spell Check: " .. tostring(vim.opt.spell:get()))
+  end, { desc = '[T]oggle [S]pell' })
 
 vim.api.nvim_create_autocmd('LspAttach', {
   group = vim.api.nvim_create_augroup('UserLspConfig', {}),
