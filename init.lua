@@ -83,13 +83,11 @@ now(function()
       "angularls",
       "bashls",
       "eslint",
-      "ltex",
       "lua_ls",
       "marksman",
       "omnisharp",
       "pyright",
       "tailwindcss",
-      "texlab",
       "tsserver",
     },
   }
@@ -97,16 +95,21 @@ now(function()
     function(server_name) -- default handler (optional)
       require("lspconfig")[server_name].setup {}
     end,
-
-    require("lspconfig").lua_ls.setup {
-      settings = {
-        Lua = {
-          hint = {
-            enable = true,
-          },
-        },
-      },
-    }
+    ["lua_ls"] = function()
+      local lspconfig = require("lspconfig")
+      lspconfig.lua_ls.setup {
+        settings = {
+          Lua = {
+            hint = {
+              enable = true
+            },
+            diagnostics = {
+              globals = { "vim" }
+            }
+          }
+        }
+      }
+    end,
   }
 end)
 
@@ -118,20 +121,20 @@ later(function()
     triggers = {
       { mode = 'n', keys = '<Leader>' }, -- Leader
       { mode = 'x', keys = '<Leader>' }, -- Leader
-      { mode = 'i', keys = '<C-x>' },    -- Built-in completion
-      { mode = 'n', keys = 'g' },        -- 'g' key
-      { mode = 'x', keys = 'g' },        -- 'g' key
-      { mode = 'n', keys = "'" },        -- Marks
-      { mode = 'n', keys = '`' },        -- Marks
-      { mode = 'x', keys = "'" },        -- Marks
-      { mode = 'x', keys = '`' },        -- Marks
-      { mode = 'n', keys = '"' },        -- Registers
-      { mode = 'x', keys = '"' },        -- Registers
-      { mode = 'i', keys = '<C-r>' },    -- Registers
-      { mode = 'c', keys = '<C-r>' },    -- Registers
-      { mode = 'n', keys = '<C-w>' },    -- Window commands
-      { mode = 'n', keys = 'z' },        -- `z` key
-      { mode = 'x', keys = 'z' },        -- `z` key
+      { mode = 'i', keys = '<C-x>' }, -- Built-in completion
+      { mode = 'n', keys = 'g' },     -- 'g' key
+      { mode = 'x', keys = 'g' },     -- 'g' key
+      { mode = 'n', keys = "'" },     -- Marks
+      { mode = 'n', keys = '`' },     -- Marks
+      { mode = 'x', keys = "'" },     -- Marks
+      { mode = 'x', keys = '`' },     -- Marks
+      { mode = 'n', keys = '"' },     -- Registers
+      { mode = 'x', keys = '"' },     -- Registers
+      { mode = 'i', keys = '<C-r>' }, -- Registers
+      { mode = 'c', keys = '<C-r>' }, -- Registers
+      { mode = 'n', keys = '<C-w>' }, -- Window commands
+      { mode = 'n', keys = 'z' },     -- `z` key
+      { mode = 'x', keys = 'z' },     -- `z` key
     },
     clues = {
       miniclue.gen_clues.builtin_completion(),
@@ -207,13 +210,31 @@ later(function()
   require('render-markdown').setup()
 end)
 
+now(function()
+  add({ source = "epwalsh/obsidian.nvim", checkout = '*' })
+  require("obsidian").setup({
+    workspaces = {
+      {
+        name = "buf-parent",
+        path = function()
+          return assert(vim.fs.dirname(vim.api.nvim_buf_get_name(0)))
+        end,
+      },
+      --   {
+      --     name="personal",
+      --     path="~/valuts/personal"
+      --   }
+    }
+  })
+end)
+
 --##############################################################################
 vim.cmd.colorscheme "catppuccin-frappe"
 vim.g.have_nerd_font = true
 vim.opt.breakindent = true               --Indent wrapped lines
 vim.opt.clipboard = 'unnamedplus'        -- Sync clipboard between OS and Neovim.
 vim.opt.colorcolumn = "120"
-vim.opt.completeopt = 'menuone,noselect' -- Set completeopt to have a better completion experience
+vim.opt.completeopt = 'menu,menuone,popup,noselect' -- Set completeopt to have a better completion experience
 vim.opt.cursorline = true
 vim.opt.expandtab = true
 vim.opt.hlsearch = false  -- Set highlight on search
@@ -354,15 +375,38 @@ vim.keymap.set("n", "<leader>th",
     vim.notify("LSP Inlay hint enabled: " .. tostring(vim.lsp.inlay_hint.is_enabled({})))
   end, { desc = '[T]oggle [H]int (LSP)' })
 
+
 vim.keymap.set("n", "<leader>ts",
   function()
-    vim.opt.spell = not(vim.opt.spell:get())
+    vim.opt.spell = not (vim.opt.spell:get())
     vim.notify("Spell Check: " .. tostring(vim.opt.spell:get()))
   end, { desc = '[T]oggle [S]pell' })
 
+vim.keymap.set("n", "<leader>tc",
+  function()
+    local old_level = vim.g.conceallevel
+    -- local new_level = math.fmod(old_level + 1, 4) --3 Is the max value
+    -- vim.g.conceallevel = new_level
+    -- vim.notify("Conceal level: " .. tostring(old_level) .. "=>" .. tostring(new_level))
+
+    vim.ui.select({ nil, 0, 1, 2, 3 }, {
+      prompt = 'Select Conceal Level',
+      format_item = function(item)
+        return "Conceal Level: " .. tostring(item)
+      end,
+    }, function(choice)
+      vim.g.conceallevel = choice
+      vim.notify("Conceal level: " .. tostring(old_level) .. "=>" .. tostring(vim.g.conceallevel))
+    end)
+  end, { desc = '[T]oggle [C]onceal level' })
+
+
+
+-- LSP Attach autocmd
 vim.api.nvim_create_autocmd('LspAttach', {
   group = vim.api.nvim_create_augroup('UserLspConfig', {}),
   callback = function(ev)
+    vim.notify("LSP Inlay hint enabled: " .. tostring(vim.lsp.inlay_hint.is_enabled({})))
     local function declaration() MiniExtra.pickers.lsp({ scope = 'declaration' }) end
     local function definition() MiniExtra.pickers.lsp({ scope = 'definition' }) end
     local function document_symbol() MiniExtra.pickers.lsp({ scope = 'document_symbol' }) end
