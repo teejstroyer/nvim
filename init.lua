@@ -16,27 +16,98 @@ end
 require('mini.deps').setup({ path = { package = path_package } })
 local add, now, later = MiniDeps.add, MiniDeps.now, MiniDeps.later
 
-now(function() add("catppuccin/nvim") end)
-now(function() add('nvim-lua/plenary.nvim') end)
+local Setup = function(plugin, functionToCall)
+  functionToCall(function()
+    require(plugin).setup()
+  end)
+end
+
+local SetupNow = function(plugin) Setup(plugin, now) end
+local SetupLater = function(plugin) Setup(plugin, later) end
+
+SetupLater('mini.ai')
+SetupLater('mini.diff')
+SetupLater('mini.indentscope')
+SetupLater('mini.splitjoin')
+SetupLater('mini.surround')
+SetupLater('mini.tabline')
+SetupNow('mini.colors')
+SetupNow('mini.completion')
+SetupNow('mini.extra')
+SetupNow('mini.statusline')
+SetupNow('mini.tabline')
+
 now(function()
   require('mini.notify').setup()
   vim.notify = require('mini.notify').make_notify()
 end)
-
-now(function() require('mini.colors').setup() end)
-now(function() require('mini.statusline').setup() end)
-now(function() require('mini.tabline').setup() end)
 now(function()
   local pick = require('mini.pick')
   pick.setup()
   vim.ui.select = pick.ui_select
 end)
+
+
+now(function()
+  require('mini.files').setup({
+    windows = {
+      max_number = math.huge,
+      preview = true,
+      width_focus = 50,
+      width_nofocus = 15,
+      width_preview = 50,
+    }
+  })
+end)
+
+later(function()
+  local miniclue = require('mini.clue')
+  miniclue.setup({
+    triggers = {
+      { mode = 'n', keys = '<Leader>' }, -- Leader
+      { mode = 'x', keys = '<Leader>' }, -- Leader
+      { mode = 'i', keys = '<C-x>' }, -- Built-in completion
+      { mode = 'n', keys = 'g' },     -- 'g' key
+      { mode = 'x', keys = 'g' },     -- 'g' key
+      { mode = 'n', keys = "'" },     -- Marks
+      { mode = 'n', keys = '`' },     -- Marks
+      { mode = 'x', keys = "'" },     -- Marks
+      { mode = 'x', keys = '`' },     -- Marks
+      { mode = 'n', keys = '"' },     -- Registers
+      { mode = 'x', keys = '"' },     -- Registers
+      { mode = 'i', keys = '<C-r>' }, -- Registers
+      { mode = 'c', keys = '<C-r>' }, -- Registers
+      { mode = 'n', keys = '<C-w>' }, -- Window commands
+      { mode = 'n', keys = 'z' },     -- `z` key
+      { mode = 'x', keys = 'z' },     -- `z` key
+    },
+    clues = {
+      miniclue.gen_clues.builtin_completion(),
+      miniclue.gen_clues.g(),
+      miniclue.gen_clues.marks(),
+      miniclue.gen_clues.registers(),
+      miniclue.gen_clues.windows(),
+      miniclue.gen_clues.z(),
+    },
+    window = {
+      config = {
+        width = "auto",
+        border = "double"
+      },
+      delay = 100,
+      scroll_down = '<C-d>',
+      scroll_up = '<C-u>',
+    },
+  })
+end)
+
 --Non Mini Plugins
+now(function() add("catppuccin/nvim") end)
+now(function() add('nvim-lua/plenary.nvim') end)
 now(function()
   add('nvim-tree/nvim-web-devicons')
   require('nvim-web-devicons').setup()
 end)
-
 now(function()
   add({
     source = 'neovim/nvim-lspconfig',
@@ -49,29 +120,31 @@ now(function()
       "jay-babu/mason-nvim-dap.nvim",
     }
   })
+end)
 
-  later(function()
-    add({
-      source = 'rcarriga/nvim-dap-ui',
-      depends = { "mfussenegger/nvim-dap", "nvim-neotest/nvim-nio" }
-    })
+later(function()
+  add({
+    source = 'rcarriga/nvim-dap-ui',
+    depends = { "mfussenegger/nvim-dap", "nvim-neotest/nvim-nio" }
+  })
 
-    require('dapui').setup()
-    local dap, dapui = require("dap"), require("dapui")
-    dap.listeners.before.attach.dapui_config = function()
-      dapui.open()
-    end
-    dap.listeners.before.launch.dapui_config = function()
-      dapui.open()
-    end
-    dap.listeners.before.event_terminated.dapui_config = function()
-      dapui.close()
-    end
-    dap.listeners.before.event_exited.dapui_config = function()
-      dapui.close()
-    end
-  end)
+  require('dapui').setup()
+  local dap, dapui = require("dap"), require("dapui")
+  dap.listeners.before.attach.dapui_config = function()
+    dapui.open()
+  end
+  dap.listeners.before.launch.dapui_config = function()
+    dapui.open()
+  end
+  dap.listeners.before.event_terminated.dapui_config = function()
+    dapui.close()
+  end
+  dap.listeners.before.event_exited.dapui_config = function()
+    dapui.close()
+  end
+end)
 
+later(function()
   require('mason').setup()
   require("mason-null-ls").setup({ handlers = {}, ensure_installed = { 'black', 'prettierd' }, automatic_installation = {} })
   require("neodev").setup({
@@ -113,66 +186,6 @@ now(function()
   }
 end)
 
-later(function() require('mini.ai').setup() end)
--- later(function() require('mini.animate').setup() end)
-later(function()
-  local miniclue = require('mini.clue')
-  miniclue.setup({
-    triggers = {
-      { mode = 'n', keys = '<Leader>' }, -- Leader
-      { mode = 'x', keys = '<Leader>' }, -- Leader
-      { mode = 'i', keys = '<C-x>' }, -- Built-in completion
-      { mode = 'n', keys = 'g' },     -- 'g' key
-      { mode = 'x', keys = 'g' },     -- 'g' key
-      { mode = 'n', keys = "'" },     -- Marks
-      { mode = 'n', keys = '`' },     -- Marks
-      { mode = 'x', keys = "'" },     -- Marks
-      { mode = 'x', keys = '`' },     -- Marks
-      { mode = 'n', keys = '"' },     -- Registers
-      { mode = 'x', keys = '"' },     -- Registers
-      { mode = 'i', keys = '<C-r>' }, -- Registers
-      { mode = 'c', keys = '<C-r>' }, -- Registers
-      { mode = 'n', keys = '<C-w>' }, -- Window commands
-      { mode = 'n', keys = 'z' },     -- `z` key
-      { mode = 'x', keys = 'z' },     -- `z` key
-    },
-    clues = {
-      miniclue.gen_clues.builtin_completion(),
-      miniclue.gen_clues.g(),
-      miniclue.gen_clues.marks(),
-      miniclue.gen_clues.registers(),
-      miniclue.gen_clues.windows(),
-      miniclue.gen_clues.z(),
-    },
-    window = {
-      config = {
-        width = "auto",
-        border = "double"
-      },
-      delay = 100,
-      scroll_down = '<C-d>',
-      scroll_up = '<C-u>',
-    },
-  })
-end)
-later(function() require('mini.diff').setup() end)
-later(function() require('mini.indentscope').setup() end)
-later(function() require('mini.splitjoin').setup() end)
-later(function() require('mini.surround').setup() end)
-later(function() require('mini.tabline').setup() end)
-now(function() require('mini.completion').setup() end)
-now(function() require('mini.extra').setup() end)
-now(function()
-  require('mini.files').setup({
-    windows = {
-      max_number = math.huge,
-      preview = true,
-      width_focus = 50,
-      width_nofocus = 15,
-      width_preview = 50,
-    }
-  })
-end)
 
 now(function()
   add("iamcco/markdown-preview.nvim")
@@ -184,12 +197,15 @@ later(function()
     source = 'nvim-treesitter/nvim-treesitter',
     checkout = 'master',
     monitor = 'main',
+    hooks = {
+      post_checkout = function()
+        vim.cmd('TSUpdate')
+      end
+    }
   })
-
 
   add('nvim-treesitter/nvim-treesitter-context')
   add('nvim-treesitter/nvim-treesitter-textobjects')
-  vim.cmd('TSUpdate')
 
   ---@diagnostic disable-next-line: missing-fields
   require('nvim-treesitter.configs').setup({
@@ -200,32 +216,13 @@ later(function()
       additional_vim_regex_highlighting = { 'ruby' },
     },
     indent = { enable = true, disable = { 'ruby' } },
-  }
-  )
+  })
 end)
 
 later(function() add("lervag/vimtex") end)
 later(function()
   add('MeanderingProgrammer/markdown.nvim')
   require('render-markdown').setup()
-end)
-
-now(function()
-  add({ source = "epwalsh/obsidian.nvim", checkout = '*' })
-  require("obsidian").setup({
-    workspaces = {
-      {
-        name = "buf-parent",
-        path = function()
-          return assert(vim.fs.dirname(vim.api.nvim_buf_get_name(0)))
-        end,
-      },
-      --   {
-      --     name="personal",
-      --     path="~/valuts/personal"
-      --   }
-    }
-  })
 end)
 
 --##############################################################################
@@ -275,7 +272,7 @@ vim.g.vimtex_continuous = 1                -- Enable continuous compilation
 vim.g.vimtex_view_automatic = 1            -- Automatically open PDF viewer
 vim.g.vimtex_snippets_enable_autoload = 1  -- Enable snippets for faster typing (optional)
 vim.g.vimtex_compiler_latexmk = {
-  out_dir = 'out'
+out_dir = 'out'
 }
 
 --AUTO Commands
@@ -286,27 +283,27 @@ local autocmd = vim.api.nvim_create_autocmd
 local yank_group = augroup("HighlightYank", {})
 
 autocmd("TextYankPost", {
-  group = yank_group,
-  pattern = "*",
-  callback = function()
-    vim.highlight.on_yank({
-      higroup = "IncSearch",
-      timeout = 40,
-    })
-  end,
+group = yank_group,
+pattern = "*",
+callback = function()
+vim.highlight.on_yank({
+higroup = "IncSearch",
+timeout = 40,
+})
+end,
 })
 
 autocmd({ "BufWritePre" }, {
-  group = auGroupConfig,
-  pattern = "*",
-  command = [[%s/\s\+$//e]], --removes trailing whitespace
+group = auGroupConfig,
+pattern = "*",
+command = [[%s/\s\+$//e]], --removes trailing whitespace
 })
 
 --Term open auto command
 autocmd({ "TermOpen" }, {
-  group = auGroupConfig,
-  pattern = "*",
-  command = [[setlocal nonumber norelativenumber | startinsert]],
+group = auGroupConfig,
+pattern = "*",
+command = [[setlocal nonumber norelativenumber | startinsert]],
 })
 
 ----------------------------------------------------
@@ -330,7 +327,7 @@ vim.keymap.set({ "n", "v" }, "<leader>d", [["_d]], { desc = "[D]elete to buffer"
 vim.keymap.set({ "n", "v" }, "<leader>y", [["+y]], { desc = "[Y]ank to buffer" })
 --SEARCH AND REPLACE UNDER CURSOR
 vim.keymap.set("n", "<leader>s", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]],
-  { desc = "[S]ubsitute under cursor" })
+{ desc = "[S]ubsitute under cursor" })
 --FILE Explorer
 vim.keymap.set("n", "<leader>e",
   function(...)
@@ -395,9 +392,9 @@ vim.keymap.set("n", "<leader>tc",
         return "Conceal Level: " .. tostring(item)
       end,
     }, function(choice)
-      vim.g.conceallevel = choice
-      vim.notify("Conceal level: " .. tostring(old_level) .. "=>" .. tostring(vim.g.conceallevel))
-    end)
+        vim.g.conceallevel = choice
+        vim.notify("Conceal level: " .. tostring(old_level) .. "=>" .. tostring(vim.g.conceallevel))
+      end)
   end, { desc = '[T]oggle [C]onceal level' })
 
 
