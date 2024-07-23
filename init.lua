@@ -1,5 +1,6 @@
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
+
 --##############################################################################
 local path_package = vim.fn.stdpath('data') .. '/site'
 local mini_path = path_package .. '/pack/deps/start/mini.nvim'
@@ -31,6 +32,7 @@ SetupLater('mini.indentscope')
 SetupLater('mini.splitjoin')
 SetupLater('mini.surround')
 SetupLater('mini.tabline')
+SetupNow('mini.icons')
 SetupNow('mini.colors')
 SetupNow('mini.completion')
 SetupNow('mini.extra')
@@ -41,12 +43,12 @@ now(function()
   require('mini.notify').setup()
   vim.notify = require('mini.notify').make_notify()
 end)
+
 now(function()
   local pick = require('mini.pick')
   pick.setup()
   vim.ui.select = pick.ui_select
 end)
-
 
 now(function()
   require('mini.files').setup({
@@ -105,10 +107,6 @@ end)
 now(function() add("catppuccin/nvim") end)
 now(function() add('nvim-lua/plenary.nvim') end)
 now(function()
-  add('nvim-tree/nvim-web-devicons')
-  require('nvim-web-devicons').setup()
-end)
-now(function()
   add({
     source = 'neovim/nvim-lspconfig',
     depends = {
@@ -120,31 +118,7 @@ now(function()
       "jay-babu/mason-nvim-dap.nvim",
     }
   })
-end)
 
-later(function()
-  add({
-    source = 'rcarriga/nvim-dap-ui',
-    depends = { "mfussenegger/nvim-dap", "nvim-neotest/nvim-nio" }
-  })
-
-  require('dapui').setup()
-  local dap, dapui = require("dap"), require("dapui")
-  dap.listeners.before.attach.dapui_config = function()
-    dapui.open()
-  end
-  dap.listeners.before.launch.dapui_config = function()
-    dapui.open()
-  end
-  dap.listeners.before.event_terminated.dapui_config = function()
-    dapui.close()
-  end
-  dap.listeners.before.event_exited.dapui_config = function()
-    dapui.close()
-  end
-end)
-
-later(function()
   require('mason').setup()
   require("mason-null-ls").setup({ handlers = {}, ensure_installed = { 'black', 'prettierd' }, automatic_installation = {} })
   require("neodev").setup({
@@ -186,6 +160,27 @@ later(function()
   }
 end)
 
+later(function()
+  add({
+    source = 'rcarriga/nvim-dap-ui',
+    depends = { "mfussenegger/nvim-dap", "nvim-neotest/nvim-nio" }
+  })
+
+  require('dapui').setup()
+  local dap, dapui = require("dap"), require("dapui")
+  dap.listeners.before.attach.dapui_config = function()
+    dapui.open()
+  end
+  dap.listeners.before.launch.dapui_config = function()
+    dapui.open()
+  end
+  dap.listeners.before.event_terminated.dapui_config = function()
+    dapui.close()
+  end
+  dap.listeners.before.event_exited.dapui_config = function()
+    dapui.close()
+  end
+end)
 
 now(function()
   add("iamcco/markdown-preview.nvim")
@@ -411,6 +406,7 @@ vim.api.nvim_create_autocmd('LspAttach', {
     local function references() MiniExtra.pickers.lsp({ scope = 'references' }) end
     local function type_definition() MiniExtra.pickers.lsp({ scope = 'type_definition' }) end
     local function workspace_symbol() MiniExtra.pickers.lsp({ scope = 'workspace_symbol' }) end
+
     -- Enable completion triggered by <c-x><c-o>
     vim.bo[ev.buf].omnifunc = 'v:lua.vim.lsp.omnifunc'
     --Staple Keymap
@@ -435,7 +431,7 @@ vim.api.nvim_create_autocmd('LspAttach', {
     vim.keymap.set('n', '<leader>gd', type_definition, { buffer = ev.buf, desc = '[G]oto Type [D]efinition' })
     vim.keymap.set('n', 'gI', implementation, { buffer = ev.buf, desc = '[G]oto [I]mplementation' })
     vim.keymap.set('n', 'gd', definition, { buffer = ev.buf, desc = '[G]oto [D]efinition' })
-    vim.keymap.set('n', 'gr', references, { buffer = ev.buf, desc = '[G]oto [R]eferences' })
+    vim.keymap.set('n', 'grr', vim.lsp.buf.references, { buffer = ev.buf, desc = '[G]oto [R]eferences' })
     -- Create a command `:Format` local to the LSP buffer
     vim.api.nvim_buf_create_user_command(ev.buf, 'Format', vim.lsp.buf.format,
       { desc = 'Format current buffer with LSP' })
