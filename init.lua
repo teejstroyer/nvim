@@ -1,6 +1,12 @@
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
+--Creates a server in the cache  on boot, useful for Godot
+--https://ericlathrop.com/2024/02/configuring-neovim-s-lsp-to-work-with-godot/
+local pipepath = vim.fn.stdpath("cache") .. "/server.pipe"
+if not vim.loop.fs_stat(pipepath) then
+  vim.fn.serverstart(pipepath)
+end
 --##############################################################################
 local path_package = vim.fn.stdpath('data') .. '/site'
 local mini_path = path_package .. '/pack/deps/start/mini.nvim'
@@ -17,50 +23,24 @@ end
 require('mini.deps').setup({ path = { package = path_package } })
 local add, now, later = MiniDeps.add, MiniDeps.now, MiniDeps.later
 
-local Setup = function(plugin, functionToCall)
-  functionToCall(function()
-    require(plugin).setup()
-  end)
-end
-
-local SetupNow = function(plugin) Setup(plugin, now) end
-local SetupLater = function(plugin) Setup(plugin, later) end
-
-SetupLater('mini.ai')
-SetupLater('mini.diff')
-SetupLater('mini.indentscope')
-SetupLater('mini.splitjoin')
-SetupLater('mini.surround')
-SetupLater('mini.tabline')
-SetupNow('mini.icons')
-SetupNow('mini.colors')
-SetupNow('mini.completion')
-SetupNow('mini.extra')
-SetupNow('mini.statusline')
-SetupNow('mini.tabline')
-
-now(function()
-  require('mini.notify').setup()
-  vim.notify = require('mini.notify').make_notify()
-end)
-
-now(function()
-  local pick = require('mini.pick')
-  pick.setup()
-  vim.ui.select = pick.ui_select
-end)
-
-now(function()
-  require('mini.files').setup({
-    windows = {
-      max_number = math.huge,
-      preview = true,
-      width_focus = 50,
-      width_nofocus = 15,
-      width_preview = 50,
-    }
-  })
-end)
+require('mini.ai').setup()
+require('mini.diff').setup()
+require('mini.indentscope').setup()
+require('mini.splitjoin').setup()
+require('mini.surround').setup()
+require('mini.tabline').setup()
+require('mini.icons').setup()
+require('mini.colors').setup()
+require('mini.completion').setup()
+require('mini.extra').setup()
+require('mini.statusline').setup()
+require('mini.tabline').setup()
+require('mini.files').setup()
+require('mini.notify').setup()
+vim.notify = require('mini.notify').make_notify()
+local pick = require('mini.pick')
+pick.setup()
+vim.ui.select = pick.ui_select
 
 later(function()
   local miniclue = require('mini.clue')
@@ -68,20 +48,20 @@ later(function()
     triggers = {
       { mode = 'n', keys = '<Leader>' }, -- Leader
       { mode = 'x', keys = '<Leader>' }, -- Leader
-      { mode = 'i', keys = '<C-x>' }, -- Built-in completion
-      { mode = 'n', keys = 'g' },     -- 'g' key
-      { mode = 'x', keys = 'g' },     -- 'g' key
-      { mode = 'n', keys = "'" },     -- Marks
-      { mode = 'n', keys = '`' },     -- Marks
-      { mode = 'x', keys = "'" },     -- Marks
-      { mode = 'x', keys = '`' },     -- Marks
-      { mode = 'n', keys = '"' },     -- Registers
-      { mode = 'x', keys = '"' },     -- Registers
-      { mode = 'i', keys = '<C-r>' }, -- Registers
-      { mode = 'c', keys = '<C-r>' }, -- Registers
-      { mode = 'n', keys = '<C-w>' }, -- Window commands
-      { mode = 'n', keys = 'z' },     -- `z` key
-      { mode = 'x', keys = 'z' },     -- `z` key
+      { mode = 'i', keys = '<C-x>' },    -- Built-in completion
+      { mode = 'n', keys = 'g' },        -- 'g' key
+      { mode = 'x', keys = 'g' },        -- 'g' key
+      { mode = 'n', keys = "'" },        -- Marks
+      { mode = 'n', keys = '`' },        -- Marks
+      { mode = 'x', keys = "'" },        -- Marks
+      { mode = 'x', keys = '`' },        -- Marks
+      { mode = 'n', keys = '"' },        -- Registers
+      { mode = 'x', keys = '"' },        -- Registers
+      { mode = 'i', keys = '<C-r>' },    -- Registers
+      { mode = 'c', keys = '<C-r>' },    -- Registers
+      { mode = 'n', keys = '<C-w>' },    -- Window commands
+      { mode = 'n', keys = 'z' },        -- `z` key
+      { mode = 'x', keys = 'z' },        -- `z` key
     },
     clues = {
       miniclue.gen_clues.builtin_completion(),
@@ -104,8 +84,9 @@ later(function()
 end)
 
 --Non Mini Plugins
-now(function() add("catppuccin/nvim") end)
-now(function() add('nvim-lua/plenary.nvim') end)
+add("catppuccin/nvim")
+add('nvim-lua/plenary.nvim')
+
 now(function()
   add({
     source = 'neovim/nvim-lspconfig',
@@ -121,9 +102,7 @@ now(function()
 
   require('mason').setup()
   require("mason-null-ls").setup({ handlers = {}, ensure_installed = { 'black', 'prettierd' }, automatic_installation = {} })
-  require("neodev").setup({
-    library = { plugins = { "nvim-dap-ui" }, types = true }
-  })
+  require("neodev").setup()
   local mason_lspconfig = require('mason-lspconfig')
   mason_lspconfig.setup {
     ensure_installed = {
@@ -160,26 +139,11 @@ now(function()
   }
 end)
 
-later(function()
+now(function()
   add({
-    source = 'rcarriga/nvim-dap-ui',
-    depends = { "mfussenegger/nvim-dap", "nvim-neotest/nvim-nio" }
+    source = "OXY2DEV/markview.nvim",
+    depends = { "nvim-treesitter/nvim-treesitter", "nvim-tree/nvim-web-devicons" }
   })
-
-  require('dapui').setup()
-  local dap, dapui = require("dap"), require("dapui")
-  dap.listeners.before.attach.dapui_config = function()
-    dapui.open()
-  end
-  dap.listeners.before.launch.dapui_config = function()
-    dapui.open()
-  end
-  dap.listeners.before.event_terminated.dapui_config = function()
-    dapui.close()
-  end
-  dap.listeners.before.event_exited.dapui_config = function()
-    dapui.close()
-  end
 end)
 
 now(function()
@@ -215,16 +179,12 @@ later(function()
 end)
 
 later(function() add("lervag/vimtex") end)
-later(function()
-  add('MeanderingProgrammer/markdown.nvim')
-  require('render-markdown').setup()
-end)
 
 --##############################################################################
 vim.cmd.colorscheme "catppuccin-frappe"
 vim.g.have_nerd_font = true
-vim.opt.breakindent = true               --Indent wrapped lines
-vim.opt.clipboard = 'unnamedplus'        -- Sync clipboard between OS and Neovim.
+vim.opt.breakindent = true                          --Indent wrapped lines
+vim.opt.clipboard = 'unnamedplus'                   -- Sync clipboard between OS and Neovim.
 vim.opt.colorcolumn = "120"
 vim.opt.completeopt = 'menu,menuone,popup,noselect' -- Set completeopt to have a better completion experience
 vim.opt.cursorline = true
@@ -256,7 +216,6 @@ vim.opt.wrap = true
 vim.opt.spelllang = 'en_us'
 vim.opt.spelloptions = "camel"
 
-
 -- LaTex Configuration
 vim.g.tex_flavor = 'latex'                 -- Default tex file format
 vim.g.vimtex_compiler_progname = 'latexmk' -- Set compiler (optional)
@@ -266,39 +225,33 @@ vim.g.vimtex_view_skim_activate = 1        -- Value 1 allows change focus to ski
 vim.g.vimtex_continuous = 1                -- Enable continuous compilation
 vim.g.vimtex_view_automatic = 1            -- Automatically open PDF viewer
 vim.g.vimtex_snippets_enable_autoload = 1  -- Enable snippets for faster typing (optional)
-vim.g.vimtex_compiler_latexmk = {
-out_dir = 'out'
-}
+vim.g.vimtex_compiler_latexmk = { out_dir = 'out' }
 
 --AUTO Commands
-local augroup = vim.api.nvim_create_augroup
-local auGroupConfig = augroup("auGroup_config", {})
+local auGroupConfig = vim.api.nvim_create_augroup("auGroup_config", {})
 
-local autocmd = vim.api.nvim_create_autocmd
-local yank_group = augroup("HighlightYank", {})
-
-autocmd("TextYankPost", {
-group = yank_group,
-pattern = "*",
-callback = function()
-vim.highlight.on_yank({
-higroup = "IncSearch",
-timeout = 40,
-})
-end,
+vim.api.nvim_create_autocmd("TextYankPost", {
+  group = vim.api.nvim_create_augroup("HighlightYank", {}),
+  pattern = "*",
+  callback = function()
+    vim.highlight.on_yank({
+      higroup = "IncSearch",
+      timeout = 40,
+    })
+  end,
 })
 
-autocmd({ "BufWritePre" }, {
-group = auGroupConfig,
-pattern = "*",
-command = [[%s/\s\+$//e]], --removes trailing whitespace
+vim.api.nvim_create_autocmd({ "BufWritePre" }, {
+  group = auGroupConfig,
+  pattern = "*",
+  command = [[%s/\s\+$//e]], --removes trailing whitespace
 })
 
 --Term open auto command
-autocmd({ "TermOpen" }, {
-group = auGroupConfig,
-pattern = "*",
-command = [[setlocal nonumber norelativenumber | startinsert]],
+vim.api.nvim_create_autocmd({ "TermOpen" }, {
+  group = auGroupConfig,
+  pattern = "*",
+  command = [[setlocal nonumber norelativenumber | startinsert]],
 })
 
 ----------------------------------------------------
@@ -322,7 +275,7 @@ vim.keymap.set({ "n", "v" }, "<leader>d", [["_d]], { desc = "[D]elete to buffer"
 vim.keymap.set({ "n", "v" }, "<leader>y", [["+y]], { desc = "[Y]ank to buffer" })
 --SEARCH AND REPLACE UNDER CURSOR
 vim.keymap.set("n", "<leader>s", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]],
-{ desc = "[S]ubsitute under cursor" })
+  { desc = "[S]ubsitute under cursor" })
 --FILE Explorer
 vim.keymap.set("n", "<leader>e",
   function(...)
@@ -350,8 +303,10 @@ vim.keymap.set("n", "<leader>fh", MiniPick.builtin.help, { desc = "[F]ind [H]elp
 vim.keymap.set("n", "<leader>fr", MiniPick.builtin.resume, { desc = "[F]ind [R]esume" })
 vim.keymap.set("n", "<leader>fe", MiniExtra.pickers.explorer, { desc = "[F]ind [E]xplore" })
 --DIAGNOSTICS
-vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = 'Go to previous diagnostic message' })
-vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { desc = 'Go to next diagnostic message' })
+vim.keymap.set('n', '[d', function() vim.diagnostic.jump({ count = 1, float = true }) end,
+  { desc = 'Go to previous diagnostic message' })
+vim.keymap.set('n', ']d', function() vim.diagnostic.jump({ count = -1, float = true }) end,
+  { desc = 'Go to next diagnostic message' })
 vim.keymap.set('n', '<leader>k', vim.diagnostic.open_float, { desc = 'Open floating diagnostic message' })
 
 --TOGGLES
@@ -377,19 +332,15 @@ vim.keymap.set("n", "<leader>ts",
 vim.keymap.set("n", "<leader>tc",
   function()
     local old_level = vim.g.conceallevel
-    -- local new_level = math.fmod(old_level + 1, 4) --3 Is the max value
-    -- vim.g.conceallevel = new_level
-    -- vim.notify("Conceal level: " .. tostring(old_level) .. "=>" .. tostring(new_level))
-
     vim.ui.select({ nil, 0, 1, 2, 3 }, {
       prompt = 'Select Conceal Level',
       format_item = function(item)
         return "Conceal Level: " .. tostring(item)
       end,
     }, function(choice)
-        vim.g.conceallevel = choice
-        vim.notify("Conceal level: " .. tostring(old_level) .. "=>" .. tostring(vim.g.conceallevel))
-      end)
+      vim.g.conceallevel = choice
+      vim.notify("Conceal level: " .. tostring(old_level) .. "=>" .. tostring(vim.g.conceallevel))
+    end)
   end, { desc = '[T]oggle [C]onceal level' })
 
 
