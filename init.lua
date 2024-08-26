@@ -1,28 +1,9 @@
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
---Creates a server in the cache  on boot, useful for Godot
---https://ericlathrop.com/2024/02/configuring-neovim-s-lsp-to-work-with-godot/
-local pipepath = vim.fn.stdpath("cache") .. "/server.pipe"
-if not vim.loop.fs_stat(pipepath) then
-  vim.fn.serverstart(pipepath)
-end
---##############################################################################
-local path_package = vim.fn.stdpath('data') .. '/site'
-local mini_path = path_package .. '/pack/deps/start/mini.nvim'
-if not vim.loop.fs_stat(mini_path) then
-  vim.cmd('echo "Installing `mini.nvim`" | redraw')
-  local clone_cmd = {
-    'git', 'clone', '--filter=blob:none',
-    'https://github.com/echasnovski/mini.nvim', mini_path
-  }
-  vim.fn.system(clone_cmd)
-  vim.cmd('packadd mini.nvim | helptags ALL')
-end
-
-require('mini.deps').setup({ path = { package = path_package } })
-local add, now, later = MiniDeps.add, MiniDeps.now, MiniDeps.later
-
+--Moved install scripts to lua/bootstrap/init.lua
+require('bootstrap').init()
+------------------------------------------
 require('mini.ai').setup()
 require('mini.diff').setup()
 require('mini.indentscope').setup()
@@ -42,143 +23,110 @@ local pick = require('mini.pick')
 pick.setup()
 vim.ui.select = pick.ui_select
 
-later(function()
-  local miniclue = require('mini.clue')
-  miniclue.setup({
-    triggers = {
-      { mode = 'n', keys = '<Leader>' }, -- Leader
-      { mode = 'x', keys = '<Leader>' }, -- Leader
-      { mode = 'i', keys = '<C-x>' },    -- Built-in completion
-      { mode = 'n', keys = 'g' },        -- 'g' key
-      { mode = 'x', keys = 'g' },        -- 'g' key
-      { mode = 'n', keys = "'" },        -- Marks
-      { mode = 'n', keys = '`' },        -- Marks
-      { mode = 'x', keys = "'" },        -- Marks
-      { mode = 'x', keys = '`' },        -- Marks
-      { mode = 'n', keys = '"' },        -- Registers
-      { mode = 'x', keys = '"' },        -- Registers
-      { mode = 'i', keys = '<C-r>' },    -- Registers
-      { mode = 'c', keys = '<C-r>' },    -- Registers
-      { mode = 'n', keys = '<C-w>' },    -- Window commands
-      { mode = 'n', keys = 'z' },        -- `z` key
-      { mode = 'x', keys = 'z' },        -- `z` key
+local miniclue = require('mini.clue')
+miniclue.setup({
+  triggers = {
+    { mode = 'n', keys = '<Leader>' }, -- Leader
+    { mode = 'x', keys = '<Leader>' }, -- Leader
+    { mode = 'i', keys = '<C-x>' },    -- Built-in completion
+    { mode = 'n', keys = 'g' },        -- 'g' key
+    { mode = 'x', keys = 'g' },        -- 'g' key
+    { mode = 'n', keys = "'" },        -- Marks
+    { mode = 'n', keys = '`' },        -- Marks
+    { mode = 'x', keys = "'" },        -- Marks
+    { mode = 'x', keys = '`' },        -- Marks
+    { mode = 'n', keys = '"' },        -- Registers
+    { mode = 'x', keys = '"' },        -- Registers
+    { mode = 'i', keys = '<C-r>' },    -- Registers
+    { mode = 'c', keys = '<C-r>' },    -- Registers
+    { mode = 'n', keys = '<C-w>' },    -- Window commands
+    { mode = 'n', keys = 'z' },        -- `z` key
+    { mode = 'x', keys = 'z' },        -- `z` key
+  },
+  clues = {
+    miniclue.gen_clues.builtin_completion(),
+    miniclue.gen_clues.g(),
+    miniclue.gen_clues.marks(),
+    miniclue.gen_clues.registers(),
+    miniclue.gen_clues.windows(),
+    miniclue.gen_clues.z(),
+  },
+  window = {
+    config = {
+      width = "auto",
+      border = "double"
     },
-    clues = {
-      miniclue.gen_clues.builtin_completion(),
-      miniclue.gen_clues.g(),
-      miniclue.gen_clues.marks(),
-      miniclue.gen_clues.registers(),
-      miniclue.gen_clues.windows(),
-      miniclue.gen_clues.z(),
-    },
-    window = {
-      config = {
-        width = "auto",
-        border = "double"
-      },
-      delay = 100,
-      scroll_down = '<C-d>',
-      scroll_up = '<C-u>',
-    },
-  })
-end)
+    delay = 100,
+    scroll_down = '<C-d>',
+    scroll_up = '<C-u>',
+  },
+})
 
---Non Mini Plugins
-add("catppuccin/nvim")
-add('nvim-lua/plenary.nvim')
-
-now(function()
-  add({
-    source = 'neovim/nvim-lspconfig',
-    depends = {
-      'williamboman/mason.nvim',
-      'williamboman/mason-lspconfig.nvim',
-      'folke/neodev.nvim',
-      "jay-babu/mason-null-ls.nvim",
-      "nvimtools/none-ls.nvim",
-      "jay-babu/mason-nvim-dap.nvim",
-    }
-  })
-
-  require('mason').setup()
-  require("mason-null-ls").setup({ handlers = {}, ensure_installed = { 'black', 'prettierd' }, automatic_installation = {} })
-  require("neodev").setup()
-  local mason_lspconfig = require('mason-lspconfig')
-  mason_lspconfig.setup {
-    ensure_installed = {
-      "angularls",
-      "bashls",
-      "eslint",
-      "lua_ls",
-      "marksman",
-      "omnisharp",
-      "pyright",
-      "tailwindcss",
-      "tsserver",
-    },
-  }
-  mason_lspconfig.setup_handlers {
-    function(server_name) -- default handler (optional)
-      require("lspconfig")[server_name].setup {}
-    end,
-    ["lua_ls"] = function()
-      local lspconfig = require("lspconfig")
-      lspconfig.lua_ls.setup {
-        settings = {
-          Lua = {
-            hint = {
-              enable = true
-            },
-            diagnostics = {
-              globals = { "vim" }
-            }
+require("null-ls").setup()
+require('mason').setup()
+require("mason-null-ls").setup({ handlers = {}, ensure_installed = { 'black', 'prettierd' }, automatic_installation = {} })
+require("neodev").setup()
+local mason_lspconfig = require('mason-lspconfig')
+mason_lspconfig.setup {
+  ensure_installed = {
+    "angularls",
+    "bashls",
+    "eslint",
+    "lua_ls",
+    "marksman",
+    "omnisharp",
+    "pyright",
+    "tailwindcss",
+    "tsserver",
+  },
+}
+mason_lspconfig.setup_handlers {
+  function(server_name) -- default handler (optional)
+    require("lspconfig")[server_name].setup {}
+  end,
+  ["lua_ls"] = function()
+    local lspconfig = require("lspconfig")
+    lspconfig.lua_ls.setup {
+      settings = {
+        Lua = {
+          hint = {
+            enable = true
+          },
+          diagnostics = {
+            globals = { "vim" }
           }
         }
       }
-    end,
-  }
-end)
-
-now(function()
-  add({
-    source = "OXY2DEV/markview.nvim",
-    depends = { "nvim-treesitter/nvim-treesitter", "nvim-tree/nvim-web-devicons" }
-  })
-end)
-
-now(function()
-  add("iamcco/markdown-preview.nvim")
-  vim.fn["mkdp#util#install"]()
-end)
-
-later(function()
-  add({
-    source = 'nvim-treesitter/nvim-treesitter',
-    checkout = 'master',
-    monitor = 'main',
-    hooks = {
-      post_checkout = function()
-        vim.cmd('TSUpdate')
-      end
     }
-  })
+  end,
+}
 
-  add('nvim-treesitter/nvim-treesitter-context')
-  add('nvim-treesitter/nvim-treesitter-textobjects')
+-- add("iamcco/markdown-preview.nvim")
+-- vim.fn["mkdp#util#install"]()
 
-  ---@diagnostic disable-next-line: missing-fields
-  require('nvim-treesitter.configs').setup({
-    ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'vim', 'vimdoc', 'c_sharp', 'angular' },
-    auto_install = true,
-    highlight = {
-      enable = true,
-      additional_vim_regex_highlighting = { 'ruby' },
-    },
-    indent = { enable = true, disable = { 'ruby' } },
-  })
-end)
+---@diagnostic disable-next-line: missing-fields
+require('nvim-treesitter.configs').setup({
+  ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'vim', 'vimdoc', 'c_sharp', 'angular' },
+  auto_install = true,
+  highlight = {
+    enable = true,
+    additional_vim_regex_highlighting = { 'ruby' },
+  },
+  indent = { enable = true, disable = { 'ruby' } },
+})
 
-later(function() add("lervag/vimtex") end)
+
+---@diagnostic disable-next-line: missing-fields
+require("image").setup({
+  backend = "ueberzug", --"ueberzug" or "kitty",
+  integrations = {},
+  max_width = 100,
+  max_height = 12,
+  max_height_window_percentage = math.huge, -- this is necessary for a good experience
+  max_width_window_percentage = math.huge,
+})
+
+-- later(function() add("lervag/vimtex") end)
 
 --##############################################################################
 vim.cmd.colorscheme "catppuccin-frappe"
@@ -282,8 +230,6 @@ vim.keymap.set("n", "<leader>e",
     if not MiniFiles.close() then MiniFiles.open(...) end
   end,
   { desc = "[E]xplore files" })
---MOVE BETWEEN WINDOW PREFIX
-vim.keymap.set("n", "<leader>w", "<C-w>", { desc = "[W]indow", silent = true })
 --WINDOW SPLITS
 vim.keymap.set("n", "<Up>", "<C-w>+", { desc = "Resize", silent = true })
 vim.keymap.set("n", "<Down>", "<C-w>-", { desc = "Resize", silent = true })
@@ -342,7 +288,6 @@ vim.keymap.set("n", "<leader>tc",
       vim.notify("Conceal level: " .. tostring(old_level) .. "=>" .. tostring(vim.g.conceallevel))
     end)
   end, { desc = '[T]oggle [C]onceal level' })
-
 
 
 -- LSP Attach autocmd
