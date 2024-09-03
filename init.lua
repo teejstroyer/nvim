@@ -106,11 +106,11 @@ mason_lspconfig.setup_handlers {
 
 ---@diagnostic disable-next-line: missing-fields
 require('nvim-treesitter.configs').setup({
-  ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'vim', 'vimdoc', 'c_sharp', 'angular' },
-  auto_install = true,
+  -- ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'vim', 'vimdoc', 'c_sharp', 'angular' },
+  -- auto_install = true,
   highlight = {
     enable = true,
-    additional_vim_regex_highlighting = { 'ruby' },
+    -- additional_vim_regex_highlighting = { 'ruby' },
   },
   indent = { enable = true, disable = { 'ruby' } },
 })
@@ -125,6 +125,9 @@ require("image").setup({
   max_height_window_percentage = math.huge, -- this is necessary for a good experience
   max_width_window_percentage = math.huge,
 })
+
+vim.g.molten_image_provider = "image.nvim"
+vim.g.molten_output_win_max_height = 20
 
 -- later(function() add("lervag/vimtex") end)
 
@@ -176,8 +179,6 @@ vim.g.vimtex_snippets_enable_autoload = 1  -- Enable snippets for faster typing 
 vim.g.vimtex_compiler_latexmk = { out_dir = 'out' }
 
 --AUTO Commands
-local auGroupConfig = vim.api.nvim_create_augroup("auGroup_config", {})
-
 vim.api.nvim_create_autocmd("TextYankPost", {
   group = vim.api.nvim_create_augroup("HighlightYank", {}),
   pattern = "*",
@@ -190,14 +191,13 @@ vim.api.nvim_create_autocmd("TextYankPost", {
 })
 
 vim.api.nvim_create_autocmd({ "BufWritePre" }, {
-  group = auGroupConfig,
+  group = vim.api.nvim_create_augroup("TrailingSpace", {}),
   pattern = "*",
   command = [[%s/\s\+$//e]], --removes trailing whitespace
 })
 
---Term open auto command
 vim.api.nvim_create_autocmd({ "TermOpen" }, {
-  group = auGroupConfig,
+  group = vim.api.nvim_create_augroup("TerminalLineNumbers", {}),
   pattern = "*",
   command = [[setlocal nonumber norelativenumber | startinsert]],
 })
