@@ -79,7 +79,6 @@ mason_lspconfig.setup {
     "omnisharp",
     "pyright",
     "tailwindcss",
-    "tsserver",
   },
 }
 mason_lspconfig.setup_handlers {
