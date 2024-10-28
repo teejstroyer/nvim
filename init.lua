@@ -4,6 +4,7 @@ vim.g.maplocalleader = ' '
 --Moved install scripts to lua/bootstrap/init.lua
 require('bootstrap').init()
 ------------------------------------------
+--
 require('mini.ai').setup()
 require('mini.colors').setup()
 require('mini.completion').setup()
@@ -15,10 +16,9 @@ require('mini.indentscope').setup()
 require('mini.notify').setup()
 require('mini.splitjoin').setup()
 require('mini.statusline').setup()
-require('mini.statusline').setup()
 require('mini.surround').setup()
 require('mini.tabline').setup()
-require('mini.tabline').setup()
+--
 vim.notify = require('mini.notify').make_notify()
 local pick = require('mini.pick')
 pick.setup()
@@ -63,7 +63,6 @@ miniclue.setup({
   },
 })
 
-require("copilot").setup({})
 require("null-ls").setup()
 require('mason').setup()
 require("mason-null-ls").setup({ handlers = {}, ensure_installed = { 'black', 'prettierd' }, automatic_installation = {} })
@@ -99,6 +98,9 @@ mason_lspconfig.setup_handlers {
         }
       }
     }
+
+    --npm install -g basics-language-server
+    -- lspconfig.basics_ls.setup{}
   end,
 }
 
@@ -119,7 +121,7 @@ require('nvim-treesitter.configs').setup({
 
 ---@diagnostic disable-next-line: missing-fields
 require("image").setup({
-  backend = "ueberzug", --"ueberzug" or "kitty",
+  backend = "kitty", --"ueberzug" or "kitty",
   integrations = {},
   max_width = 100,
   max_height = 12,
@@ -240,8 +242,7 @@ vim.keymap.set("n", "<Right>", "<C-w>>", { desc = "Resize", silent = true })
 vim.keymap.set("n", "<leader>/", MiniExtra.pickers.buf_lines, { desc = "[/] Fuzzily search in current buffer" })
 vim.keymap.set("n", "<leader><space>", MiniPick.builtin.files, { desc = "Find Files" })
 vim.keymap.set("n", "<leader>f.", MiniExtra.pickers.git_files, { desc = "[F]ind [G]it [F]iles" })
-vim.keymap.set("n", "<leader>fG", function() MiniPick.builtin.grep_live({ tool = 'git' }) end,
-  { desc = "[F]ind by [G]rep on Git Root" })
+vim.keymap.set("n", "<leader>fG", function() MiniPick.builtin.grep_live({ tool = 'git' }) end, { desc = "[F]ind by [G]rep on Git Root" })
 vim.keymap.set("n", "<leader>fb", MiniPick.builtin.buffers, { desc = "[F]ind [b]buffers" })
 vim.keymap.set("n", "<leader>fc", MiniExtra.pickers.commands, { desc = "[F]ind [C]ommands" })
 vim.keymap.set("n", "<leader>fd", MiniExtra.pickers.diagnostic, { desc = "[F]ind [D]iagnostics" })
