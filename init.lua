@@ -1,13 +1,61 @@
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
---Moved install scripts to lua/bootstrap/init.lua
-require('bootstrap').init()
+-- Creates a server in the cache  on boot, useful for Godot
+-- https://ericlathrop.com/2024/02/configuring-neovim-s-lsp-to-work-with-godot/
+local pipepath = vim.fn.stdpath("cache") .. "/server.pipe"
+if not vim.loop.fs_stat(pipepath) then
+  vim.fn.serverstart(pipepath)
+end
+
 ------------------------------------------
---
+------------------------------------------
+--Rocks.nvim install
+do
+  local install_location = vim.fs.joinpath(vim.fn.stdpath("data"), "rocks")
+  local rocks_config = { rocks_path = vim.fs.normalize(install_location), }
+
+  vim.g.rocks_nvim = rocks_config
+
+  local luarocks_path = {
+    vim.fs.joinpath(rocks_config.rocks_path, "share", "lua", "5.1", "?.lua"),
+    vim.fs.joinpath(rocks_config.rocks_path, "share", "lua", "5.1", "?", "init.lua"),
+  }
+  package.path = package.path .. ";" .. table.concat(luarocks_path, ";")
+  local luarocks_cpath = {
+    vim.fs.joinpath(rocks_config.rocks_path, "lib", "lua", "5.1", "?.so"),
+    vim.fs.joinpath(rocks_config.rocks_path, "lib64", "lua", "5.1", "?.so"),
+  }
+  package.cpath = package.cpath .. ";" .. table.concat(luarocks_cpath, ";")
+  vim.opt.runtimepath:append(vim.fs.joinpath(rocks_config.rocks_path, "lib", "luarocks", "rocks-5.1", "rocks.nvim",
+    "*"))
+end
+
+-- If rocks.nvim is not installed then install it!
+if not pcall(require, "rocks") then
+  local rocks_location = vim.fs.joinpath(vim.fn.stdpath("cache"), "rocks.nvim")
+
+  if not vim.uv.fs_stat(rocks_location) then
+    -- Pull down rocks.nvim
+    vim.fn.system({
+      "git",
+      "clone",
+      "--filter=blob:none",
+      "https://github.com/nvim-neorocks/rocks.nvim",
+      rocks_location,
+    })
+  end
+
+  -- If the clone was successful then source the bootstrapping script
+  assert(vim.v.shell_error == 0, "rocks.nvim installation failed. Try exiting and re-entering Neovim!")
+  vim.cmd.source(vim.fs.joinpath(rocks_location, "bootstrap.lua"))
+  vim.fn.delete(rocks_location, "rf")
+end
+------------------------------------------
+------------------------------------------
 require('mini.ai').setup()
 require('mini.colors').setup()
-require('mini.completion').setup()
+-- require('mini.completion').setup()
 require('mini.diff').setup()
 require('mini.extra').setup()
 require('mini.files').setup()
@@ -23,6 +71,7 @@ vim.notify = require('mini.notify').make_notify()
 local pick = require('mini.pick')
 pick.setup()
 vim.ui.select = pick.ui_select
+
 
 local miniclue = require('mini.clue')
 miniclue.setup({
@@ -51,6 +100,16 @@ miniclue.setup({
     miniclue.gen_clues.registers(),
     miniclue.gen_clues.windows(),
     miniclue.gen_clues.z(),
+    { mode = 'i', keys = '<C-x><C-f>',  desc = 'File names' },
+    { mode = 'i', keys = '<C-x><C-l>',  desc = 'Whole lines' },
+    { mode = 'i', keys = '<C-x><C-o>',  desc = 'Omni completion' },
+    { mode = 'i', keys = '<C-x><C-s>',  desc = 'Spelling suggestions' },
+    { mode = 'i', keys = '<C-x><C-u>',  desc = "With 'completefunc'" },
+    { mode = 'n', keys = '<leader>c',   desc = "Code" },
+    { mode = 'n', keys = '<leader>cw',  desc = "Code Workspace" },
+    { mode = 'n', keys = '<leader>cwf', desc = "Code Workspace Folder" },
+    { mode = 'n', keys = '<leader>t',   desc = "Toggle" },
+    { mode = 'n', keys = '<leader>f',   desc = "Find" },
   },
   window = {
     config = {
@@ -66,7 +125,6 @@ miniclue.setup({
 require("null-ls").setup()
 require('mason').setup()
 require("mason-null-ls").setup({ handlers = {}, ensure_installed = { 'black', 'prettierd' }, automatic_installation = {} })
-require("neodev").setup()
 local mason_lspconfig = require('mason-lspconfig')
 mason_lspconfig.setup {
   ensure_installed = {
@@ -80,40 +138,51 @@ mason_lspconfig.setup {
     "tailwindcss",
   },
 }
-mason_lspconfig.setup_handlers {
-  function(server_name) -- default handler (optional)
-    require("lspconfig")[server_name].setup {}
-  end,
-  ["lua_ls"] = function()
-    local lspconfig = require("lspconfig")
-    lspconfig.lua_ls.setup {
-      settings = {
-        Lua = {
-          hint = {
-            enable = true
-          },
-          diagnostics = {
-            globals = { "vim" }
-          }
+
+local server_configs = {
+  lua_ls = {
+    settings = {
+      Lua = {
+        hint = {
+          enable = true
+        },
+        diagnostics = {
+          globals = { "vim" }
         }
       }
     }
+  }
+}
 
-    --npm install -g basics-language-server
-    -- lspconfig.basics_ls.setup{}
+mason_lspconfig.setup_handlers {
+  function(server_name) -- default handler (optional)
+    local config = server_configs[server_name] or {};
+    config.capabilities = require('blink.cmp').get_lsp_capabilities(config.capabilities or {})
+
+    require("lspconfig")[server_name].setup(config)
   end,
 }
 
--- add("iamcco/markdown-preview.nvim")
--- vim.fn["mkdp#util#install"]()
+require('lazydev').setup()
+require('blink.cmp').setup({
+  sources = {
+    -- add lazydev to your completion providers
+    default = { "lazydev", "lsp", "path", "snippets", "buffer" },
+    providers = {
+      lazydev = {
+        name = "LazyDev",
+        module = "lazydev.integrations.blink",
+        -- make lazydev completions top priority (see `:h blink.cmp`)
+        score_offset = 100,
+      },
+    }
+  }
+})
 
 ---@diagnostic disable-next-line: missing-fields
 require('nvim-treesitter.configs').setup({
-  -- ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'vim', 'vimdoc', 'c_sharp', 'angular' },
-  -- auto_install = true,
   highlight = {
     enable = true,
-    -- additional_vim_regex_highlighting = { 'ruby' },
   },
   indent = { enable = true, disable = { 'ruby' } },
 })
@@ -211,7 +280,7 @@ vim.api.nvim_create_autocmd({ "TermOpen" }, {
 vim.keymap.set('n', 'k', 'gk', { silent = true }) -- Word Wrap Fix
 vim.keymap.set('n', 'j', 'gj', { silent = true }) -- Word Wrap Fix
 vim.keymap.set("n", "Q", "<nop>")                 --UNMAP to prevent hard quit
-vim.keymap.set("t", "<Esc>", "<c-\\><c-n>")       -- Excap enters normal mode for terminal
+vim.keymap.set("t", "<Esc>", "<c-\\><c-n>")       -- Escape enters normal mode for terminal
 --BUFFER
 vim.keymap.set("n", "<leader>q", ":bdelete<CR>", { desc = "[B]buffer delete" })
 vim.keymap.set("n", "<leader>l", ":bnext<CR>", { desc = "[B]buffer next" })
@@ -219,14 +288,8 @@ vim.keymap.set("n", "<leader>h", ":bprevious<CR>", { desc = "[B]buffer previous"
 --Move selection up or down
 vim.keymap.set("v", "<C-k>", ":m '<-2<cr>gv=gv")
 vim.keymap.set("v", "<C-j>", ":m '>+1<cr>gv=gv")
--- COPY/PASTE/DELETE To buffer
-vim.keymap.set("n", "<leader>Y", [["+Y]], { desc = "[Y]ank to buffer" })
-vim.keymap.set("x", "<leader>p", [["_dP]], { desc = "[P]aste to buffer" })
-vim.keymap.set({ "n", "v" }, "<leader>d", [["_d]], { desc = "[D]elete to buffer" })
-vim.keymap.set({ "n", "v" }, "<leader>y", [["+y]], { desc = "[Y]ank to buffer" })
 --SEARCH AND REPLACE UNDER CURSOR
-vim.keymap.set("n", "<leader>s", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]],
-  { desc = "[S]ubsitute under cursor" })
+vim.keymap.set("n", "<leader>s", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]], { desc = "[S]ubsitute word" })
 --FILE Explorer
 vim.keymap.set("n", "<leader>e",
   function(...)
@@ -239,22 +302,20 @@ vim.keymap.set("n", "<Down>", "<C-w>-", { desc = "Resize", silent = true })
 vim.keymap.set("n", "<Left>", "<C-w><", { desc = "Resize", silent = true })
 vim.keymap.set("n", "<Right>", "<C-w>>", { desc = "Resize", silent = true })
 -- Mini-Pick
-vim.keymap.set("n", "<leader>/", MiniExtra.pickers.buf_lines, { desc = "[/] Fuzzily search in current buffer" })
-vim.keymap.set("n", "<leader><space>", MiniPick.builtin.files, { desc = "Find Files" })
-vim.keymap.set("n", "<leader>f.", MiniExtra.pickers.git_files, { desc = "[F]ind [G]it [F]iles" })
-vim.keymap.set("n", "<leader>fG", function() MiniPick.builtin.grep_live({ tool = 'git' }) end, { desc = "[F]ind by [G]rep on Git Root" })
-vim.keymap.set("n", "<leader>fb", MiniPick.builtin.buffers, { desc = "[F]ind [b]buffers" })
-vim.keymap.set("n", "<leader>fc", MiniExtra.pickers.commands, { desc = "[F]ind [C]ommands" })
-vim.keymap.set("n", "<leader>fd", MiniExtra.pickers.diagnostic, { desc = "[F]ind [D]iagnostics" })
-vim.keymap.set("n", "<leader>fg", MiniPick.builtin.grep_live, { desc = "[F]ind by [G]rep" })
-vim.keymap.set("n", "<leader>fh", MiniPick.builtin.help, { desc = "[F]ind [H]elp" })
-vim.keymap.set("n", "<leader>fr", MiniPick.builtin.resume, { desc = "[F]ind [R]esume" })
-vim.keymap.set("n", "<leader>fe", MiniExtra.pickers.explorer, { desc = "[F]ind [E]xplore" })
+vim.keymap.set("n", "<leader>/", MiniExtra.pickers.buf_lines, { desc = "Fuzzy Grep Buffer" })
+vim.keymap.set("n", "<leader><space>", MiniPick.builtin.files, { desc = "Fuzzy Files" })
+vim.keymap.set("n", "<leader>f.", MiniExtra.pickers.git_files, { desc = "Fuzzy Git Files" })
+vim.keymap.set("n", "<leader>fG", function() MiniPick.builtin.grep_live({ tool = 'git' }) end, { desc = "Grep Git Root" })
+vim.keymap.set("n", "<leader>fb", MiniPick.builtin.buffers, { desc = "Buffers" })
+vim.keymap.set("n", "<leader>fc", MiniExtra.pickers.commands, { desc = "Commands" })
+vim.keymap.set("n", "<leader>fd", MiniExtra.pickers.diagnostic, { desc = "Diagnostics" })
+vim.keymap.set("n", "<leader>fg", MiniPick.builtin.grep_live, { desc = "Grep" })
+vim.keymap.set("n", "<leader>fh", MiniPick.builtin.help, { desc = "Help" })
+vim.keymap.set("n", "<leader>fr", MiniPick.builtin.resume, { desc = "Resume" })
+vim.keymap.set("n", "<leader>fe", MiniExtra.pickers.explorer, { desc = "Explorer" })
 --DIAGNOSTICS
-vim.keymap.set('n', '[d', function() vim.diagnostic.jump({ count = 1, float = true }) end,
-  { desc = 'Go to previous diagnostic message' })
-vim.keymap.set('n', ']d', function() vim.diagnostic.jump({ count = -1, float = true }) end,
-  { desc = 'Go to next diagnostic message' })
+vim.keymap.set('n', '[d', function() vim.diagnostic.jump({ count = 1, float = true }) end, { desc = 'Diagnostic prev' })
+vim.keymap.set('n', ']d', function() vim.diagnostic.jump({ count = -1, float = true }) end, { desc = 'Diagnostic next' })
 vim.keymap.set('n', '<leader>k', vim.diagnostic.open_float, { desc = 'Open floating diagnostic message' })
 
 --TOGGLES
@@ -262,20 +323,19 @@ vim.keymap.set("n", "<leader>tw",
   function()
     vim.cmd('set wrap!')
     vim.notify("Toggle Line Wrap")
-  end, { desc = "[T]oggle [W]rap Lines", silent = true })
+  end, { desc = "Toggle Wrap Lines", silent = true })
 
 vim.keymap.set("n", "<leader>th",
   function()
     vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled({}))
     vim.notify("LSP Inlay hint enabled: " .. tostring(vim.lsp.inlay_hint.is_enabled({})))
-  end, { desc = '[T]oggle [H]int (LSP)' })
-
+  end, { desc = 'Toggle Hint' })
 
 vim.keymap.set("n", "<leader>ts",
   function()
     vim.opt.spell = not (vim.opt.spell:get())
     vim.notify("Spell Check: " .. tostring(vim.opt.spell:get()))
-  end, { desc = '[T]oggle [S]pell' })
+  end, { desc = 'Toggle Spell' })
 
 vim.keymap.set("n", "<leader>tc",
   function()
@@ -289,49 +349,38 @@ vim.keymap.set("n", "<leader>tc",
       vim.g.conceallevel = choice
       vim.notify("Conceal level: " .. tostring(old_level) .. "=>" .. tostring(vim.g.conceallevel))
     end)
-  end, { desc = '[T]oggle [C]onceal level' })
-
+  end, { desc = 'Toggle Conceal level' })
 
 -- LSP Attach autocmd
 vim.api.nvim_create_autocmd('LspAttach', {
   group = vim.api.nvim_create_augroup('UserLspConfig', {}),
   callback = function(ev)
     vim.notify("LSP Inlay hint enabled: " .. tostring(vim.lsp.inlay_hint.is_enabled({})))
-    local function declaration() MiniExtra.pickers.lsp({ scope = 'declaration' }) end
-    local function definition() MiniExtra.pickers.lsp({ scope = 'definition' }) end
-    local function document_symbol() MiniExtra.pickers.lsp({ scope = 'document_symbol' }) end
-    local function implementation() MiniExtra.pickers.lsp({ scope = 'implementation' }) end
-    local function references() MiniExtra.pickers.lsp({ scope = 'references' }) end
-    local function type_definition() MiniExtra.pickers.lsp({ scope = 'type_definition' }) end
-    local function workspace_symbol() MiniExtra.pickers.lsp({ scope = 'workspace_symbol' }) end
-
-    -- Enable completion triggered by <c-x><c-o>
     vim.bo[ev.buf].omnifunc = 'v:lua.vim.lsp.omnifunc'
+
+    local lsp = vim.lsp.buf
+    local kmap = vim.keymap.set
+
     --Staple Keymap
-    vim.keymap.set('n', 'K', vim.lsp.buf.hover, { buffer = ev.buf, desc = 'Hover Documentation' })
+    kmap('n', 'K', lsp.hover, { buffer = ev.buf, silent = true, desc = 'Hover Documentation' })
     --Code
-    vim.keymap.set({ 'n', 'v' }, '<leader>ca', vim.lsp.buf.code_action, { buffer = ev.buf, desc = '[C]ode [A]ction' })
-    vim.keymap.set('n', '<leader>cr', vim.lsp.buf.rename, { buffer = ev.buf, desc = '[C]ode [R]ename' })
-    vim.keymap.set('n', '<leader>cf', vim.lsp.buf.format, { buffer = ev.buf, desc = '[C]ode [F]ormat' })
-    vim.keymap.set('n', '<leader>cs', vim.lsp.buf.signature_help,
-      { buffer = ev.buf, desc = '[C]ode [S]ignature Documentation' })
-    vim.keymap.set('n', '<leader>cd', document_symbol, { buffer = ev.buf, desc = '[C]ode [D]ocument Symbols' })
+    kmap({ 'n', 'v' }, '<leader>ca', lsp.code_action, { buffer = ev.buf, silent = true, desc = 'Code Action' })
+    kmap('n', '<leader>cr', lsp.rename, { buffer = ev.buf, silent = true, desc = 'Rename' })
+    kmap('n', '<leader>cf', lsp.format, { buffer = ev.buf, silent = true, desc = 'Format' })
+    kmap('n', '<leader>cs', lsp.signature_help, { buffer = ev.buf, silent = true, desc = 'Signature Documentation' })
+    kmap('n', '<leader>cd', lsp.document_symbol, { buffer = ev.buf, silent = true, desc = 'Document Symbols' })
     --Code Workspace
-    vim.keymap.set('n', '<leader>cws', workspace_symbol, { buffer = ev.buf, desc = '[C]ode [W]orkspace [S]ymbols' })
-    vim.keymap.set('n', '<leader>cwfa', vim.lsp.buf.add_workspace_folder,
-      { buffer = ev.buf, desc = '[C]ode [W]orkspace [F]older [A]dd' })
-    vim.keymap.set('n', '<leader>cwfr', vim.lsp.buf.remove_workspace_folder,
-      { buffer = ev.buf, desc = '[C]ode [W]orkspace [F]older [R]emove' })
-    vim.keymap.set('n', '<leader>cwfl', function() print(vim.inspect(vim.lsp.buf.list_workspace_folders())) end,
-      { buffer = ev.buf, desc = '[C]ode [W]orkspace [F]olders [L]ist' })
+    kmap('n', '<leader>cws', lsp.workspace_symbol, { buffer = ev.buf, silent = true, desc = 'Workspace Symbols' })
+    kmap('n', '<leader>cwfa', lsp.add_workspace_folder, { buffer = ev.buf, silent = true, desc = 'Folder Add' })
+    kmap('n', '<leader>cwfr', lsp.remove_workspace_folder, { buffer = ev.buf, silent = true, desc = 'Folder Remove' })
+    kmap('n', '<leader>cwfl', lsp.list_workspace_folders, { buffer = ev.buf, silent = true, desc = 'Folders List' })
     -- GoTos
-    vim.keymap.set('n', 'gD', declaration, { buffer = ev.buf, desc = '[G]oto [D]eclaration' })
-    vim.keymap.set('n', '<leader>gd', type_definition, { buffer = ev.buf, desc = '[G]oto Type [D]efinition' })
-    vim.keymap.set('n', 'gI', implementation, { buffer = ev.buf, desc = '[G]oto [I]mplementation' })
-    vim.keymap.set('n', 'gd', definition, { buffer = ev.buf, desc = '[G]oto [D]efinition' })
-    vim.keymap.set('n', 'grr', vim.lsp.buf.references, { buffer = ev.buf, desc = '[G]oto [R]eferences' })
+    kmap('n', 'gD', lsp.declaration, { buffer = ev.buf, silent = true, desc = 'Goto Declaration' })
+    kmap('n', '<leader>gd', lsp.type_definition, { buffer = ev.buf, silent = true, desc = 'Goto Type Definition' })
+    kmap('n', 'gI', lsp.implementation, { buffer = ev.buf, silent = true, desc = 'Goto Implementation' })
+    kmap('n', 'gd', lsp.definition, { buffer = ev.buf, silent = true, desc = 'Goto Definition' })
+    kmap('n', 'grr', lsp.references, { buffer = ev.buf, silent = true, desc = 'Goto References' })
     -- Create a command `:Format` local to the LSP buffer
-    vim.api.nvim_buf_create_user_command(ev.buf, 'Format', vim.lsp.buf.format,
-      { desc = 'Format current buffer with LSP' })
+    vim.api.nvim_buf_create_user_command(ev.buf, 'Format', lsp.format, { desc = 'Format current buffer with LSP' })
   end,
 })
