@@ -55,17 +55,16 @@ end
 ------------------------------------------
 require('mini.ai').setup()
 require('mini.colors').setup()
--- require('mini.completion').setup()
 require('mini.diff').setup()
 require('mini.extra').setup()
 require('mini.files').setup()
 require('mini.icons').setup()
 require('mini.indentscope').setup()
 require('mini.notify').setup()
-require('mini.splitjoin').setup()
 require('mini.statusline').setup()
-require('mini.surround').setup()
 require('mini.tabline').setup()
+-- require('mini.surround').setup()
+-- require('mini.completion').setup()
 --
 vim.notify = require('mini.notify').make_notify()
 local pick = require('mini.pick')
@@ -187,7 +186,6 @@ require('nvim-treesitter.configs').setup({
   indent = { enable = true, disable = { 'ruby' } },
 })
 
-
 ---@diagnostic disable-next-line: missing-fields
 require("image").setup({
   backend = "kitty", --"ueberzug" or "kitty",
@@ -282,20 +280,16 @@ vim.keymap.set('n', 'j', 'gj', { silent = true }) -- Word Wrap Fix
 vim.keymap.set("n", "Q", "<nop>")                 --UNMAP to prevent hard quit
 vim.keymap.set("t", "<Esc>", "<c-\\><c-n>")       -- Escape enters normal mode for terminal
 --BUFFER
-vim.keymap.set("n", "<leader>q", ":bdelete<CR>", { desc = "[B]buffer delete" })
-vim.keymap.set("n", "<leader>l", ":bnext<CR>", { desc = "[B]buffer next" })
-vim.keymap.set("n", "<leader>h", ":bprevious<CR>", { desc = "[B]buffer previous" })
+vim.keymap.set("n", "<leader>q", ":bdelete<CR>", { desc = "Buffer delete" })
+vim.keymap.set("n", "<leader>l", ":bnext<CR>", { desc = "Buffer next" })
+vim.keymap.set("n", "<leader>h", ":bprevious<CR>", { desc = "Buffer previous" })
 --Move selection up or down
 vim.keymap.set("v", "<C-k>", ":m '<-2<cr>gv=gv")
 vim.keymap.set("v", "<C-j>", ":m '>+1<cr>gv=gv")
 --SEARCH AND REPLACE UNDER CURSOR
-vim.keymap.set("n", "<leader>s", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]], { desc = "[S]ubsitute word" })
+vim.keymap.set("n", "<leader>s", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]], { desc = "Subsitute word" })
 --FILE Explorer
-vim.keymap.set("n", "<leader>e",
-  function(...)
-    if not MiniFiles.close() then MiniFiles.open(...) end
-  end,
-  { desc = "[E]xplore files" })
+vim.keymap.set("n", "<leader>e", MiniFiles.open, { desc = "Explore files" })
 --WINDOW SPLITS
 vim.keymap.set("n", "<Up>", "<C-w>+", { desc = "Resize", silent = true })
 vim.keymap.set("n", "<Down>", "<C-w>-", { desc = "Resize", silent = true })
@@ -376,9 +370,9 @@ vim.api.nvim_create_autocmd('LspAttach', {
     kmap('n', '<leader>cwfl', lsp.list_workspace_folders, { buffer = ev.buf, silent = true, desc = 'Folders List' })
     -- GoTos
     kmap('n', 'gD', lsp.declaration, { buffer = ev.buf, silent = true, desc = 'Goto Declaration' })
-    kmap('n', '<leader>gd', lsp.type_definition, { buffer = ev.buf, silent = true, desc = 'Goto Type Definition' })
+    kmap('n', 'gdt', lsp.type_definition, { buffer = ev.buf, silent = true, desc = 'Goto Type Definition' })
     kmap('n', 'gI', lsp.implementation, { buffer = ev.buf, silent = true, desc = 'Goto Implementation' })
-    kmap('n', 'gd', lsp.definition, { buffer = ev.buf, silent = true, desc = 'Goto Definition' })
+    kmap('n', 'gdd', lsp.definition, { buffer = ev.buf, silent = true, desc = 'Goto Definition' })
     kmap('n', 'grr', lsp.references, { buffer = ev.buf, silent = true, desc = 'Goto References' })
     -- Create a command `:Format` local to the LSP buffer
     vim.api.nvim_buf_create_user_command(ev.buf, 'Format', lsp.format, { desc = 'Format current buffer with LSP' })
