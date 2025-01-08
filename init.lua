@@ -122,21 +122,9 @@ miniclue.setup({
 
 require("null-ls").setup()
 require('mason').setup()
-require("mason-null-ls").setup({ handlers = {}, ensure_installed = { 'black', 'prettierd' }, automatic_installation = {} })
+require("mason-null-ls").setup({ ensure_installed = nil, automatic_installation = true })
 local mason_lspconfig = require('mason-lspconfig')
-mason_lspconfig.setup {
-  ---@diagnostic disable-next-line: missing-fields
-  ensure_installed = {
-    "angularls",
-    "bashls",
-    "eslint",
-    "lua_ls",
-    "marksman",
-    "omnisharp",
-    "pyright",
-    "tailwindcss",
-  },
-}
+mason_lspconfig.setup()
 
 local server_configs = {
   lua_ls = {
