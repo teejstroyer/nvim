@@ -71,7 +71,6 @@ local pick = require('mini.pick')
 pick.setup()
 vim.ui.select = pick.ui_select
 
-
 local miniclue = require('mini.clue')
 miniclue.setup({
   triggers = {
@@ -126,6 +125,7 @@ require('mason').setup()
 require("mason-null-ls").setup({ handlers = {}, ensure_installed = { 'black', 'prettierd' }, automatic_installation = {} })
 local mason_lspconfig = require('mason-lspconfig')
 mason_lspconfig.setup {
+  ---@diagnostic disable-next-line: missing-fields
   ensure_installed = {
     "angularls",
     "bashls",
@@ -175,6 +175,17 @@ require('blink.cmp').setup({
         score_offset = 100,
       },
     }
+  },
+  completion = {
+    list = {
+      selection = function(ctx)
+        return ctx.mode == 'cmdline' and 'auto_insert' or 'preselect'
+      end
+    },
+    accept = {
+      create_undo_point = true
+    }
+
   }
 })
 
@@ -198,8 +209,6 @@ require("image").setup({
 
 vim.g.molten_image_provider = "image.nvim"
 vim.g.molten_output_win_max_height = 20
-
--- later(function() add("lervag/vimtex") end)
 
 --##############################################################################
 vim.cmd.colorscheme "catppuccin-frappe"
