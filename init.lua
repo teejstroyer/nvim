@@ -180,15 +180,7 @@ require('nvim-treesitter.configs').setup({
   indent = { enable = true, disable = { 'ruby' } },
 })
 
----@diagnostic disable-next-line: missing-fields
-require("image").setup({
-  backend = "kitty", --"ueberzug" or "kitty",
-  integrations = {},
-  max_width = 100,
-  max_height = 12,
-  max_height_window_percentage = math.huge, -- this is necessary for a good experience
-  max_width_window_percentage = math.huge,
-})
+require("image").setup()
 
 vim.g.molten_image_provider = "image.nvim"
 vim.g.molten_output_win_max_height = 20
@@ -267,63 +259,64 @@ vim.api.nvim_create_autocmd({ "TermOpen" }, {
 ----------------------------------------------------
 -- KEYMAPS
 ----------------------------------------------------
-vim.keymap.set('n', 'k', 'gk', { silent = true }) -- Word Wrap Fix
-vim.keymap.set('n', 'j', 'gj', { silent = true }) -- Word Wrap Fix
-vim.keymap.set("n", "Q", "<nop>")                 --UNMAP to prevent hard quit
-vim.keymap.set("t", "<Esc>", "<c-\\><c-n>")       -- Escape enters normal mode for terminal
+local kmap = vim.keymap.set
+kmap('n', 'k', 'gk', { silent = true }) -- Word Wrap Fix
+kmap('n', 'j', 'gj', { silent = true }) -- Word Wrap Fix
+kmap("n", "Q", "<nop>")                 --UNMAP to prevent hard quit
+kmap("t", "<Esc>", "<c-\\><c-n>")       -- Escape enters normal mode for terminal
 --BUFFER
-vim.keymap.set("n", "<leader>q", ":bdelete<CR>", { desc = "Buffer delete" })
-vim.keymap.set("n", "<leader>l", ":bnext<CR>", { desc = "Buffer next" })
-vim.keymap.set("n", "<leader>h", ":bprevious<CR>", { desc = "Buffer previous" })
+kmap("n", "<leader>q", ":bdelete<CR>", { desc = "Buffer delete" })
+kmap("n", "<leader>l", ":bnext<CR>", { desc = "Buffer next" })
+kmap("n", "<leader>h", ":bprevious<CR>", { desc = "Buffer previous" })
 --Move selection up or down
-vim.keymap.set("v", "<C-k>", ":m '<-2<cr>gv=gv")
-vim.keymap.set("v", "<C-j>", ":m '>+1<cr>gv=gv")
+kmap("v", "<C-k>", ":m '<-2<cr>gv=gv")
+kmap("v", "<C-j>", ":m '>+1<cr>gv=gv")
 --SEARCH AND REPLACE UNDER CURSOR
-vim.keymap.set("n", "<leader>s", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]], { desc = "Subsitute word" })
+kmap("n", "<leader>s", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]], { desc = "Subsitute word" })
 --FILE Explorer
-vim.keymap.set("n", "<leader>e", MiniFiles.open, { desc = "Explore files" })
+kmap("n", "<leader>e", MiniFiles.open, { desc = "Explore files" })
 --WINDOW SPLITS
-vim.keymap.set("n", "<Up>", "<C-w>+", { desc = "Resize", silent = true })
-vim.keymap.set("n", "<Down>", "<C-w>-", { desc = "Resize", silent = true })
-vim.keymap.set("n", "<Left>", "<C-w><", { desc = "Resize", silent = true })
-vim.keymap.set("n", "<Right>", "<C-w>>", { desc = "Resize", silent = true })
+kmap("n", "<Up>", "<C-w>+", { desc = "Resize", silent = true })
+kmap("n", "<Down>", "<C-w>-", { desc = "Resize", silent = true })
+kmap("n", "<Left>", "<C-w><", { desc = "Resize", silent = true })
+kmap("n", "<Right>", "<C-w>>", { desc = "Resize", silent = true })
 -- Mini-Pick
-vim.keymap.set("n", "<leader>/", MiniExtra.pickers.buf_lines, { desc = "Fuzzy Grep Buffer" })
-vim.keymap.set("n", "<leader><space>", MiniPick.builtin.files, { desc = "Fuzzy Files" })
-vim.keymap.set("n", "<leader>f.", MiniExtra.pickers.git_files, { desc = "Fuzzy Git Files" })
-vim.keymap.set("n", "<leader>fG", function() MiniPick.builtin.grep_live({ tool = 'git' }) end, { desc = "Grep Git Root" })
-vim.keymap.set("n", "<leader>fb", MiniPick.builtin.buffers, { desc = "Buffers" })
-vim.keymap.set("n", "<leader>fc", MiniExtra.pickers.commands, { desc = "Commands" })
-vim.keymap.set("n", "<leader>fd", MiniExtra.pickers.diagnostic, { desc = "Diagnostics" })
-vim.keymap.set("n", "<leader>fg", MiniPick.builtin.grep_live, { desc = "Grep" })
-vim.keymap.set("n", "<leader>fh", MiniPick.builtin.help, { desc = "Help" })
-vim.keymap.set("n", "<leader>fr", MiniPick.builtin.resume, { desc = "Resume" })
-vim.keymap.set("n", "<leader>fe", MiniExtra.pickers.explorer, { desc = "Explorer" })
+kmap("n", "<leader>/", MiniExtra.pickers.buf_lines, { desc = "Fuzzy Grep Buffer" })
+kmap("n", "<leader><space>", MiniPick.builtin.files, { desc = "Fuzzy Files" })
+kmap("n", "<leader>f.", MiniExtra.pickers.git_files, { desc = "Fuzzy Git Files" })
+kmap("n", "<leader>fG", function() MiniPick.builtin.grep_live({ tool = 'git' }) end, { desc = "Grep Git Root" })
+kmap("n", "<leader>fb", MiniPick.builtin.buffers, { desc = "Buffers" })
+kmap("n", "<leader>fc", MiniExtra.pickers.commands, { desc = "Commands" })
+kmap("n", "<leader>fd", MiniExtra.pickers.diagnostic, { desc = "Diagnostics" })
+kmap("n", "<leader>fg", MiniPick.builtin.grep_live, { desc = "Grep" })
+kmap("n", "<leader>fh", MiniPick.builtin.help, { desc = "Help" })
+kmap("n", "<leader>fr", MiniPick.builtin.resume, { desc = "Resume" })
+kmap("n", "<leader>fe", MiniExtra.pickers.explorer, { desc = "Explorer" })
 --DIAGNOSTICS
-vim.keymap.set('n', '[d', function() vim.diagnostic.jump({ count = 1, float = true }) end, { desc = 'Diagnostic prev' })
-vim.keymap.set('n', ']d', function() vim.diagnostic.jump({ count = -1, float = true }) end, { desc = 'Diagnostic next' })
-vim.keymap.set('n', '<leader>k', vim.diagnostic.open_float, { desc = 'Open floating diagnostic message' })
+kmap('n', '[d', function() vim.diagnostic.jump({ count = 1, float = true }) end, { desc = 'Diagnostic prev' })
+kmap('n', ']d', function() vim.diagnostic.jump({ count = -1, float = true }) end, { desc = 'Diagnostic next' })
+kmap('n', '<leader>k', vim.diagnostic.open_float, { desc = 'Open floating diagnostic message' })
 
 --TOGGLES
-vim.keymap.set("n", "<leader>tw",
+kmap("n", "<leader>tw",
   function()
     vim.cmd('set wrap!')
     vim.notify("Toggle Line Wrap")
   end, { desc = "Toggle Wrap Lines", silent = true })
 
-vim.keymap.set("n", "<leader>th",
+kmap("n", "<leader>th",
   function()
     vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled({}))
     vim.notify("LSP Inlay hint enabled: " .. tostring(vim.lsp.inlay_hint.is_enabled({})))
   end, { desc = 'Toggle Hint' })
 
-vim.keymap.set("n", "<leader>ts",
+kmap("n", "<leader>ts",
   function()
     vim.opt.spell = not (vim.opt.spell:get())
     vim.notify("Spell Check: " .. tostring(vim.opt.spell:get()))
   end, { desc = 'Toggle Spell' })
 
-vim.keymap.set("n", "<leader>tc",
+kmap("n", "<leader>tc",
   function()
     local old_level = vim.g.conceallevel
     vim.ui.select({ nil, 0, 1, 2, 3 }, {
@@ -345,7 +338,6 @@ vim.api.nvim_create_autocmd('LspAttach', {
     vim.bo[ev.buf].omnifunc = 'v:lua.vim.lsp.omnifunc'
 
     local lsp = vim.lsp.buf
-    local kmap = vim.keymap.set
 
     --Staple Keymap
     kmap('n', 'K', lsp.hover, { buffer = ev.buf, silent = true, desc = 'Hover Documentation' })
