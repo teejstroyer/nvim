@@ -165,28 +165,23 @@ mason_lspconfig.setup_handlers {
 require('lazydev').setup()
 require('blink.cmp').setup({
   sources = {
-    -- add lazydev to your completion providers
     default = { "lazydev", "lsp", "path", "snippets", "buffer" },
     providers = {
       lazydev = {
         name = "LazyDev",
         module = "lazydev.integrations.blink",
-        -- make lazydev completions top priority (see `:h blink.cmp`)
         score_offset = 100,
       },
     }
   },
   completion = {
-    list = {
-      selection = function(ctx)
-        return ctx.mode == 'cmdline' and 'auto_insert' or 'preselect'
-      end
-    },
     accept = {
       create_undo_point = true
-    }
-
-  }
+    },
+    documentation = { auto_show = true, auto_show_delay_ms = 500 },
+    ghost_text = { enabled = true },
+  },
+  signature = { enabled = true }
 })
 
 ---@diagnostic disable-next-line: missing-fields
@@ -236,6 +231,8 @@ vim.opt.signcolumn = "number"
 vim.opt.smartcase = true
 vim.opt.smartindent = true
 vim.opt.softtabstop = 2
+vim.opt.spelllang = 'en_us'
+vim.opt.spelloptions = "camel"
 vim.opt.swapfile = false
 vim.opt.tabstop = 2
 vim.opt.termguicolors = true
@@ -243,8 +240,6 @@ vim.opt.timeoutlen = 300
 vim.opt.undofile = true  -- Save undo history
 vim.opt.updatetime = 300 -- Decrease update time
 vim.opt.wrap = true
-vim.opt.spelllang = 'en_us'
-vim.opt.spelloptions = "camel"
 
 -- LaTex Configuration
 vim.g.tex_flavor = 'latex'                 -- Default tex file format
