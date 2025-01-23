@@ -63,65 +63,15 @@ require('mini.indentscope').setup()
 require('mini.notify').setup()
 require('mini.statusline').setup()
 require('mini.tabline').setup()
--- require('mini.surround').setup()
--- require('mini.completion').setup()
---
+
 vim.notify = require('mini.notify').make_notify()
 local pick = require('mini.pick')
 pick.setup()
 vim.ui.select = pick.ui_select
 
-local miniclue = require('mini.clue')
-miniclue.setup({
-  triggers = {
-    { mode = 'n', keys = '<Leader>' }, -- Leader
-    { mode = 'x', keys = '<Leader>' }, -- Leader
-    { mode = 'i', keys = '<C-x>' },    -- Built-in completion
-    { mode = 'n', keys = 'g' },        -- 'g' key
-    { mode = 'x', keys = 'g' },        -- 'g' key
-    { mode = 'n', keys = "'" },        -- Marks
-    { mode = 'n', keys = '`' },        -- Marks
-    { mode = 'x', keys = "'" },        -- Marks
-    { mode = 'x', keys = '`' },        -- Marks
-    { mode = 'n', keys = '"' },        -- Registers
-    { mode = 'x', keys = '"' },        -- Registers
-    { mode = 'i', keys = '<C-r>' },    -- Registers
-    { mode = 'c', keys = '<C-r>' },    -- Registers
-    { mode = 'n', keys = '<C-w>' },    -- Window commands
-    { mode = 'n', keys = 'z' },        -- `z` key
-    { mode = 'x', keys = 'z' },        -- `z` key
-  },
-  clues = {
-    miniclue.gen_clues.builtin_completion(),
-    miniclue.gen_clues.g(),
-    miniclue.gen_clues.marks(),
-    miniclue.gen_clues.registers(),
-    miniclue.gen_clues.windows(),
-    miniclue.gen_clues.z(),
-    { mode = 'i', keys = '<C-x><C-f>',  desc = 'File names' },
-    { mode = 'i', keys = '<C-x><C-l>',  desc = 'Whole lines' },
-    { mode = 'i', keys = '<C-x><C-o>',  desc = 'Omni completion' },
-    { mode = 'i', keys = '<C-x><C-s>',  desc = 'Spelling suggestions' },
-    { mode = 'i', keys = '<C-x><C-u>',  desc = "With 'completefunc'" },
-    { mode = 'n', keys = '<leader>c',   desc = "Code" },
-    { mode = 'n', keys = '<leader>cw',  desc = "Code Workspace" },
-    { mode = 'n', keys = '<leader>cwf', desc = "Code Workspace Folder" },
-    { mode = 'n', keys = '<leader>t',   desc = "Toggle" },
-    { mode = 'n', keys = '<leader>f',   desc = "Find" },
-  },
-  window = {
-    config = {
-      width = "auto",
-      border = "double"
-    },
-    delay = 100,
-    scroll_down = '<C-d>',
-    scroll_up = '<C-u>',
-  },
-})
-
 require("null-ls").setup()
 require('mason').setup()
+---@diagnostic disable-next-line: assign-type-mismatch
 require("mason-null-ls").setup({ ensure_installed = nil, automatic_installation = true })
 local mason_lspconfig = require('mason-lspconfig')
 mason_lspconfig.setup()
