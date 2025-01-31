@@ -13,27 +13,29 @@
 [plugins]
 "rocks.nvim" = "2.43.0"
 "rocks-git.nvim" = "2.5.2"
-"rocks-lazy.nvim" = "1.1.1"
+"rocks-lazy.nvim" = "1.1.2"
 "rocks-treesitter.nvim" = "1.3.0"
 "copilot.lua" = "scm"
+"diffview.nvim" = "scm"
 "image.nvim" = "1.3.0"
 "lazydev.nvim" = "1.9.0"
-"markview.nvim" = "24.0.0"
+"markview.nvim" = "25.0.3"
 "mason-lspconfig.nvim" = "scm"
 "mason.nvim" = "scm"
 "mini.nvim" = "scm"
 "none-ls.nvim" = "scm"
 "plenary.nvim" = "scm"
 "rocks-config.nvim" = "3.1.0"
+"which-key.nvim" = "3.16.0"
 neogit = "scm"
-nvim-lspconfig = "1.3.0"
-nvim-treesitter = "scm"
+nvim-lspconfig = "1.5.0"
 nvim-treesitter-context = "scm"
 nvim-treesitter-textobjects = "scm"
 tree-sitter-angular = "scm"
 tree-sitter-bash = "scm"
 tree-sitter-c = "scm"
 tree-sitter-c_sharp = "scm"
+tree-sitter-csv = "0.0.29"
 tree-sitter-diff = "scm"
 tree-sitter-html = "scm"
 tree-sitter-json = "scm"
@@ -47,9 +49,9 @@ tree-sitter-requirements = "scm"
 tree-sitter-toml = "scm"
 tree-sitter-vim = "scm"
 tree-sitter-vimdoc = "scm"
-"diffview.nvim" = "scm"
-tree-sitter-csv = "0.0.29"
-"which-key.nvim" = "3.15.0"
+
+[treesitter]
+auto_install = "prompt" # true | false
 
 [plugins."markdown-preview.nvim"]
 git = "iamcco/markdown-preview.nvim"
@@ -66,16 +68,16 @@ rev = "v2.6.0"
 
 [plugins.molten-nvim ]
 git = "benlubas/molten-nvim"
-rev = "v1.9.1"
+rev = "v1.9.2"
 
 [plugins.neorg ]
 git = "nvim-neorg/neorg"
-rev = "v9.1.1"
+rev = "v9.2.0"
 
 [plugins.vimtex]
 git = "lervag/vimtex"
-rev = "v2.15"
+rev = "v2.16"
 
 [plugins."blink.cmp"]
 git = "Saghen/blink.cmp"
-rev = "v0.10.0"
+rev = "v0.11.0"
