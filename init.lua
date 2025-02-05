@@ -123,43 +123,7 @@ require('blink.cmp').setup({
 })
 
 -- require("image").setup({backend="ueberzug"})
-require("image").setup({
-  backend = "kitty",
-  processor = "magick_rock", -- or "magick_cli"
-  integrations = {
-    markdown = {
-      enabled = true,
-      clear_in_insert_mode = false,
-      download_remote_images = true,
-      only_render_image_at_cursor = false,
-      floating_windows = false, -- if true, images will be rendered in floating markdown windows
-      filetypes = { "markdown", "vimwiki" }, -- markdown extensions (ie. quarto) can go here
-    },
-    neorg = {
-      enabled = true,
-      filetypes = { "norg" },
-    },
-    -- typst = {
-    --   enabled = true,
-    --   filetypes = { "typst" },
-    -- },
-    html = {
-      enabled = false,
-    },
-    css = {
-      enabled = false,
-    },
-  },
-  max_width = nil,
-  max_height = nil,
-  max_width_window_percentage = nil,
-  max_height_window_percentage = 50,
-  window_overlap_clear_enabled = false, -- toggles images when windows are overlapped
-  window_overlap_clear_ft_ignore = { "cmp_menu", "cmp_docs", "snacks_notif", "scrollview", "scrollview_sign" },
-  editor_only_render_when_focused = false, -- auto show/hide images when the editor gains/looses focus
-  tmux_show_only_in_active_window = false, -- auto show/hide images in the correct Tmux window (needs visual-activity off)
-  hijack_file_patterns = { "*.png", "*.jpg", "*.jpeg", "*.gif", "*.webp", "*.avif" }, -- render image files as images when opened
-})
+require("image").setup()
 
 vim.g.molten_image_provider = "image.nvim"
 vim.g.molten_output_win_max_height = 20
@@ -236,6 +200,17 @@ vim.api.nvim_create_autocmd({ "TermOpen" }, {
 })
 
 ----------------------------------------------------
+-- FUNCTIONS
+----------------------------------------------------
+function InsertDate()
+  local date = os.date("%Y-%m-%d")
+
+  vim.api.nvim_put({ date }, "", true, true)
+end
+
+vim.api.nvim_create_user_command("InsertDate", InsertDate, {})
+
+----------------------------------------------------
 -- KEYMAPS
 ----------------------------------------------------
 local kmap = vim.keymap.set
@@ -276,6 +251,9 @@ kmap('n', '[d', function() vim.diagnostic.jump({ count = 1, float = true }) end,
 kmap('n', ']d', function() vim.diagnostic.jump({ count = -1, float = true }) end, { desc = 'Diagnostic next' })
 kmap('n', '<leader>k', vim.diagnostic.open_float, { desc = 'Open floating diagnostic message' })
 
+--INSERT
+kmap('n', '<leader>id', InsertDate, { desc = 'Insert Date' })
+
 --TOGGLES
 kmap("n", "<leader>tw",
   function()
@@ -308,6 +286,7 @@ kmap("n", "<leader>tc",
       vim.notify("Conceal level: " .. tostring(old_level) .. "=>" .. tostring(vim.g.conceallevel))
     end)
   end, { desc = 'Toggle Conceal level' })
+
 
 -- LSP Attach autocmd
 vim.api.nvim_create_autocmd('LspAttach', {
