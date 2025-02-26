@@ -1,5 +1,6 @@
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ','
+vim.cmd.colorscheme "catppuccin-frappe"
 
 -- Creates a server in the cache  on boot, useful for Godot
 -- https://ericlathrop.com/2024/02/configuring-neovim-s-lsp-to-work-with-godot/
@@ -51,8 +52,10 @@ if not pcall(require, "rocks") then
   vim.cmd.source(vim.fs.joinpath(rocks_location, "bootstrap.lua"))
   vim.fn.delete(rocks_location, "rf")
 end
+
 ------------------------------------------
 ------------------------------------------
+
 require('mini.ai').setup()
 require('mini.colors').setup()
 require('mini.diff').setup()
@@ -68,6 +71,21 @@ vim.notify = require('mini.notify').make_notify()
 local pick = require('mini.pick')
 pick.setup()
 vim.ui.select = pick.ui_select
+
+local presets = require("markview.presets");
+require("markview").setup({
+  markdown = {
+    headings = presets.headings.arrowed,
+    horizontal_rules = presets.horizontal_rules.solid,
+    tables = presets.tables.rounded
+  },
+  preview = {
+    hybrid_modes = { "n", "v" },
+    edit_range = { 1, 1 }
+  }
+})
+
+
 
 require("null-ls").setup()
 require('mason').setup()
@@ -122,14 +140,24 @@ require('blink.cmp').setup({
   signature = { enabled = true }
 })
 
--- require("image").setup({backend="ueberzug"})
-require("image").setup()
+require("image").setup(
+  {
+    integrations = {
+      markdown = {
+        enabled = true,
+        clear_in_insert_mode = false,
+        download_remote_images = true,
+        only_render_image_at_cursor = false,
+        floating_windows = true, --
+      }
+    }
+  }
+)
 
 vim.g.molten_image_provider = "image.nvim"
 vim.g.molten_output_win_max_height = 20
 
 --##############################################################################
-vim.cmd.colorscheme "catppuccin-frappe"
 vim.g.have_nerd_font = true
 vim.opt.breakindent = true                          --Indent wrapped lines
 vim.opt.clipboard = 'unnamedplus'                   -- Sync clipboard between OS and Neovim.
@@ -218,6 +246,11 @@ kmap('n', 'k', 'gk', { silent = true }) -- Word Wrap Fix
 kmap('n', 'j', 'gj', { silent = true }) -- Word Wrap Fix
 kmap("n", "Q", "<nop>")                 --UNMAP to prevent hard quit
 kmap("t", "<Esc>", "<c-\\><c-n>")       -- Escape enters normal mode for terminal
+kmap("n", "<c-h>", "<c-w>h", { silent = true })
+kmap("n", "<c-j>", "<c-w>j", { silent = true })
+kmap("n", "<c-k>", "<c-w>k", { silent = true })
+kmap("n", "<c-l>", "<c-w>l", { silent = true })
+
 --BUFFER
 kmap("n", "<leader>q", ":bdelete<CR>", { desc = "Buffer delete" })
 kmap("n", "<leader>l", ":bnext<CR>", { desc = "Buffer next" })
@@ -250,10 +283,8 @@ kmap("n", "<leader>fe", MiniExtra.pickers.explorer, { desc = "Explorer" })
 kmap('n', '[d', function() vim.diagnostic.jump({ count = 1, float = true }) end, { desc = 'Diagnostic prev' })
 kmap('n', ']d', function() vim.diagnostic.jump({ count = -1, float = true }) end, { desc = 'Diagnostic next' })
 kmap('n', '<leader>k', vim.diagnostic.open_float, { desc = 'Open floating diagnostic message' })
-
 --INSERT
 kmap('n', '<leader>id', InsertDate, { desc = 'Insert Date' })
-
 --TOGGLES
 kmap("n", "<leader>tw",
   function()
@@ -292,7 +323,6 @@ kmap("n", "<leader>tc",
 vim.api.nvim_create_autocmd('LspAttach', {
   group = vim.api.nvim_create_augroup('UserLspConfig', {}),
   callback = function(ev)
-    vim.notify("LSP Inlay hint enabled: " .. tostring(vim.lsp.inlay_hint.is_enabled({})))
     vim.bo[ev.buf].omnifunc = 'v:lua.vim.lsp.omnifunc'
 
     local lsp = vim.lsp.buf
