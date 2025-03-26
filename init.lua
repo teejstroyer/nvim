@@ -2,7 +2,11 @@ vim.g.mapleader = ' '
 vim.g.maplocalleader = ','
 vim.cmd.colorscheme "catppuccin-frappe"
 
--- Creates a server in the cache  on boot, useful for Godot
+if _G.FormatOnSave == nill then
+  _G.FormatOnSave = true
+end
+
+-- Creates a server in the cache on boot, useful for Godot
 -- https://ericlathrop.com/2024/02/configuring-neovim-s-lsp-to-work-with-godot/
 local pipepath = vim.fn.stdpath("cache") .. "/server.pipe"
 if not vim.loop.fs_stat(pipepath) then
@@ -85,8 +89,6 @@ require("markview").setup({
   }
 })
 
-
-
 require("null-ls").setup()
 require('mason').setup()
 ---@diagnostic disable-next-line: assign-type-mismatch
@@ -112,8 +114,7 @@ local server_configs = {
 mason_lspconfig.setup_handlers {
   function(server_name) -- default handler (optional)
     local config = server_configs[server_name] or {};
-    config.capabilities = require('blink.cmp').get_lsp_capabilities(config.capabilities or {})
-
+    -- config.capabilities = require('blink.cmp').get_lsp_capabilities(config.capabilities or {})
     require("lspconfig")[server_name].setup(config)
   end,
 }
@@ -142,6 +143,8 @@ require('blink.cmp').setup({
 
 require("image").setup(
   {
+    backend = "kitty",
+    kitty_method = "normal",
     integrations = {
       markdown = {
         enabled = true,
@@ -154,15 +157,59 @@ require("image").setup(
   }
 )
 
-vim.g.molten_image_provider = "image.nvim"
+require("quarto").setup({
+  lspFeatures = {
+    -- NOTE: put whatever languages you want here:
+    languages = { "r", "python", "rust" },
+    chunks = "all",
+    diagnostics = {
+      enabled = true,
+      triggers = { "BufWritePost" },
+    },
+    completion = {
+      enabled = false,
+    },
+  },
+  -- keymap = {
+  --   -- NOTE: setup your own keymaps:
+  --   hover = "H",
+  --   definition = "gd",
+  --   rename = "<leader>rn",
+  --   references = "gr",
+  --   format = "<leader>gf",
+  -- },
+  codeRunner = {
+    enabled = true,
+    default_method = "molten",
+  },
+})
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "markdown",
+  callback = function()
+    require("quarto").activate()
+  end
+})
+require("jupytext").setup({
+  style = "markdown",
+  output_extension = "md",
+  force_ft = "markdown",
+})
+
+
+-- REPL and Notebook requirements
 vim.g.molten_output_win_max_height = 20
+vim.g.molten_auto_open_output = false
+vim.g.molten_image_provider = "image.nvim"
+vim.g.molten_wrap_output = true
+vim.g.molten_virt_text_output = true
+vim.g.molten_virt_lines_off_by_1 = true
 
 --##############################################################################
 vim.g.have_nerd_font = true
-vim.opt.breakindent = true                          --Indent wrapped lines
-vim.opt.clipboard = 'unnamedplus'                   -- Sync clipboard between OS and Neovim.
+vim.opt.breakindent = true        --Indent wrapped lines
+vim.opt.clipboard = 'unnamedplus' -- Sync clipboard between OS and Neovim.
 vim.opt.colorcolumn = "120"
-vim.opt.completeopt = 'menu,menuone,popup,noselect' -- Set completeopt to have a better completion experience
+vim.opt.completeopt = 'fuzzy,menu,menuone,popup,noselect,preview'
 vim.opt.cursorline = true
 vim.opt.expandtab = true
 vim.opt.hlsearch = false  -- Set highlight on search
@@ -192,6 +239,11 @@ vim.opt.undofile = true  -- Save undo history
 vim.opt.updatetime = 300 -- Decrease update time
 vim.opt.wrap = true
 
+vim.diagnostic.config({
+  virtual_text = false, -- end of line text
+  virtual_lines = true
+})
+
 -- LaTex Configuration
 vim.g.tex_flavor = 'latex'                 -- Default tex file format
 vim.g.vimtex_compiler_progname = 'latexmk' -- Set compiler (optional)
@@ -208,10 +260,7 @@ vim.api.nvim_create_autocmd("TextYankPost", {
   group = vim.api.nvim_create_augroup("HighlightYank", {}),
   pattern = "*",
   callback = function()
-    vim.highlight.on_yank({
-      higroup = "IncSearch",
-      timeout = 40,
-    })
+    vim.highlight.on_yank({ higroup = "IncSearch", timeout = 40 })
   end,
 })
 
@@ -233,7 +282,7 @@ vim.api.nvim_create_autocmd({ "TermOpen" }, {
 function InsertDate()
   local date = os.date("%Y-%m-%d")
 
-  vim.api.nvim_put({ date }, "", true, true)
+  vim.api.nvim_put({ tostring(date) }, "", true, true)
 end
 
 vim.api.nvim_create_user_command("InsertDate", InsertDate, {})
@@ -253,8 +302,6 @@ kmap("n", "<c-l>", "<c-w>l", { silent = true })
 
 --BUFFER
 kmap("n", "<leader>q", ":bdelete<CR>", { desc = "Buffer delete" })
-kmap("n", "<leader>l", ":bnext<CR>", { desc = "Buffer next" })
-kmap("n", "<leader>h", ":bprevious<CR>", { desc = "Buffer previous" })
 --Move selection up or down
 kmap("v", "<C-k>", ":m '<-2<cr>gv=gv")
 kmap("v", "<C-j>", ":m '>+1<cr>gv=gv")
@@ -280,8 +327,6 @@ kmap("n", "<leader>fh", MiniPick.builtin.help, { desc = "Help" })
 kmap("n", "<leader>fr", MiniPick.builtin.resume, { desc = "Resume" })
 kmap("n", "<leader>fe", MiniExtra.pickers.explorer, { desc = "Explorer" })
 --DIAGNOSTICS
-kmap('n', '[d', function() vim.diagnostic.jump({ count = 1, float = true }) end, { desc = 'Diagnostic prev' })
-kmap('n', ']d', function() vim.diagnostic.jump({ count = -1, float = true }) end, { desc = 'Diagnostic next' })
 kmap('n', '<leader>k', vim.diagnostic.open_float, { desc = 'Open floating diagnostic message' })
 --INSERT
 kmap('n', '<leader>id', InsertDate, { desc = 'Insert Date' })
@@ -319,34 +364,45 @@ kmap("n", "<leader>tc",
   end, { desc = 'Toggle Conceal level' })
 
 
--- LSP Attach autocmd
+kmap("n", "<leader>tf", function()
+  _G.FormatOnSave = not _G.FormatOnSave
+  vim.notify("Format on Save: " .. tostring(_G.FormatOnSave))
+end, { desc = 'Toggle Format on Save' })
+
+-- Molten Keymap
+vim.keymap.set("n", "<localleader>e", ":MoltenEvaluateOperator<CR>", { desc = "evaluate operator", silent = true })
+vim.keymap.set("n", "<localleader>os", ":noautocmd MoltenEnterOutput<CR>", { desc = "open output window", silent = true })
+vim.keymap.set("n", "<localleader>rr", ":MoltenReevaluateCell<CR>", { desc = "re-eval cell", silent = true })
+vim.keymap.set("v", "<localleader>r", ":<C-u>MoltenEvaluateVisual<CR>gv",
+  { desc = "execute visual selection", silent = true })
+vim.keymap.set("n", "<localleader>oh", ":MoltenHideOutput<CR>", { desc = "close output window", silent = true })
+vim.keymap.set("n", "<localleader>md", ":MoltenDelete<CR>", { desc = "delete Molten cell", silent = true })
+vim.keymap.set("n", "<localleader>mx", ":MoltenOpenInBrowser<CR>", { desc = "open output in browser", silent = true })
+
+local runner = require("quarto.runner")
+vim.keymap.set("n", "<localleader>rc", runner.run_cell, { desc = "run cell", silent = true })
+vim.keymap.set("n", "<localleader>ra", runner.run_above, { desc = "run cell and above", silent = true })
+vim.keymap.set("n", "<localleader>rA", runner.run_all, { desc = "run all cells", silent = true })
+vim.keymap.set("n", "<localleader>rl", runner.run_line, { desc = "run line", silent = true })
+vim.keymap.set("v", "<localleader>r", runner.run_range, { desc = "run visual range", silent = true })
+vim.keymap.set("n", "<localleader>RA", function() runner.run_all(true) end,
+  { desc = "run all cells of all languages", silent = true })
+
 vim.api.nvim_create_autocmd('LspAttach', {
-  group = vim.api.nvim_create_augroup('UserLspConfig', {}),
-  callback = function(ev)
-    vim.bo[ev.buf].omnifunc = 'v:lua.vim.lsp.omnifunc'
-
-    local lsp = vim.lsp.buf
-
-    --Staple Keymap
-    kmap('n', 'K', lsp.hover, { buffer = ev.buf, silent = true, desc = 'Hover Documentation' })
-    --Code
-    kmap({ 'n', 'v' }, '<leader>ca', lsp.code_action, { buffer = ev.buf, silent = true, desc = 'Code Action' })
-    kmap('n', '<leader>cr', lsp.rename, { buffer = ev.buf, silent = true, desc = 'Rename' })
-    kmap('n', '<leader>cf', lsp.format, { buffer = ev.buf, silent = true, desc = 'Format' })
-    kmap('n', '<leader>cs', lsp.signature_help, { buffer = ev.buf, silent = true, desc = 'Signature Documentation' })
-    kmap('n', '<leader>cd', lsp.document_symbol, { buffer = ev.buf, silent = true, desc = 'Document Symbols' })
-    --Code Workspace
-    kmap('n', '<leader>cws', lsp.workspace_symbol, { buffer = ev.buf, silent = true, desc = 'Workspace Symbols' })
-    kmap('n', '<leader>cwfa', lsp.add_workspace_folder, { buffer = ev.buf, silent = true, desc = 'Folder Add' })
-    kmap('n', '<leader>cwfr', lsp.remove_workspace_folder, { buffer = ev.buf, silent = true, desc = 'Folder Remove' })
-    kmap('n', '<leader>cwfl', lsp.list_workspace_folders, { buffer = ev.buf, silent = true, desc = 'Folders List' })
-    -- GoTos
-    kmap('n', 'gD', lsp.declaration, { buffer = ev.buf, silent = true, desc = 'Goto Declaration' })
-    kmap('n', 'gdt', lsp.type_definition, { buffer = ev.buf, silent = true, desc = 'Goto Type Definition' })
-    kmap('n', 'gI', lsp.implementation, { buffer = ev.buf, silent = true, desc = 'Goto Implementation' })
-    kmap('n', 'gdd', lsp.definition, { buffer = ev.buf, silent = true, desc = 'Goto Definition' })
-    kmap('n', 'grr', lsp.references, { buffer = ev.buf, silent = true, desc = 'Goto References' })
-    -- Create a command `:Format` local to the LSP buffer
-    vim.api.nvim_buf_create_user_command(ev.buf, 'Format', lsp.format, { desc = 'Format current buffer with LSP' })
-  end,
+  group = vim.api.nvim_create_augroup('my.lsp', {}),
+  callback = function(args)
+    local client = assert(vim.lsp.get_client_by_id(args.data.client_id))
+    if not client:supports_method('textDocument/willSaveWaitUntil')
+        and client:supports_method('textDocument/formatting') then
+      vim.api.nvim_create_autocmd('BufWritePre', {
+        group = vim.api.nvim_create_augroup('my.lsp', { clear = false }),
+        buffer = args.buf,
+        callback = function()
+          if _G.FormatOnSave then
+            vim.lsp.buf.format({ bufnr = args.buf, id = client.id, timeout_ms = 1000 })
+          end
+        end
+      })
+    end
+  end
 })

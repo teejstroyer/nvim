@@ -3,7 +3,8 @@
     "Lua.diagnostics.disable": [
         "unused-local",
         "undefined-global",
-        "undefined-field"
+        "undefined-field",
+        "param-type-mismatch"
     ],
     "Lua.diagnostics.globals": [
         "vim",
