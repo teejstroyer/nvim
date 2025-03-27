@@ -241,7 +241,9 @@ vim.opt.wrap = true
 
 vim.diagnostic.config({
   virtual_text = false, -- end of line text
-  virtual_lines = true
+  virtual_lines = {
+    current_line = true
+  }
 })
 
 -- LaTex Configuration
