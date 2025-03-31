@@ -58,7 +58,6 @@ if not pcall(require, "rocks") then
 end
 
 ------------------------------------------
-------------------------------------------
 
 require('mini.ai').setup()
 require('mini.colors').setup()
@@ -159,7 +158,6 @@ require("image").setup(
 
 require("quarto").setup({
   lspFeatures = {
-    -- NOTE: put whatever languages you want here:
     languages = { "r", "python", "rust" },
     chunks = "all",
     diagnostics = {
@@ -195,7 +193,6 @@ require("jupytext").setup({
   force_ft = "markdown",
 })
 
-
 -- REPL and Notebook requirements
 vim.g.molten_output_win_max_height = 20
 vim.g.molten_auto_open_output = false
@@ -209,7 +206,7 @@ vim.g.have_nerd_font = true
 vim.opt.breakindent = true        --Indent wrapped lines
 vim.opt.clipboard = 'unnamedplus' -- Sync clipboard between OS and Neovim.
 vim.opt.colorcolumn = "120"
-vim.opt.completeopt = 'fuzzy,menu,menuone,popup,noselect,preview'
+vim.opt.completeopt = 'menuone,fuzzy,popup,noselect,preview'
 vim.opt.cursorline = true
 vim.opt.expandtab = true
 vim.opt.hlsearch = false  -- Set highlight on search
@@ -240,10 +237,19 @@ vim.opt.updatetime = 300 -- Decrease update time
 vim.opt.wrap = true
 
 vim.diagnostic.config({
-  virtual_text = false, -- end of line text
+  virtual_text = {
+    enabled = true,
+    --current_line
+    severity = {
+      max = vim.diagnostic.severity.WARN,
+    },
+  },
   virtual_lines = {
-    current_line = true
-  }
+    enabled = true,
+    severity = {
+      min = vim.diagnostic.severity.ERROR,
+    },
+  },
 })
 
 -- LaTex Configuration
@@ -251,10 +257,10 @@ vim.g.tex_flavor = 'latex'                 -- Default tex file format
 vim.g.vimtex_compiler_progname = 'latexmk' -- Set compiler (optional)
 vim.g.vimtex_view_method = 'skim'          -- Set viewer (optional)
 vim.g.vimtex_view_skim_sync = 1
-vim.g.vimtex_view_skim_activate = 1        -- Value 1 allows change focus to skim after command `:VimtexView` is given
-vim.g.vimtex_continuous = 1                -- Enable continuous compilation
-vim.g.vimtex_view_automatic = 1            -- Automatically open PDF viewer
-vim.g.vimtex_snippets_enable_autoload = 1  -- Enable snippets for faster typing (optional)
+vim.g.vimtex_view_skim_activate = 1
+vim.g.vimtex_continuous = 1               -- Enable continuous compilation
+vim.g.vimtex_view_automatic = 1           -- Automatically open PDF viewer
+vim.g.vimtex_snippets_enable_autoload = 1 -- Enable snippets
 vim.g.vimtex_compiler_latexmk = { out_dir = 'out' }
 
 --AUTO Commands
@@ -301,7 +307,6 @@ kmap("n", "<c-h>", "<c-w>h", { silent = true })
 kmap("n", "<c-j>", "<c-w>j", { silent = true })
 kmap("n", "<c-k>", "<c-w>k", { silent = true })
 kmap("n", "<c-l>", "<c-w>l", { silent = true })
-
 --BUFFER
 kmap("n", "<leader>q", ":bdelete<CR>", { desc = "Buffer delete" })
 --Move selection up or down
