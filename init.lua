@@ -88,36 +88,9 @@ require("markview").setup({
   }
 })
 
-require("null-ls").setup()
-require('mason').setup()
----@diagnostic disable-next-line: assign-type-mismatch
-require("mason-null-ls").setup({ ensure_installed = nil, automatic_installation = true })
-local mason_lspconfig = require('mason-lspconfig')
-mason_lspconfig.setup()
-
-local server_configs = {
-  lua_ls = {
-    settings = {
-      Lua = {
-        hint = {
-          enable = true
-        },
-        diagnostics = {
-          globals = { "vim" }
-        }
-      }
-    }
-  }
-}
-
-mason_lspconfig.setup_handlers {
-  function(server_name) -- default handler (optional)
-    local config = server_configs[server_name] or {};
-    -- config.capabilities = require('blink.cmp').get_lsp_capabilities(config.capabilities or {})
-    require("lspconfig")[server_name].setup(config)
-  end,
-}
-
+vim.fn.sign_define("DapBreakpoint", { text = "🐞" })
+-- require("easy-dotnet").setup()
+require("nvim-dap-virtual-text").setup()
 require('lazydev').setup()
 require('blink.cmp').setup({
   sources = {
@@ -406,24 +379,31 @@ kmap("n", "<leader>tf", function()
   vim.notify("Format on Save: " .. tostring(_G.FormatOnSave))
 end, { desc = 'Toggle Format on Save' })
 
+-- Debug
+local dm = require("debugmaster")
+vim.keymap.set({ "n", "v" }, "<leader>d", dm.mode.toggle, { desc = "Debug Mode", nowait = true })
+-- vim.keymap.set("t", "<C-/>", "<C-\\><C-n>", { desc = "Exit terminal mode" })
+
 -- Molten Keymap
-vim.keymap.set("n", "<localleader>e", ":MoltenEvaluateOperator<CR>", { desc = "evaluate operator", silent = true })
-vim.keymap.set("n", "<localleader>os", ":noautocmd MoltenEnterOutput<CR>", { desc = "open output window", silent = true })
-vim.keymap.set("n", "<localleader>rr", ":MoltenReevaluateCell<CR>", { desc = "re-eval cell", silent = true })
-vim.keymap.set("v", "<localleader>r", ":<C-u>MoltenEvaluateVisual<CR>gv",
-  { desc = "execute visual selection", silent = true })
-vim.keymap.set("n", "<localleader>oh", ":MoltenHideOutput<CR>", { desc = "close output window", silent = true })
-vim.keymap.set("n", "<localleader>md", ":MoltenDelete<CR>", { desc = "delete Molten cell", silent = true })
-vim.keymap.set("n", "<localleader>mx", ":MoltenOpenInBrowser<CR>", { desc = "open output in browser", silent = true })
+kmap("n", "<localleader>e", ":MoltenEvaluateOperator<CR>", { desc = "evaluate operator", silent = true })
+kmap("n", "<localleader>os", ":noautocmd MoltenEnterOutput<CR>", { desc = "open output window", silent = true })
+kmap("n", "<localleader>rr", ":MoltenReevaluateCell<CR>", { desc = "re-eval cell", silent = true })
+kmap("v", "<localleader>r", ":<C-u>MoltenEvaluateVisual<CR>gv", { desc = "execute selection", silent = true })
+kmap("n", "<localleader>oh", ":MoltenHideOutput<CR>", { desc = "close output window", silent = true })
+kmap("n", "<localleader>md", ":MoltenDelete<CR>", { desc = "delete Molten cell", silent = true })
+kmap("n", "<localleader>mx", ":MoltenOpenInBrowser<CR>", { desc = "open output in browser", silent = true })
 
 local runner = require("quarto.runner")
-vim.keymap.set("n", "<localleader>rc", runner.run_cell, { desc = "run cell", silent = true })
-vim.keymap.set("n", "<localleader>ra", runner.run_above, { desc = "run cell and above", silent = true })
-vim.keymap.set("n", "<localleader>rA", runner.run_all, { desc = "run all cells", silent = true })
-vim.keymap.set("n", "<localleader>rl", runner.run_line, { desc = "run line", silent = true })
-vim.keymap.set("v", "<localleader>r", runner.run_range, { desc = "run visual range", silent = true })
-vim.keymap.set("n", "<localleader>RA", function() runner.run_all(true) end,
-  { desc = "run all cells of all languages", silent = true })
+kmap("n", "<localleader>rc", runner.run_cell, { desc = "run cell", silent = true })
+kmap("n", "<localleader>ra", runner.run_above, { desc = "run cell and above", silent = true })
+kmap("n", "<localleader>rA", runner.run_all, { desc = "run all cells", silent = true })
+kmap("n", "<localleader>rl", runner.run_line, { desc = "run line", silent = true })
+kmap("v", "<localleader>r", runner.run_range, { desc = "run visual range", silent = true })
+kmap("n", "<localleader>RA", function() runner.run_all(true) end, { desc = "run all cells of all languages", silent = true })
+
+-- Image pasting
+local imgclip = require('img-clip')
+kmap("n", "<leader>p", imgclip.pasteImage, { desc = "Paste Image", silent = true })
 
 vim.api.nvim_create_autocmd('LspAttach', {
   group = vim.api.nvim_create_augroup('my.lsp', {}),
