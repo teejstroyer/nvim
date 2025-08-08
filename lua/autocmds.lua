@@ -1,34 +1,81 @@
-----------------------------------------------------
--- AUTO Commands
-----------------------------------------------------
+-- ===========================================================================
+-- AUTO COMMANDS
+-- ===========================================================================
+-- Auto commands, or `autocmd`s, are a way to automate tasks based on events.
+-- They tell Neovim to execute a command whenever a specific event occurs,
+-- such as a file being saved (`BufWritePre`).
+--
+-- The recommended way to define an autocmd in Lua is using
+-- `vim.api.nvim_create_autocmd`.
+
+-- --- Treesitter Update Handler ---
+-- Automatically runs `:TSUpdate` when the nvim-treesitter plugin is updated.
+-- This ensures that your language parsers are always up-to-date.
+vim.api.nvim_create_autocmd('PackChanged', {
+  desc = 'Handle nvim-treesitter updates',
+  group = vim.api.nvim_create_augroup('nvim-treesitter-pack-changed-update-handler', { clear = true }),
+  callback = function(event)
+    if event.data.kind == 'update' then
+      vim.notify('nvim-treesitter updated, running TSUpdate...', vim.log.levels.INFO)
+      ---@diagnostic disable-next-line: param-type-mismatch
+      local ok = pcall(vim.cmd, 'TSUpdate')
+      if ok then
+        vim.notify('TSUpdate completed successfully!', vim.log.levels.INFO)
+      else
+        vim.notify('TSUpdate command not available yet, skipping', vim.log.levels.WARN)
+      end
+    end
+  end,
+})
+
+-- --- Highlight Yanked Text ---
+-- Briefly highlights the text that you have just yanked (copied).
+-- This provides a visual confirmation of what you've copied.
 vim.api.nvim_create_autocmd("TextYankPost", {
-  group = vim.api.nvim_create_augroup("HighlightYank", {}),
+  group = vim.api.nvim_create_augroup("HighlightYank", { clear = true }),
   pattern = "*",
   callback = function()
     vim.highlight.on_yank({ higroup = "IncSearch", timeout = 40 })
   end,
 })
 
+-- --- Remove Trailing Whitespace ---
+-- Automatically remove trailing whitespace from a file when it's saved.
+-- This helps to keep your files clean and consistent.
+-- The `%s/\s\+$//e` is a regular expression that finds and removes whitespace at the end of lines.
 vim.api.nvim_create_autocmd({ "BufWritePre" }, {
-  group = vim.api.nvim_create_augroup("TrailingSpace", {}),
+  group = vim.api.nvim_create_augroup("TrailingSpace", { clear = true }),
   pattern = "*",
-  command = [[%s/\s\+$//e]], --removes trailing whitespace
+  command = [[%s/\s\+$//e]],
 })
 
+-- --- Terminal Settings ---
+-- When a terminal is opened, set local options for a better experience.
+-- `setlocal nonumber norelativenumber` disables line numbers in the terminal buffer.
+-- `startinsert` automatically puts you in insert mode when you open a terminal.
 vim.api.nvim_create_autocmd({ "TermOpen" }, {
-  group = vim.api.nvim_create_augroup("TerminalLineNumbers", {}),
+  group = vim.api.nvim_create_augroup("TerminalLineNumbers", { clear = true }),
   pattern = "*",
   command = [[setlocal nonumber norelativenumber | startinsert]],
 })
 
+-- --- Format on Save ---
+-- This autocmd sets up automatic formatting on save.
+-- It works by creating a `BufWritePre` event listener *only* when a language
+-- server that supports formatting is attached to a buffer.
+-- This is a smart way to ensure that formatting is only attempted when it's possible.
+if _G.FormatOnSave == nil then
+  _G.FormatOnSave = true
+end
+
 vim.api.nvim_create_autocmd('LspAttach', {
-  group = vim.api.nvim_create_augroup('my.lsp', {}),
+  group = vim.api.nvim_create_augroup('my.lsp.format_on_save', { clear = true }),
   callback = function(args)
     local client = assert(vim.lsp.get_client_by_id(args.data.client_id))
     if not client:supports_method('textDocument/willSaveWaitUntil')
         and client:supports_method('textDocument/formatting') then
       vim.api.nvim_create_autocmd('BufWritePre', {
-        group = vim.api.nvim_create_augroup('my.lsp', { clear = false }),
+        group = vim.api.nvim_create_augroup('my.lsp.format_on_save', { clear = false }),
         buffer = args.buf,
         callback = function()
           if _G.FormatOnSave then
@@ -40,10 +87,15 @@ vim.api.nvim_create_autocmd('LspAttach', {
   end
 })
 
+-- --- Advanced Diagnostic Control ---
+-- This autocmd is a clever way to make diagnostics less visually noisy.
+-- It ensures that diagnostic virtual text (the full error message) is only
+-- hidden on the current line if there is a virtual line shown for it. This
+-- prevents you from seeing the same error message twice.
 local og_virt_text
 local og_virt_line
 vim.api.nvim_create_autocmd({ 'CursorMoved', 'DiagnosticChanged' }, {
-  group = vim.api.nvim_create_augroup('diagnostic_only_virtlines', {}),
+  group = vim.api.nvim_create_augroup('diagnostic_only_virtlines', { clear = true }),
   callback = function()
     if og_virt_line == nil then
       og_virt_line = vim.diagnostic.config().virtual_lines
@@ -55,11 +107,9 @@ vim.api.nvim_create_autocmd({ 'CursorMoved', 'DiagnosticChanged' }, {
       end
       return
     end
-
     if og_virt_text == nil then
       og_virt_text = vim.diagnostic.config().virtual_text
     end
-
     local lnum = vim.api.nvim_win_get_cursor(0)[1] - 1
     if vim.tbl_isempty(vim.diagnostic.get(0, { lnum = lnum })) then
       vim.diagnostic.config({ virtual_text = og_virt_text })
@@ -69,8 +119,13 @@ vim.api.nvim_create_autocmd({ 'CursorMoved', 'DiagnosticChanged' }, {
   end
 })
 
+-- --- Redraw Diagnostics on Mode Change ---
+-- This ensures that diagnostics are updated and displayed correctly
+-- when you switch from Insert mode to Normal mode.
+-- The `pcall` function is used to safely call `vim.diagnostic.show`,
+-- which might not always be available.
 vim.api.nvim_create_autocmd('ModeChanged', {
-  group = vim.api.nvim_create_augroup('diagnostic_redraw', {}),
+  group = vim.api.nvim_create_augroup('diagnostic_redraw', { clear = true }),
   callback = function()
     pcall(vim.diagnostic.show)
   end

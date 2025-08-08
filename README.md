@@ -13,6 +13,5 @@
            ╚═════╝ ╚═════╝ ╚═╝  ╚═══╝╚═╝     ╚═╝ ╚═════╝
 ```
 
-A Lua only **single file** Neovim config.
 
 > A constant work in progress.
