@@ -61,7 +61,6 @@ vim.api.nvim_create_autocmd({ 'CursorMoved', 'DiagnosticChanged' }, {
     end
 
     local lnum = vim.api.nvim_win_get_cursor(0)[1] - 1
-
     if vim.tbl_isempty(vim.diagnostic.get(0, { lnum = lnum })) then
       vim.diagnostic.config({ virtual_text = og_virt_text })
     else

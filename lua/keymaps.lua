@@ -19,6 +19,12 @@ kmap("v", "<C-j>", ":m '>+1<cr>gv=gv")
 kmap("n", "<leader>s", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]], { desc = "Subsitute word" })
 --FILE Explorer
 kmap("n", "<leader>e", MiniFiles.open, { desc = "Explore files" })
+
+kmap("n", "<leader>o", function()
+  vim.cmd("vsplit | wincmd l")
+  require("oil").open()
+end)
+
 --WINDOW SPLITS
 kmap("n", "<Up>", "<C-w>+", { desc = "Resize", silent = true })
 kmap("n", "<Down>", "<C-w>-", { desc = "Resize", silent = true })
@@ -78,9 +84,6 @@ kmap("n", "<leader>tf", function()
   vim.notify("Format on Save: " .. tostring(_G.FormatOnSave))
 end, { desc = 'Toggle Format on Save' })
 
--- Debug
-local dm = require("debugmaster")
-kmap({ "n", "v" }, "<leader>d", dm.mode.toggle, { desc = "Debug Mode", nowait = true })
 
-local imgclip = require('img-clip')
-kmap("n", "<leader>p", imgclip.pasteImage, { desc = "Paste Image", silent = true })
+vim.pack.add({ 'https://github.com/HakonHarnes/img-clip.nvim'})
+kmap("n", "<leader>p", require('img-clip').pasteImage, { desc = "Paste Image", silent = true })
