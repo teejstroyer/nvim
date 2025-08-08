@@ -17,10 +17,9 @@ vim.keymap.set("n", "<leader><space>", ":FzfLua<CR>", { desc = "FZF Lua" })     
 vim.keymap.set("n", "<leader>ff", fzf.files, { desc = "Find files" })                                 -- Find files in the current working directory.
 vim.keymap.set("n", "<leader>fc", fzf.commands, { desc = "Find commands" })                           -- Find and execute Neovim commands.
 vim.keymap.set("n", "<leader>fb", fzf.buffers, { desc = "Find buffers" })                             -- Find and switch to open buffers.
-vim.keymap.set("n", "<leader>fg", fzf.grep, { desc = "Find grep" })                                   -- Search for a string in all files in the project.
+vim.keymap.set("n", "<leader>fg", fzf.live_grep, { desc = "Find grep" })                              -- Search for a string in all files in the project.
 vim.keymap.set("n", "<leader>fh", fzf.helptags, { desc = "Find helptags" })                           -- Search through the help documentation.
 vim.keymap.set("n", "<leader>fd", fzf.diagnostics_document, { desc = "Find diagnostics_document" })   -- Find diagnostics in the current document.
 vim.keymap.set("n", "<leader>fD", fzf.diagnostics_workspace, { desc = "Find diagnostics_workspace" }) -- Find diagnostics in the entire workspace.
 vim.keymap.set("n", "<leader>fr", fzf.resume, { desc = "Find resume" })                               -- Resume the last fzf search.
 vim.keymap.set("n", "<leader>/", fzf.lines, { desc = "Find lines" })                                  -- Search for lines in the current buffer.
-

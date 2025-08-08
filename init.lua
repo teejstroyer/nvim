@@ -67,9 +67,15 @@ vim.pack.add({
   -- Plenary.nvim is a utility library that many other plugins depend on.
   -- It provides useful functions for things like file paths and shell commands.
   'https://github.com/nvim-lua/plenary.nvim',
-  'https://github.com/sindrets/diffview.nvim',
-  'https://github.com/NeogitOrg/neogit',
 })
+
+
+--Here we add top level headings to our custom mappings and groups
+local wk = require("which-key")
+wk.add({ { "<leader>g", group = "Git" } })
+wk.add({ { "<leader>f", group = "Find" } })
+wk.add({ { "<leader>t", group = "Toggle" } })
+wk.add({ { "gr", group = "LSP Actions" } })
 
 -- ===========================================================================
 -- Modularized Configuration
@@ -93,7 +99,7 @@ require('plugins.markview')   -- Markdown previewer
 require('plugins.mini')       -- A collection of minimal, fast, and single-file plugins
 require('plugins.treesitter') -- Advanced syntax highlighting and code parsing
 require('plugins.vimtex')     -- Enhanced support for LaTeX documents
-require('plugins.git-signs')
+require('plugins.git')
 
 -- Load other core configuration files
 require('autocmds')  -- Automations that trigger on specific events
