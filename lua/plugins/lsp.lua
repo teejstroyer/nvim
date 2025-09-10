@@ -20,23 +20,32 @@
 -- This will open a window where you can manage your language servers.
 
 vim.pack.add({
-  'https://github.com/rafamadriz/friendly-snippets', -- A collection of snippets for various languages.
-  'https://github.com/neovim/nvim-lspconfig', -- The core LSP configuration plugin.
-  'https://github.com/mason-org/mason.nvim', -- The LSP installer.
-  'https://github.com/mason-org/mason-lspconfig.nvim', -- The bridge between Mason and lspconfig.
-  'https://github.com/nvimtools/none-ls.nvim', -- For non-LSP sources.
-  'https://github.com/folke/lazydev.nvim', -- For Neovim Lua API completions.
+
+  'https://github.com/neovim/nvim-lspconfig',                                          -- The core LSP configuration plugin.
+  'https://github.com/mason-org/mason.nvim',                                           -- The LSP installer.
+  'https://github.com/mason-org/mason-lspconfig.nvim',                                 -- The bridge between Mason and lspconfig.
+  'https://github.com/nvimtools/none-ls.nvim',                                         -- For non-LSP sources.
+  'https://github.com/folke/lazydev.nvim',                                             -- For Neovim Lua API completions.
+  'https://github.com/rafamadriz/friendly-snippets',                                   -- A collection of snippets for various languages.
   { src = "https://github.com/Saghen/blink.cmp", version = vim.version.range('1.*') }, -- The autocompletion engine.
 })
 
+
 -- After adding the plugins, `require()` is used to load and configure them.
 require('lazydev').setup() -- Set up lazydev.
-require('mason').setup() -- Set up Mason.
+require('mason').setup()   -- Set up Mason.
 require('mason-lspconfig').setup({
-    -- A list of language servers to ensure are installed.
-    -- You can add any language server supported by mason-lspconfig here.
-    ensure_installed = { "lua_ls" },
-  })
+  -- A list of language servers to ensure are installed.
+  -- You can add any language server supported by mason-lspconfig here.
+  ensure_installed = { "lua_ls" },
+})
+
+vim.api.nvim_create_autocmd('LspAttach', {
+  callback = function(ev)
+    -- stylua: ignore
+    vim.lsp.completion.enable(true, ev.data.client_id, ev.buf, { autotrigger = true })
+  end,
+})
 
 -- Configure blink.cmp, specifying the sources it should use for completion.
 -- By default <c-n> => next <c-p> => previous, <c-y> accepts
@@ -66,3 +75,22 @@ require('blink.cmp').setup({
 -- your LSP client has the necessary features enabled to interact with servers.
 -- This is important for getting the most out of your language servers.
 vim.lsp.config('*', { capabilities = vim.lsp.protocol.make_client_capabilities() })
+
+
+--nvim java setup needs
+vim.pack.add({
+  'https://github.com/nvim-java/nvim-java-test',
+  'https://github.com/mason-org/mason.nvim',
+  'https://github.com/nvim-java/nvim-java-core',
+  'https://github.com/nvim-java/lua-async-await',
+  'https://github.com/nvim-java/nvim-java-refactor',
+  'https://github.com/nvim-java/nvim-java-dap',
+  'https://github.com/MunifTanjim/nui.nvim',
+  'https://github.com/neovim/nvim-lspconfig',
+  'https://github.com/mfussenegger/nvim-dap',
+  'https://github.com/JavaHello/spring-boot.nvim',
+  'https://github.com/nvim-java/nvim-java',
+})
+
+require('java').setup({ jdk = { auto_install = false } })
+require('lspconfig').jdtls.setup({})

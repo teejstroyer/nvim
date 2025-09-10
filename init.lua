@@ -90,16 +90,18 @@ wk.add({ { "gr", group = "LSP Actions" } })
 
 -- Load plugin configurations
 -- Each file in `lua/plugins/` is dedicated to configuring a specific plugin.
-require('plugins.dap')        -- Debug Adapter Protocol (DAP) for debugging
-require('plugins.fzf')        -- Fuzzy finder for quickly searching files, buffers, etc.
-require('plugins.image')      -- Image viewing capabilities
-require('plugins.image-clip') -- Clipboard support for images
-require('plugins.lsp')        -- Language Server Protocol (LSP) for code intelligence
-require('plugins.markview')   -- Markdown previewer
-require('plugins.mini')       -- A collection of minimal, fast, and single-file plugins
-require('plugins.treesitter') -- Advanced syntax highlighting and code parsing
-require('plugins.vimtex')     -- Enhanced support for LaTeX documents
+require('plugins.dap')           -- Debug Adapter Protocol (DAP) for debugging
+require('plugins.fzf')           -- Fuzzy finder for quickly searching files, buffers, etc.
+require('plugins.image')         -- Image viewing capabilities
+require('plugins.image-clip')    -- Clipboard support for images
+require('plugins.lsp')           -- Language Server Protocol (LSP) for code intelligence
+require('plugins.markview')      -- Markdown previewer
+require('plugins.mini')          -- A collection of minimal, fast, and single-file plugins
+require('plugins.treesitter')    -- Advanced syntax highlighting and code parsing
+require('plugins.vimtex')        -- Enhanced support for LaTeX documents
 require('plugins.git')
+require('plugins.neotest')       --Testing integration
+require('plugins.buffer-walker') -- Utility plugin for back and next buffer navigation
 
 -- Load other core configuration files
 require('autocmds')  -- Automations that trigger on specific events
