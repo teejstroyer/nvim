@@ -101,9 +101,7 @@ require('plugins.mini')          -- A collection of minimal, fast, and single-fi
 require('plugins.treesitter')    -- Advanced syntax highlighting and code parsing
 require('plugins.vimtex')        -- Enhanced support for LaTeX documents
 require('plugins.git')
-require('plugins.neotest')       --Testing integration
 require('plugins.buffer-walker') -- Utility plugin for back and next buffer navigation
-require('plugins.quicktest')     -- Unit test
 require('plugins.fyler')
 
 -- Load other core configuration files
