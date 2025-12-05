@@ -1,0 +1,51 @@
+{
+  "plugins": {
+    "FixCursorHold.nvim": [],
+    "blink.cmp": {
+      "version": "1.0.0 - 2.0.0"
+    },
+    "buffer_walker.nvim": [],
+    "diffview.nvim": [],
+    "friendly-snippets": [],
+    "fyler.nvim": {
+      "rev": "bb8b9f3",
+      "src": "https://github.com/A7Lavinraj/fyler.nvim",
+      "version": "'stable'"
+    },
+    "fzf-lua": [],
+    "fzf-lua-frecency.nvim": [],
+    "gitsigns.nvim": [],
+    "image.nvim": [],
+    "img-clip.nvim": [],
+    "lazydev.nvim": [],
+    "lua-async-await": [],
+    "markview.nvim": [],
+    "mason-lspconfig.nvim": [],
+    "mason.nvim": [],
+    "mini.nvim": [],
+    "neogit": [],
+    "neotest": [],
+    "neotest-java": [],
+    "none-ls.nvim": [],
+    "nui.nvim": [],
+    "nvim": [],
+    "nvim-dap": [],
+    "nvim-dap-virtual-text": [],
+    "nvim-java": [],
+    "nvim-java-core": [],
+    "nvim-java-dap": [],
+    "nvim-java-refactor": [],
+    "nvim-java-test": [],
+    "nvim-lspconfig": [],
+    "nvim-nio": [],
+    "nvim-treesitter": {
+      "version": "'master'"
+    },
+    "nvim-treesitter-context": [],
+    "plenary.nvim": [],
+    "quicktest.nvim": [],
+    "spring-boot.nvim": [],
+    "vimtex": [],
+    "which-key.nvim": []
+  }
+}

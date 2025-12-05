@@ -13,7 +13,7 @@ require('mini.align').setup()       -- For interactive aligning
 require('mini.colors').setup()      -- A minimal and fast color scheme.
 -- require('mini.diff').setup()     -- A minimal and fast diff viewer.
 require('mini.extra').setup()       -- Extra functionality for other mini modules.
-require('mini.files').setup()       -- A minimal and fast file explorer.
+-- require('mini.files').setup()       -- A minimal and fast file explorer.
 require('mini.icons').setup()       -- Provides icons for other plugins.
 require('mini.indentscope').setup() -- Visualizes indentation levels.
 require('mini.notify').setup()      -- A minimal and fast notification manager.
@@ -37,4 +37,4 @@ vim.ui.select = pick.ui_select
 -- To learn more about mini.nvim, press 'gx' over the URL below.
 -- We are using mini.files, but there are many other modules available.
 -- https://github.com/echasnovski/mini.nvim
-vim.keymap.set("n", "<leader>e", function() require('mini.files').open() end, { desc = "Explore files" })
+-- vim.keymap.set("n", "<leader>e", function() require('mini.files').open() end, { desc = "Explore files" })

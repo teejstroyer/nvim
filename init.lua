@@ -75,6 +75,7 @@ local wk = require("which-key")
 wk.add({ { "<leader>g", group = "Git" } })
 wk.add({ { "<leader>f", group = "Find" } })
 wk.add({ { "<leader>t", group = "Toggle" } })
+wk.add({ { "<leader>x", group = "Test" } })
 wk.add({ { "gr", group = "LSP Actions" } })
 
 -- ===========================================================================
@@ -102,6 +103,8 @@ require('plugins.vimtex')        -- Enhanced support for LaTeX documents
 require('plugins.git')
 require('plugins.neotest')       --Testing integration
 require('plugins.buffer-walker') -- Utility plugin for back and next buffer navigation
+require('plugins.quicktest')     -- Unit test
+require('plugins.fyler')
 
 -- Load other core configuration files
 require('autocmds')  -- Automations that trigger on specific events
