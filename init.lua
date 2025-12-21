@@ -121,3 +121,5 @@ end
 if #to_remove > 0 then
   vim.pack.del(to_remove)
 end
+
+vim.pack.update({}, { force = true })
