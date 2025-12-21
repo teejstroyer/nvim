@@ -122,4 +122,9 @@ if #to_remove > 0 then
   vim.pack.del(to_remove)
 end
 
-vim.pack.update({}, { force = true })
+vim.api.nvim_create_autocmd("UIEnter", {
+  once = true,
+  callback = function()
+    vim.pack.update({}, { force = true })
+  end,
+})
