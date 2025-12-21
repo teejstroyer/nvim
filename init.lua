@@ -70,6 +70,7 @@ vim.pack.add({
 })
 
 
+
 --Here we add top level headings to our custom mappings and groups
 local wk = require("which-key")
 wk.add({ { "<leader>g", group = "Git" } })
@@ -109,3 +110,14 @@ require('autocmds')  -- Automations that trigger on specific events
 require('functions') -- Custom Lua functions
 require('options')   -- General Neovim settings
 require('keymaps')   -- Custom keybindings
+
+--CLEANUP UNUSED PLUGINS
+local to_remove = {}
+for _, plugin in ipairs(vim.pack.get()) do
+  if not plugin.active then
+    table.insert(to_remove, plugin.spec.name)
+  end
+end
+if #to_remove > 0 then
+  vim.pack.del(to_remove)
+end

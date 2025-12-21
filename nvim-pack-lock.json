@@ -1,51 +1,107 @@
 {
   "plugins": {
-    "FixCursorHold.nvim": [],
     "blink.cmp": {
+      "rev": "b19413d214068f316c78978b08264ed1c41830ec",
+      "src": "https://github.com/Saghen/blink.cmp",
       "version": "1.0.0 - 2.0.0"
     },
-    "buffer_walker.nvim": [],
-    "diffview.nvim": [],
-    "friendly-snippets": [],
+    "buffer_walker.nvim": {
+      "rev": "a4f1d09be73a26c5bfbd7fbc7aa33809306d9a48",
+      "src": "https://github.com/shorya-1012/buffer_walker.nvim"
+    },
+    "diffview.nvim": {
+      "rev": "4516612fe98ff56ae0415a259ff6361a89419b0a",
+      "src": "https://github.com/sindrets/diffview.nvim"
+    },
+    "friendly-snippets": {
+      "rev": "572f5660cf05f8cd8834e096d7b4c921ba18e175",
+      "src": "https://github.com/rafamadriz/friendly-snippets"
+    },
     "fyler.nvim": {
       "rev": "bb8b9f3",
       "src": "https://github.com/A7Lavinraj/fyler.nvim",
       "version": "'stable'"
     },
-    "fzf-lua": [],
-    "fzf-lua-frecency.nvim": [],
-    "gitsigns.nvim": [],
-    "image.nvim": [],
-    "img-clip.nvim": [],
-    "lazydev.nvim": [],
-    "lua-async-await": [],
-    "markview.nvim": [],
-    "mason-lspconfig.nvim": [],
-    "mason.nvim": [],
-    "mini.nvim": [],
-    "neogit": [],
-    "neotest": [],
-    "neotest-java": [],
-    "none-ls.nvim": [],
-    "nui.nvim": [],
-    "nvim": [],
-    "nvim-dap": [],
-    "nvim-dap-virtual-text": [],
-    "nvim-java": [],
-    "nvim-java-core": [],
-    "nvim-java-dap": [],
-    "nvim-java-refactor": [],
-    "nvim-java-test": [],
-    "nvim-lspconfig": [],
-    "nvim-nio": [],
+    "fzf-lua": {
+      "rev": "9d579feab4d3035627150e5e9b6e8fbf5e814ef6",
+      "src": "https://github.com/ibhagwan/fzf-lua"
+    },
+    "fzf-lua-frecency.nvim": {
+      "rev": "4c37d8d967a51f718af5d9556b72f16c5185c05b",
+      "src": "https://github.com/elanmed/fzf-lua-frecency.nvim"
+    },
+    "gitsigns.nvim": {
+      "rev": "5813e4878748805f1518cee7abb50fd7205a3a48",
+      "src": "https://github.com/lewis6991/gitsigns.nvim"
+    },
+    "image.nvim": {
+      "rev": "446a8a5cc7a3eae3185ee0c697732c32a5547a0b",
+      "src": "https://github.com/3rd/image.nvim"
+    },
+    "img-clip.nvim": {
+      "rev": "b6ddfb97b5600d99afe3452d707444afda658aca",
+      "src": "https://github.com/HakonHarnes/img-clip.nvim"
+    },
+    "lazydev.nvim": {
+      "rev": "5231c62aa83c2f8dc8e7ba957aa77098cda1257d",
+      "src": "https://github.com/folke/lazydev.nvim"
+    },
+    "markview.nvim": {
+      "rev": "0a5033326f703d99a8788e2d47753d6298195e8a",
+      "src": "https://github.com/OXY2DEV/markview.nvim"
+    },
+    "mason-lspconfig.nvim": {
+      "rev": "8f1a3e6eecb638817e8999aaa16ada27cd54d867",
+      "src": "https://github.com/mason-org/mason-lspconfig.nvim"
+    },
+    "mason.nvim": {
+      "rev": "57e5a8addb8c71fb063ee4acda466c7cf6ad2800",
+      "src": "https://github.com/mason-org/mason.nvim"
+    },
+    "mini.nvim": {
+      "rev": "6170f606fbdb94bf461635c47962f61dceffe496",
+      "src": "https://github.com/echasnovski/mini.nvim"
+    },
+    "neogit": {
+      "rev": "d8bf9102692250193b855acd9025a826f1af2729",
+      "src": "https://github.com/NeogitOrg/neogit"
+    },
+    "none-ls.nvim": {
+      "rev": "5abf61927023ea83031753504adb19630ba80eef",
+      "src": "https://github.com/nvimtools/none-ls.nvim"
+    },
+    "nvim": {
+      "rev": "ce8d176faa4643e026e597ae3c31db59b63cef09",
+      "src": "https://github.com/catppuccin/nvim"
+    },
+    "nvim-dap": {
+      "rev": "5860c7c501eb428d3137ee22c522828d20cca0b3",
+      "src": "https://github.com/mfussenegger/nvim-dap"
+    },
+    "nvim-dap-virtual-text": {
+      "rev": "fbdb48c2ed45f4a8293d0d483f7730d24467ccb6",
+      "src": "https://github.com/theHamsta/nvim-dap-virtual-text"
+    },
+    "nvim-lspconfig": {
+      "rev": "d20d83b3f24f5884da73a9fc92fdc47e778b8d0d",
+      "src": "https://github.com/neovim/nvim-lspconfig"
+    },
     "nvim-treesitter": {
+      "rev": "42fc28ba918343ebfd5565147a42a26580579482",
+      "src": "https://github.com/nvim-treesitter/nvim-treesitter",
       "version": "'master'"
     },
-    "nvim-treesitter-context": [],
-    "plenary.nvim": [],
-    "quicktest.nvim": [],
-    "spring-boot.nvim": [],
-    "vimtex": [],
-    "which-key.nvim": []
+    "nvim-treesitter-context": {
+      "rev": "64dd4cf3f6fd0ab17622c5ce15c91fc539c3f24a",
+      "src": "https://github.com/nvim-treesitter/nvim-treesitter-context"
+    },
+    "vimtex": {
+      "rev": "f5c37462c690da9a0d05cd12a7b9595b10b56200",
+      "src": "https://github.com/lervag/vimtex"
+    },
+    "which-key.nvim": {
+      "rev": "3aab2147e74890957785941f0c1ad87d0a44c15a",
+      "src": "https://github.com/folke/which-key.nvim"
+    }
   }
 }
