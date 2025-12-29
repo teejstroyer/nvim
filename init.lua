@@ -111,20 +111,27 @@ require('functions') -- Custom Lua functions
 require('options')   -- General Neovim settings
 require('keymaps')   -- Custom keybindings
 
---CLEANUP UNUSED PLUGINS
-local to_remove = {}
-for _, plugin in ipairs(vim.pack.get()) do
-  if not plugin.active then
-    table.insert(to_remove, plugin.spec.name)
-  end
-end
-if #to_remove > 0 then
-  vim.pack.del(to_remove)
-end
-
+--UPDATE AND CLEANUP PLUGINS
 vim.api.nvim_create_autocmd("UIEnter", {
   once = true,
   callback = function()
-    vim.pack.update({}, { force = true })
+    local updates = {}
+    local deletes = {}
+
+    for _, plugin in ipairs(vim.pack.get()) do
+      if not plugin.active then
+        table.insert(deletes, plugin.spec.name)
+      else
+        table.insert(updates, plugin.spec.name)
+      end
+    end
+
+    if #deletes > 0 then
+      vim.pack.del(deletes)
+    end
+
+    if #updates > 0 then
+      local results = vim.pack.update(updates, { force = true })
+    end
   end,
 })
