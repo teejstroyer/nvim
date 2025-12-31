@@ -40,13 +40,6 @@ require('mason-lspconfig').setup({
   ensure_installed = { "lua_ls" },
 })
 
-vim.api.nvim_create_autocmd('LspAttach', {
-  callback = function(ev)
-    -- stylua: ignore
-    vim.lsp.completion.enable(true, ev.data.client_id, ev.buf, { autotrigger = true })
-  end,
-})
-
 -- Configure blink.cmp, specifying the sources it should use for completion.
 -- By default <c-n> => next <c-p> => previous, <c-y> accepts
 require('blink.cmp').setup({

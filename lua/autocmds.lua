@@ -8,26 +8,6 @@
 -- The recommended way to define an autocmd in Lua is using
 -- `vim.api.nvim_create_autocmd`.
 
--- --- Treesitter Update Handler ---
--- Automatically runs `:TSUpdate` when the nvim-treesitter plugin is updated.
--- This ensures that your language parsers are always up-to-date.
-vim.api.nvim_create_autocmd('PackChanged', {
-  desc = 'Handle nvim-treesitter updates',
-  group = vim.api.nvim_create_augroup('nvim-treesitter-pack-changed-update-handler', { clear = true }),
-  callback = function(event)
-    if event.data.kind == 'update' then
-      vim.notify('nvim-treesitter updated, running TSUpdate...', vim.log.levels.INFO)
-      ---@diagnostic disable-next-line: param-type-mismatch
-      local ok = pcall(vim.cmd, 'TSUpdate')
-      if ok then
-        vim.notify('TSUpdate completed successfully!', vim.log.levels.INFO)
-      else
-        vim.notify('TSUpdate command not available yet, skipping', vim.log.levels.WARN)
-      end
-    end
-  end,
-})
-
 -- --- Highlight Yanked Text ---
 -- Briefly highlights the text that you have just yanked (copied).
 -- This provides a visual confirmation of what you've copied.
@@ -116,17 +96,5 @@ vim.api.nvim_create_autocmd({ 'CursorMoved', 'DiagnosticChanged' }, {
     else
       vim.diagnostic.config({ virtual_text = false })
     end
-  end
-})
-
--- --- Redraw Diagnostics on Mode Change ---
--- This ensures that diagnostics are updated and displayed correctly
--- when you switch from Insert mode to Normal mode.
--- The `pcall` function is used to safely call `vim.diagnostic.show`,
--- which might not always be available.
-vim.api.nvim_create_autocmd('ModeChanged', {
-  group = vim.api.nvim_create_augroup('diagnostic_redraw', { clear = true }),
-  callback = function()
-    pcall(vim.diagnostic.show)
   end
 })

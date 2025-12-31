@@ -73,11 +73,13 @@ vim.pack.add({
 
 --Here we add top level headings to our custom mappings and groups
 local wk = require("which-key")
-wk.add({ { "<leader>g", group = "Git" } })
-wk.add({ { "<leader>f", group = "Find" } })
-wk.add({ { "<leader>t", group = "Toggle" } })
-wk.add({ { "<leader>x", group = "Test" } })
-wk.add({ { "gr", group = "LSP Actions" } })
+wk.add({
+  { "<leader>g", group = "Git" },
+  { "<leader>f", group = "Find" },
+  { "<leader>t", group = "Toggle" },
+  { "<leader>x", group = "Test" },
+  { "gr",        group = "LSP Actions" },
+})
 
 -- ===========================================================================
 -- Modularized Configuration
@@ -114,24 +116,5 @@ require('keymaps')   -- Custom keybindings
 --UPDATE AND CLEANUP PLUGINS
 vim.api.nvim_create_autocmd("UIEnter", {
   once = true,
-  callback = function()
-    local updates = {}
-    local deletes = {}
-
-    for _, plugin in ipairs(vim.pack.get()) do
-      if not plugin.active then
-        table.insert(deletes, plugin.spec.name)
-      else
-        table.insert(updates, plugin.spec.name)
-      end
-    end
-
-    if #deletes > 0 then
-      vim.pack.del(deletes)
-    end
-
-    if #updates > 0 then
-      local results = vim.pack.update(updates, { force = true })
-    end
-  end,
+  callback = CheckPluginUpdates,
 })

@@ -49,8 +49,8 @@ local kmap = vim.keymap.set
 require('functions')
 
 -- --- General Navigation and Editing ---
-kmap('n', 'k', 'gk', { silent = true })                                        -- Word Wrap Fix: 'k' moves up by visual line, not by actual line.
-kmap('n', 'j', 'gj', { silent = true })                                        -- Word Wrap Fix: 'j' moves down by visual line, not by actual line.
+kmap('n', 'k', "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true })                                        -- Word Wrap Fix: 'k' moves up by visual line, unless a count is provided.
+kmap('n', 'j', "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = true })                                        -- Word Wrap Fix: 'j' moves down by visual line, unless a count is provided.
 kmap("n", "Q", "<nop>")                                                        -- Unmap 'Q' to prevent accidentally entering Ex mode.
 kmap("t", "<Esc>", "<c-\\><c-n>")                                              -- In terminal mode, <Esc> enters normal mode, making it feel more like Vim.
 kmap("n", "<c-h>", "<c-w>h", { silent = true, desc = "Navigate left window" }) -- Use Ctrl+h/j/k/l to switch between windows.

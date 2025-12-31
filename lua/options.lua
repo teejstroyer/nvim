@@ -117,9 +117,6 @@ vim.opt.swapfile = false
 -- The number of spaces a tab character is displayed as.
 vim.opt.tabstop = 2
 
--- Enable true color support, which is needed for most modern color schemes.
--- This allows Neovim to display a much wider range of colors.
-vim.opt.termguicolors = true
 
 -- The time in milliseconds Neovim waits for a key sequence to complete
 -- before assuming you've finished typing. This affects keybindings with a
