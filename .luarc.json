@@ -5,7 +5,8 @@
         "undefined-global",
         "undefined-field",
         "param-type-mismatch",
-        "missing-parameter"
+        "missing-parameter",
+        "missing-fields"
     ],
     "Lua.diagnostics.globals": [
         "vim",

@@ -28,12 +28,18 @@ vim.pack.add({
   'https://github.com/folke/lazydev.nvim',                                             -- For Neovim Lua API completions.
   'https://github.com/rafamadriz/friendly-snippets',                                   -- A collection of snippets for various languages.
   { src = "https://github.com/Saghen/blink.cmp", version = vim.version.range('1.*') }, -- The autocompletion engine.
+  'https://github.com/seblyng/roslyn.nvim'                                             --C# Roslyn lsp for faster performance
 })
 
 
 -- After adding the plugins, `require()` is used to load and configure them.
 require('lazydev').setup() -- Set up lazydev.
-require('mason').setup()   -- Set up Mason.
+require('mason').setup({
+  registries = {
+    'github:Crashdummyy/mason-registry',
+    'github:mason-org/mason-registry',
+  }
+})
 require('mason-lspconfig').setup({
   -- A list of language servers to ensure are installed.
   -- You can add any language server supported by mason-lspconfig here.

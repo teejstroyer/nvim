@@ -77,6 +77,7 @@ wk.add({
   { "<leader>g", group = "Git" },
   { "<leader>f", group = "Find" },
   { "<leader>t", group = "Toggle" },
+  { "<leader>T", group = "Todo" },
   { "<leader>x", group = "Test" },
   { "gr",        group = "LSP Actions" },
 })
@@ -99,7 +100,7 @@ require('plugins.fzf')           -- Fuzzy finder for quickly searching files, bu
 require('plugins.image')         -- Image viewing capabilities
 require('plugins.image-clip')    -- Clipboard support for images
 require('plugins.lsp')           -- Language Server Protocol (LSP) for code intelligence
-require('plugins.markview')      -- Markdown previewer
+require('plugins.markdown')      -- Markdown previewer
 require('plugins.mini')          -- A collection of minimal, fast, and single-file plugins
 require('plugins.treesitter')    -- Advanced syntax highlighting and code parsing
 require('plugins.vimtex')        -- Enhanced support for LaTeX documents
