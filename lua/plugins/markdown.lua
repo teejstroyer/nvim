@@ -9,7 +9,6 @@
 -- writing and editing documentation.
 vim.pack.add({
   "https://github.com/OXY2DEV/markview.nvim",
-  "https://github.com/bngarren/checkmate.nvim", -- check list item support
 })
 
 -- Load the presets for styling the preview.
@@ -40,25 +39,32 @@ local tasks = require("plugins.task")
 
 tasks.setup({
   sections = {
-    todo    = { label = "Backlog", check_style = "[ ]", order = 1 },
-    doing   = { label = "In Progress", check_style = "[/]", order = 2 },
-    done    = { label = "Completed", check_style = "[x]", order = 3 },
-    archive = { label = "Archive", check_style = "[x]", style = "~~", order = 4 },
-    wont    = { label = "Wont Do", check_style = "[ ]", style = "~~", order = 5 },
+    todo      = { label = "Todo", check_style = "[ ]", order = 1, color = "#ff9e64" },
+    doing     = { label = "In Progress", check_style = "[/]", order = 2, color = "#7aa2f7" },
+    done      = { label = "Completed", check_style = "[x]", order = 3, color = "#9ece6a" },
+    archive   = { label = "Archive", check_style = "[b]", style = "~~", order = 4, color = "#565f89" },
+    cancelled = { label = "Cancelled", check_style = "[-]", style = "~~", order = 5, color = "#444b6a" },
+    wont      = { label = "Wont Do", check_style = "[d]", style = "~~", order = 6, color = "#f7768e" },
+  },
+  highlights = {
+    metadata = { fg = "#565f89", italic = true }
   },
   types = {
-    bug  = { style = "**" }, -- Bold
-    feat = { style = "_" },  -- Italics
-    task = { style = "" }    -- Plain
-  }
+    bug  = { style = "**", color = "#f7768e" },
+    feat = { style = "_", color = "#bb9af7" },
+    task = { style = "", color = "#7aa2f7" }
+  },
+  date_format = "%Y-%m-%d",
+  default_type = "TASK"
 })
 
 local kmap = vim.keymap.set
 -- Task Creation
-kmap('n', '<localleader>tn', function() tasks.new_task('task') end, { desc = "Task: Quick New (TASK)" })
+kmap('n', '<localleader>tn', function() tasks.new_task('task') end, { desc = "Task: Quick New (default type)" })
 kmap('n', '<localleader>tN', function() tasks.new_task() end, { desc = "Task: New (Prompt for Type)" })
-kmap({ 'n', 'v' }, '<localleader>tb', function() tasks.move_task("todo") end, { desc = "Task: Move to Backlog" })
-kmap({ 'n', 'v' }, '<localleader>tp', function() tasks.move_task("doing") end, { desc = "Task: Move to In Progress" })
-kmap({ 'n', 'v' }, '<localleader>td', function() tasks.move_task("done") end, { desc = "Task: Mark as Completed" })
-kmap({ 'n', 'v' }, '<localleader>ta', function() tasks.move_task("archive") end, { desc = "Task: Move to Archive" })
+kmap({ 'n', 'v' }, '<localleader>tb', function() tasks.move_task("todo") end, { desc = "Task:Backlog" })
+kmap({ 'n', 'v' }, '<localleader>tp', function() tasks.move_task("doing") end, { desc = "Task: Progress" })
+kmap({ 'n', 'v' }, '<localleader>td', function() tasks.move_task("done") end, { desc = "Task:Completed" })
+kmap({ 'n', 'v' }, '<localleader>ta', function() tasks.move_task("archive") end, { desc = "Task:Archive" })
 kmap({ 'n', 'v' }, '<localleader>tw', function() tasks.move_task("wont") end, { desc = "Task: Wont Do" })
+kmap({ 'n', 'v' }, '<localleader>tc', function() tasks.move_task("cancelled") end, { desc = "Task: Cancelled" })
