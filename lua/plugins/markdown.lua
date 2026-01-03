@@ -9,6 +9,8 @@
 -- writing and editing documentation.
 vim.pack.add({
   "https://github.com/OXY2DEV/markview.nvim",
+  "https://github.com/teejstroyer/task.nvim",
+  -- { src = vim.fn.expand("~/Development/task.nvim") }
 })
 
 -- Load the presets for styling the preview.
@@ -35,7 +37,8 @@ require("markview").setup({
   }
 })
 
-local tasks = require("plugins.task")
+-- local tasks = require("plugins.task")
+local tasks = require("task")
 
 tasks.setup({
   sections = {
@@ -58,13 +61,16 @@ tasks.setup({
   default_type = "TASK"
 })
 
-local kmap = vim.keymap.set
 -- Task Creation
-kmap('n', '<localleader>tn', function() tasks.new_task('task') end, { desc = "Task: Quick New (default type)" })
-kmap('n', '<localleader>tN', function() tasks.new_task() end, { desc = "Task: New (Prompt for Type)" })
-kmap({ 'n', 'v' }, '<localleader>tb', function() tasks.move_task("todo") end, { desc = "Task:Backlog" })
-kmap({ 'n', 'v' }, '<localleader>tp', function() tasks.move_task("doing") end, { desc = "Task: Progress" })
-kmap({ 'n', 'v' }, '<localleader>td', function() tasks.move_task("done") end, { desc = "Task:Completed" })
-kmap({ 'n', 'v' }, '<localleader>ta', function() tasks.move_task("archive") end, { desc = "Task:Archive" })
-kmap({ 'n', 'v' }, '<localleader>tw', function() tasks.move_task("wont") end, { desc = "Task: Wont Do" })
-kmap({ 'n', 'v' }, '<localleader>tc', function() tasks.move_task("cancelled") end, { desc = "Task: Cancelled" })
+vim.keymap.set('n', '<localleader>tn', function() tasks.new_task('task') end, { desc = "Task: Quick New (default type)" })
+vim.keymap.set('n', '<localleader>tN', function()
+  vim.ui.input({ prompt = "Task Type: " }, function(input)
+    tasks.new_task(input)
+  end)
+end, { desc = "Task: New (Prompt for Type)" })
+vim.keymap.set({ 'n', 'v' }, '<localleader>tb', function() tasks.move_task("todo") end, { desc = "Task:Backlog" })
+vim.keymap.set({ 'n', 'v' }, '<localleader>tp', function() tasks.move_task("doing") end, { desc = "Task:Progress" })
+vim.keymap.set({ 'n', 'v' }, '<localleader>td', function() tasks.move_task("done") end, { desc = "Task:Completed" })
+vim.keymap.set({ 'n', 'v' }, '<localleader>ta', function() tasks.move_task("archive") end, { desc = "Task:Archive" })
+vim.keymap.set({ 'n', 'v' }, '<localleader>tw', function() tasks.move_task("wont") end, { desc = "Task:Wont Do" })
+vim.keymap.set({ 'n', 'v' }, '<localleader>tc', function() tasks.move_task("cancelled") end, { desc = "Task:Cancelled" })
