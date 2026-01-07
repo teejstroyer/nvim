@@ -76,8 +76,8 @@ local wk = require("which-key")
 wk.add({
   { "<leader>g", group = "Git" },
   { "<leader>f", group = "Find" },
-  { "<leader>t", group = "Toggle" },
-  { "<leader>T", group = "Todo" },
+  { "<leader>T", group = "Toggle" },
+  { "<leader>t", group = "Task" },
   { "<leader>x", group = "Test" },
   { "gr",        group = "LSP Actions" },
 })

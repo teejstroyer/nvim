@@ -49,8 +49,8 @@ local kmap = vim.keymap.set
 require('functions')
 
 -- --- General Navigation and Editing ---
-kmap('n', 'k', "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true })                                        -- Word Wrap Fix: 'k' moves up by visual line, unless a count is provided.
-kmap('n', 'j', "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = true })                                        -- Word Wrap Fix: 'j' moves down by visual line, unless a count is provided.
+kmap('n', 'k', "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true })    -- Word Wrap Fix: 'k' moves up by visual line, unless a count is provided.
+kmap('n', 'j', "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = true })    -- Word Wrap Fix: 'j' moves down by visual line, unless a count is provided.
 kmap("n", "Q", "<nop>")                                                        -- Unmap 'Q' to prevent accidentally entering Ex mode.
 kmap("t", "<Esc>", "<c-\\><c-n>")                                              -- In terminal mode, <Esc> enters normal mode, making it feel more like Vim.
 kmap("n", "<c-h>", "<c-w>h", { silent = true, desc = "Navigate left window" }) -- Use Ctrl+h/j/k/l to switch between windows.
@@ -91,25 +91,25 @@ kmap('i', '<c-d>', InsertDate, { desc = 'Insert Date' })
 
 -- --- Toggles ---
 -- These keymaps toggle common settings on and off, providing quick access to change your editing environment.
-kmap("n", "<leader>tw",
+kmap("n", "<leader>Tw",
   function()
     vim.opt.wrap = not vim.opt.wrap:get()
     vim.notify("Line Wrap: " .. (vim.opt.wrap:get() and "On" or "Off"))
   end, { desc = "Toggle Wrap Lines", silent = true })
 
-kmap("n", "<leader>th",
+kmap("n", "<leader>Th",
   function()
     vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled({}))
     vim.notify("LSP Inlay Hints: " .. (vim.lsp.inlay_hint.is_enabled({}) and "On" or "Off"))
   end, { desc = 'Toggle Inlay Hints' })
 
-kmap("n", "<leader>ts",
+kmap("n", "<leader>Ts",
   function()
     vim.opt.spell = not (vim.opt.spell:get())
     vim.notify("Spell Check: " .. (vim.opt.spell:get() and "On" or "Off"))
   end, { desc = 'Toggle Spell Check' })
 
-kmap("n", "<leader>tc",
+kmap("n", "<leader>Tc",
   function()
     local old_level = vim.g.conceallevel
     vim.ui.select({ nil, 0, 1, 2, 3 }, {
@@ -123,8 +123,7 @@ kmap("n", "<leader>tc",
     end)
   end, { desc = 'Toggle Conceal Level' })
 
-kmap("n", "<leader>tf", function()
+kmap("n", "<leader>Tf", function()
   _G.FormatOnSave = not _G.FormatOnSave
   vim.notify("Format on Save: " .. tostring(_G.FormatOnSave))
 end, { desc = 'Toggle Format on Save' })
-
