@@ -48,6 +48,7 @@ tasks.setup({
     archive   = { label = "Archive", check_style = "[b]", style = "~~", order = 4, color = "#565f89" },
     cancelled = { label = "Cancelled", check_style = "[-]", style = "~~", order = 5, color = "#444b6a" },
     wont      = { label = "Wont Do", check_style = "[d]", style = "~~", order = 6, color = "#f7768e" },
+    idea      = { label = "Proposals", check_style = "[I]", style = "", order = 7, color = "#f7768e" },
   },
   highlights = {
     metadata = { fg = "#565f89", italic = true }

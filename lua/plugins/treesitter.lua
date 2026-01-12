@@ -22,7 +22,16 @@ vim.api.nvim_create_autocmd("FileType", {
     local ft = vim.bo[bufnr].filetype
     local lang = vim.treesitter.language.get_lang(ft)
 
+    if ft == "mininotify" or ft == "minipick" or ft == "minifiles" or ft == "" then
+      return
+    end
+
     if not lang then return end
+
+    --Might need to verify this is working correctly
+    if not vim.tbl_contains(ts.get_available(), lang) then
+      return -- Exit silently: No Treesitter parser exists for this filetype
+    end
 
     -- Check if parser is missing and try to install it
     local has_parser = pcall(vim.treesitter.get_parser, bufnr, lang)

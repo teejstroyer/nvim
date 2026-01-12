@@ -21,19 +21,25 @@
 
 vim.pack.add({
 
-  'https://github.com/neovim/nvim-lspconfig',                                          -- The core LSP configuration plugin.
-  'https://github.com/mason-org/mason.nvim',                                           -- The LSP installer.
-  'https://github.com/mason-org/mason-lspconfig.nvim',                                 -- The bridge between Mason and lspconfig.
-  'https://github.com/nvimtools/none-ls.nvim',                                         -- For non-LSP sources.
-  'https://github.com/folke/lazydev.nvim',                                             -- For Neovim Lua API completions.
-  'https://github.com/rafamadriz/friendly-snippets',                                   -- A collection of snippets for various languages.
-  { src = "https://github.com/Saghen/blink.cmp", version = vim.version.range('1.*') }, -- The autocompletion engine.
-  'https://github.com/seblyng/roslyn.nvim'                                             --C# Roslyn lsp for faster performance
+  'https://github.com/neovim/nvim-lspconfig',          -- The core LSP configuration plugin.
+  'https://github.com/mason-org/mason.nvim',           -- The LSP installer.
+  'https://github.com/mason-org/mason-lspconfig.nvim', -- The bridge between Mason and lspconfig.
+  'https://github.com/nvimtools/none-ls.nvim',         -- For non-LSP sources.
+  'https://github.com/folke/lazydev.nvim',             -- For Neovim Lua API completions.
+  'https://github.com/rafamadriz/friendly-snippets',   -- A collection of snippets for various languages.
+  {
+    src = "https://github.com/Saghen/blink.cmp",
+    version = vim.version.range('1.*'),
+  },                                       -- The autocompletion engine.
+  'https://github.com/fang2hou/blink-copilot',
+  'https://github.com/seblyng/roslyn.nvim' --C# Roslyn lsp for faster performance
 })
 
 
+require("lspconfig")
+
 -- After adding the plugins, `require()` is used to load and configure them.
-require('lazydev').setup() -- Set up lazydev.
+require('lazydev').setup()
 require('mason').setup({
   registries = {
     'github:Crashdummyy/mason-registry',
@@ -43,7 +49,8 @@ require('mason').setup({
 require('mason-lspconfig').setup({
   -- A list of language servers to ensure are installed.
   -- You can add any language server supported by mason-lspconfig here.
-  ensure_installed = { "lua_ls" },
+  ensure_installed = { "lua_ls", "copilot" },
+  automatic_enable = true,
 })
 
 -- Configure blink.cmp, specifying the sources it should use for completion.
@@ -51,12 +58,17 @@ require('mason-lspconfig').setup({
 require('blink.cmp').setup({
   fuzzy = { implementation = 'prefer_rust_with_warning' },
   sources = {
-    default = { 'lazydev', 'lsp', 'path', 'snippets', 'buffer' },
+    default = { 'lazydev', 'lsp', 'path', 'snippets', 'buffer', 'copilot' },
     providers = {
       lazydev = {
         name = 'LazyDev',
         module = 'lazydev.integrations.blink',
         score_offset = 100,
+      },
+      copilot = {
+        name = "copilot",
+        module = "blink-copilot",
+        async = true,
       },
     }
   },
@@ -67,10 +79,5 @@ require('blink.cmp').setup({
     documentation = { auto_show = true, auto_show_delay_ms = 500 },
     ghost_text = { enabled = true },
   },
-  signature = { enabled = true }
+  signature = { enabled = true },
 })
-
--- This is a generic configuration for LSP capabilities. It ensures that
--- your LSP client has the necessary features enabled to interact with servers.
--- This is important for getting the most out of your language servers.
-vim.lsp.config('*', { capabilities = vim.lsp.protocol.make_client_capabilities() })

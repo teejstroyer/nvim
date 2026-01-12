@@ -28,7 +28,7 @@ function CheckPluginUpdates()
 
   local current_time = os.time()
   if (current_time - last_update) < (24 * 60 * 60) then
-    vim.notify("Skipping Update")
+    -- vim.notify("Skipping Update")
     return
   end
 
@@ -57,3 +57,4 @@ function CheckPluginUpdates()
     f_write:close()
   end
 end
+

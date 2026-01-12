@@ -117,7 +117,6 @@ vim.opt.swapfile = false
 -- The number of spaces a tab character is displayed as.
 vim.opt.tabstop = 2
 
-
 -- The time in milliseconds Neovim waits for a key sequence to complete
 -- before assuming you've finished typing. This affects keybindings with a
 -- prefix like `<leader>`. A shorter timeout feels more responsive.
@@ -132,8 +131,7 @@ vim.opt.undofile = true
 vim.opt.updatetime = 300
 
 -- Enable line wrapping.
--- This is generally a good default, but you can toggle it with a keymap.
-vim.opt.wrap = true
+vim.opt.wrap = false
 
 -- Configure how diagnostic messages (errors, warnings, etc.) are displayed.
 vim.diagnostic.config({
@@ -150,3 +148,4 @@ vim.diagnostic.config({
   -- Diagnostics will be updated when you enter normal mode.
   update_in_insert = false
 })
+
