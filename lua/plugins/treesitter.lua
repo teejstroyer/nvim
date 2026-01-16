@@ -40,18 +40,16 @@ vim.api.nvim_create_autocmd("FileType", {
       return
     end
 
-    -- Enable Highlighting
-    if vim.treesitter.query.get(lang, "highlights") then
-      vim.treesitter.start(bufnr, lang)
-    end
 
     -- Enable Folding
-    vim.wo[0][0].foldmethod = "expr"
-    vim.wo[0][0].foldexpr = "v:lua.vim.treesitter.foldexpr()"
-    vim.wo[0][0].foldenable = false
+    vim.wo[0][0].foldexpr = 'v:lua.vim.treesitter.foldexpr()'
+    vim.wo[0][0].foldmethod = 'expr'
 
     -- Enable Indentation
-    vim.bo[bufnr].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+    vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+
+    --treesitter no longer starts on its own...
+    vim.treesitter.start()
   end,
 })
 

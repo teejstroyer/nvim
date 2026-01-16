@@ -133,6 +133,13 @@ vim.opt.updatetime = 300
 -- Enable line wrapping.
 vim.opt.wrap = false
 
+--Folding
+vim.opt.foldenable = false
+vim.opt.foldlevel = 99
+
+
+
+
 -- Configure how diagnostic messages (errors, warnings, etc.) are displayed.
 vim.diagnostic.config({
   -- Don't show diagnostic messages as virtual text at the end of a line.
@@ -148,4 +155,3 @@ vim.diagnostic.config({
   -- Diagnostics will be updated when you enter normal mode.
   update_in_insert = false
 })
-
