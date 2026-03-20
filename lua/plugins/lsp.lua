@@ -27,16 +27,17 @@ vim.pack.add({
   'https://github.com/nvimtools/none-ls.nvim',         -- For non-LSP sources.
   'https://github.com/folke/lazydev.nvim',             -- For Neovim Lua API completions.
   'https://github.com/rafamadriz/friendly-snippets',   -- A collection of snippets for various languages.
-  {
-    src = "https://github.com/Saghen/blink.cmp",
-    version = vim.version.range('1.*'),
-  },                                       -- The autocompletion engine.
+  'https://github.com/nickjvandyke/opencode.nvim',
+
+  { src = "https://github.com/Saghen/blink.cmp", version = vim.version.range('1.*') }, -- The autocompletion engine.
+
   'https://github.com/fang2hou/blink-copilot',
   'https://github.com/seblyng/roslyn.nvim' --C# Roslyn lsp for faster performance
+
 })
 
-
 require("lspconfig")
+vim.lsp.enable('dartls')
 
 -- After adding the plugins, `require()` is used to load and configure them.
 require('lazydev').setup()
@@ -81,3 +82,4 @@ require('blink.cmp').setup({
   },
   signature = { enabled = true },
 })
+

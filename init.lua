@@ -51,11 +51,12 @@ end
 
 -- --- Color Scheme ---
 -- The Catppuccin plugin provides a beautiful and modern color scheme.
-vim.pack.add({
-  'https://github.com/catppuccin/nvim',
-})
+-- vim.pack.add({ 'https://github.com/catppuccin/nvim' })
 -- Set the color scheme to 'catppuccin-frappe' once the plugin is loaded.
-vim.cmd [[colorscheme catppuccin-frappe]]
+-- vim.cmd [[colorscheme catppuccin-frappe]]
+vim.cmd [[colorscheme retrobox]]
+
+
 
 vim.pack.add({
   -- --- Which-Key Plugin ---
