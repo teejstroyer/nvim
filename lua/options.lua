@@ -88,7 +88,8 @@ vim.opt.showbreak = "↳"
 -- Control how the sign column is displayed. It shows symbols for things like
 -- diagnostics or breakpoints. `number` makes the sign column share space with
 -- the number column, which saves horizontal space.
-vim.opt.signcolumn = "auto"
+-- vim.opt.signcolumn = "auto"
+vim.opt.signcolumn = "yes:1"
 
 -- Enable smart case-sensitive searching. If your search query contains
 -- an uppercase letter, the search will be case-sensitive. Otherwise, it will be
