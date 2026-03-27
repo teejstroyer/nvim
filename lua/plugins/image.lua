@@ -36,3 +36,9 @@ require("image").setup({
     }
   }
 })
+
+require("rndr").setup({
+  preview = {
+    auto_open = true,
+  },
+})
