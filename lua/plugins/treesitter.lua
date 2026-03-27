@@ -4,6 +4,17 @@
 -- This file configures nvim-treesitter, a plugin that provides more
 -- accurate and performant syntax highlighting, indentation, and other
 -- language-aware features.
+
+--TREE SITTER UPDATE HOOK
+vim.api.nvim_create_autocmd("PackChanged", {
+  pattern = "*",
+  callback = function(ev)
+    if ev.data.spec.name == "nvim-treesitter" and ev.data.spec.kind ~= "deleted" then
+      vim.notify("Updating Treesitter Parsers...")
+      vim.cmd("TSUpdate")
+    end
+  end,
+})
 vim.pack.add({
   {
     src = "https://github.com/nvim-treesitter/nvim-treesitter",
@@ -50,16 +61,5 @@ vim.api.nvim_create_autocmd("FileType", {
 
     --treesitter no longer starts on its own...
     vim.treesitter.start()
-  end,
-})
-
---TREE SITTER UPDATE HOOK
-vim.api.nvim_create_autocmd("PackChanged", {
-  pattern = "*",
-  callback = function(ev)
-    if ev.data.spec.name == "nvim-treesitter" and ev.data.spec.kind ~= "deleted" then
-      vim.notify("Updating Treesitter Parsers...")
-      vim.cmd("TSUpdate")
-    end
   end,
 })

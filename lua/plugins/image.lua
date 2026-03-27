@@ -4,7 +4,21 @@
 -- This file configures image.nvim, a plugin that allows you to view images
 -- directly within Neovim.
 
-vim.pack.add({ "https://github.com/3rd/image.nvim"})
+--Auto command needs to be registered first...
+vim.api.nvim_create_autocmd('PackChanged', {
+  callback = function(ev)
+    -- Use available |event-data|
+    local name, kind = ev.data.spec.name, ev.data.kind
+    if name == 'rndr.nvim' and (kind == 'install' or kind == 'update') then
+      vim.system({ 'make' }, { cwd = ev.data.path })
+    end
+  end
+})
+
+vim.pack.add({
+  "https://github.com/3rd/image.nvim",
+  "https://github.com/SalarAlo/rndr.nvim", --Renders images and 3d objects? WHAT
+})
 
 -- Configure the image viewer.
 require("image").setup({
