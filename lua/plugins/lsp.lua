@@ -32,12 +32,14 @@ vim.pack.add({
   { src = "https://github.com/Saghen/blink.cmp", version = vim.version.range('1.*') }, -- The autocompletion engine.
 
   'https://github.com/fang2hou/blink-copilot',
-  'https://github.com/seblyng/roslyn.nvim' --C# Roslyn lsp for faster performance
-
+  'https://github.com/seblyng/roslyn.nvim', --C# Roslyn lsp for faster performance
+  "https://github.com/Mathijs-Bakker/godotdev.nvim",
 })
 
 require("lspconfig")
 vim.lsp.enable('dartls')
+
+require("godotdev").setup()
 
 -- After adding the plugins, `require()` is used to load and configure them.
 require('lazydev').setup()
@@ -82,4 +84,3 @@ require('blink.cmp').setup({
   },
   signature = { enabled = true },
 })
-

@@ -108,12 +108,15 @@ require('plugins.vimtex')        -- Enhanced support for LaTeX documents
 require('plugins.git')
 require('plugins.buffer-walker') -- Utility plugin for back and next buffer navigation
 require('plugins.fyler')
+require('plugins.diagnostics')    -- Enhanced diagnostics display
 
 -- Load other core configuration files
 require('autocmds')  -- Automations that trigger on specific events
 require('functions') -- Custom Lua functions
 require('options')   -- General Neovim settings
 require('keymaps')   -- Custom keybindings
+
+require('vim._core.ui2').enable({})
 
 --UPDATE AND CLEANUP PLUGINS
 vim.api.nvim_create_autocmd("UIEnter", {

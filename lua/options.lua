@@ -138,21 +138,19 @@ vim.opt.wrap = false
 vim.opt.foldenable = false
 vim.opt.foldlevel = 99
 
-
-
-
--- Configure how diagnostic messages (errors, warnings, etc.) are displayed.
-vim.diagnostic.config({
-  -- Don't show diagnostic messages as virtual text at the end of a line.
-  -- This can be distracting, so we disable it.
-  virtual_text = false,
-  -- Show diagnostic messages on the current line as a virtual line below it.
-  -- This is a good way to see the full error message without cluttering the screen.
-  virtual_lines = { current_line = true },
-  -- Underline words with diagnostic issues.
-  -- This provides a clear visual indicator of where the issue is.
-  underline = true,
-  -- Don't update diagnostics while in insert mode to avoid distraction.
-  -- Diagnostics will be updated when you enter normal mode.
-  update_in_insert = false
-})
+--Replaced by tiny diagnostics
+-- -- Configure how diagnostic messages (errors, warnings, etc.) are displayed.
+-- vim.diagnostic.config({
+--   -- Don't show diagnostic messages as virtual text at the end of a line.
+--   -- This can be distracting, so we disable it.
+--   virtual_text = false,
+--   -- Show diagnostic messages on the current line as a virtual line below it.
+--   -- This is a good way to see the full error message without cluttering the screen.
+--   virtual_lines = { current_line = true },
+--   -- Underline words with diagnostic issues.
+--   -- This provides a clear visual indicator of where the issue is.
+--   underline = true,
+--   -- Don't update diagnostics while in insert mode to avoid distraction.
+--   -- Diagnostics will be updated when you enter normal mode.
+--   update_in_insert = false
+-- })
