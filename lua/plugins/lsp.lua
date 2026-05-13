@@ -8,7 +8,6 @@
 -- These plugins provide powerful features for code completion, diagnostics,
 -- and other language server protocol (LSP) functionality.
 --
--- - **blink.cmp**: An autocompletion plugin.
 -- - **nvim-lspconfig**: A collection of configurations for different language servers.
 -- - **mason.nvim**: A tool for easily installing and managing LSP servers, linters, and formatters.
 -- - **mason-lspconfig.nvim**: Bridges Mason and nvim-lspconfig, making it easy to set up language servers.
@@ -20,24 +19,19 @@
 -- This will open a window where you can manage your language servers.
 
 vim.pack.add({
-
   'https://github.com/neovim/nvim-lspconfig',          -- The core LSP configuration plugin.
   'https://github.com/mason-org/mason.nvim',           -- The LSP installer.
   'https://github.com/mason-org/mason-lspconfig.nvim', -- The bridge between Mason and lspconfig.
   'https://github.com/nvimtools/none-ls.nvim',         -- For non-LSP sources.
   'https://github.com/folke/lazydev.nvim',             -- For Neovim Lua API completions.
   'https://github.com/rafamadriz/friendly-snippets',   -- A collection of snippets for various languages.
-  'https://github.com/nickjvandyke/opencode.nvim',
-
-  { src = "https://github.com/Saghen/blink.cmp", version = vim.version.range('1.*') }, -- The autocompletion engine.
-
-  'https://github.com/fang2hou/blink-copilot',
-  'https://github.com/seblyng/roslyn.nvim', --C# Roslyn lsp for faster performance
-  "https://github.com/Mathijs-Bakker/godotdev.nvim",
+  'https://github.com/antonk52/filepaths_ls.nvim',     -- File system completion
+  'https://github.com/seblyng/roslyn.nvim',            -- C# Roslyn lsp for faster performance
+  "https://github.com/Mathijs-Bakker/godotdev.nvim",   -- Godot
 })
 
 require("lspconfig")
-vim.lsp.enable('dartls')
+vim.lsp.enable('dartls') -- Manualy done, since dart is already on the machine
 
 require("godotdev").setup()
 
@@ -56,31 +50,34 @@ require('mason-lspconfig').setup({
   automatic_enable = true,
 })
 
--- Configure blink.cmp, specifying the sources it should use for completion.
--- By default <c-n> => next <c-p> => previous, <c-y> accepts
-require('blink.cmp').setup({
-  fuzzy = { implementation = 'prefer_rust_with_warning' },
-  sources = {
-    default = { 'lazydev', 'lsp', 'path', 'snippets', 'buffer', 'copilot' },
-    providers = {
-      lazydev = {
-        name = 'LazyDev',
-        module = 'lazydev.integrations.blink',
-        score_offset = 100,
-      },
-      copilot = {
-        name = "copilot",
-        module = "blink-copilot",
-        async = true,
-      },
-    }
-  },
-  completion = {
-    accept = {
-      create_undo_point = true
-    },
-    documentation = { auto_show = true, auto_show_delay_ms = 500 },
-    ghost_text = { enabled = true },
-  },
-  signature = { enabled = true },
+vim.lsp.enable('filepaths_ls')
+
+-- Copied from :help vim.lsp.completion.enable
+vim.api.nvim_create_autocmd('LspAttach', {
+  group = vim.api.nvim_create_augroup('my.lsp', {}),
+  callback = function(ev)
+    local client = assert(vim.lsp.get_client_by_id(ev.data.client_id))
+
+    -- Enable auto-completion. Note: Use CTRL-Y to select an item. |complete_CTRL-Y|
+    if client:supports_method('textDocument/completion') then
+      -- Optional: trigger autocompletion on EVERY keypress. May be slow!
+      local chars = {}; for i = 32, 126 do table.insert(chars, string.char(i)) end
+      client.server_capabilities.completionProvider.triggerCharacters = chars
+
+      vim.lsp.completion.enable(true, client.id, ev.buf, { autotrigger = true })
+    end
+
+    -- Auto-format ("lint") on save.
+    -- Usually not needed if server supports "textDocument/willSaveWaitUntil".
+    if not client:supports_method('textDocument/willSaveWaitUntil')
+        and client:supports_method('textDocument/formatting') then
+      vim.api.nvim_create_autocmd('BufWritePre', {
+        group = vim.api.nvim_create_augroup('my.lsp', { clear = false }),
+        buffer = ev.buf,
+        callback = function()
+          vim.lsp.buf.format({ bufnr = ev.buf, id = client.id, timeout_ms = 1000 })
+        end,
+      })
+    end
+  end,
 })
