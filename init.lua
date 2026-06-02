@@ -1,107 +1,19 @@
--- ===========================================================================
--- TABLE OF CONTENTS:
--- 1. [CORE] Core Configuration (leader, server pipe)
--- 2. [FUNC] Custom Functions (Date, Plugin Updates)
--- 3. [OPTS] Basic Neovim Options
--- 4. [KEYS] General Keymaps
--- 5. [AUTO] Auto Commands
--- 6. [PLUG] Plugin Management & Configuration
---    - UI & Essentials
---    - DAP (Debugging)
---    - Diagnostics
---    - File Explorer (Fyler)
---    - Fuzzy Finder (FZF)
---    - Git Integration
---    - LSP (Language Server Protocol)
---    - Markdown & Tasks
---    - Rndr (3D/Image Preview)
---    - Treesitter
---    - VimTeX (LaTeX)
--- 7. [FINI] Final Setup (UI enable, update check)
--- ===========================================================================
+vim.g.mapleader = ' '      -- Set the leader key to a space. Essentially free prefixes for keymaps
+vim.g.maplocalleader = ',' -- Set the local leader key to a comma.
 
--- ===========================================================================
--- Welcome to Your Neovim Configuration!
--- ===========================================================================
---
--- This file, `init.lua`, is the main entry point for configuring Neovim.
--- It's written in Lua, a lightweight and fast scripting language.
-
--- ===========================================================================
--- 1. [CORE] Core Configuration
--- ===========================================================================
-
--- Set the leader key to a space.
-vim.g.mapleader = ' '
-
--- Set the local leader key to a comma.
-vim.g.maplocalleader = ','
-
--- Creates a server in the cache on boot. This can be useful for integrating
--- Neovim with external tools, such as the Godot game engine.
+-- Creates a server in the cache on boot. Helps with Godot.
 local pipepath = vim.fn.stdpath('cache') .. '/server.pipe'
 if not vim.loop.fs_stat(pipepath) then
   vim.fn.serverstart(pipepath)
 end
 
--- ===========================================================================
--- 2. [FUNC] Custom Functions
--- ===========================================================================
-
 -- A custom function to insert the current date in YYYY-MM-DD format.
 function InsertDate()
   local date = os.date("%Y-%m-%d")
-  vim.api.nvim_put({ tostring(date) }, "", true, true)
-end
-
--- Create a user-defined command called `:InsertDate`.
-vim.api.nvim_create_user_command("InsertDate", InsertDate, {})
-
--- Function to check for plugin updates once a day
-function CheckPluginUpdates()
-  local state_path = vim.fn.stdpath("data") .. "/plugin_update_time.txt"
-  local last_update = 0
-  local f = io.open(state_path, "r")
-  if f then
-    last_update = tonumber(f:read("*all")) or 0
-    f:close()
-  end
-
-  local current_time = os.time()
-  if (current_time - last_update) < (24 * 60 * 60) then
-    return
-  end
-
-  local updates = {}
-  local deletes = {}
-
-  for _, plugin in ipairs(vim.pack.get()) do
-    if not plugin.active then
-      table.insert(deletes, plugin.spec.name)
-    else
-      table.insert(updates, plugin.spec.name)
-    end
-  end
-
-  if #deletes > 0 then
-    vim.pack.del(deletes)
-  end
-
-  if #updates > 0 then
-    vim.pack.update(updates, { force = true })
-  end
-
-  local f_write = io.open(state_path, "w")
-  if f_write then
-    f_write:write(tostring(current_time))
-    f_write:close()
-  end
+  vim.api.nvim_put({ tostring(os.date("%Y-%m-%d")) }, "", true, true)
 end
 
 -- ===========================================================================
--- 3. [OPTS] Basic Neovim Options
--- ===========================================================================
-
 vim.g.have_nerd_font = true
 vim.opt.breakindent = true
 vim.opt.clipboard = 'unnamedplus'
@@ -132,63 +44,58 @@ vim.opt.wrap = false
 vim.opt.foldenable = false
 vim.opt.foldlevel = 99
 
+vim.g.loaded_node_provider = 0
+vim.g.loaded_perl_provider = 0
+vim.g.loaded_python3_provider = 0
+vim.g.loaded_ruby_provider = 0
+
 -- ===========================================================================
--- 4. [KEYS] General Keymaps
--- ===========================================================================
-
-local kmap = vim.keymap.set
-
-kmap('n', 'k', "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true })
-kmap('n', 'j', "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = true })
-kmap("n", "Q", "<nop>")
-kmap("t", "<Esc>", "<c-\\><c-n>")
-kmap("n", "<c-h>", "<c-w>h", { silent = true, desc = "Navigate left window" })
-kmap("n", "<c-j>", "<c-w>j", { silent = true, desc = "Navigate down window" })
-kmap("n", "<c-k>", "<c-w>k", { silent = true, desc = "Navigate up window" })
-kmap("n", "<c-l>", "<c-w>l", { silent = true, desc = "Navigate right window" })
-
+vim.keymap.set('n', 'k', "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true })
+vim.keymap.set('n', 'j', "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = true })
+vim.keymap.set("n", "Q", "<nop>")
+vim.keymap.set("t", "<Esc>", "<c-\\><c-n>")
+vim.keymap.set("n", "<c-h>", "<c-w>h", { silent = true, desc = "Navigate left window" })
+vim.keymap.set("n", "<c-j>", "<c-w>j", { silent = true, desc = "Navigate down window" })
+vim.keymap.set("n", "<c-k>", "<c-w>k", { silent = true, desc = "Navigate up window" })
+vim.keymap.set("n", "<c-l>", "<c-w>l", { silent = true, desc = "Navigate right window" })
 -- --- Buffer Management ---
-kmap("n", "<leader>q", ":bdelete<CR>", { desc = "Buffer delete" })
-
+vim.keymap.set("n", "<leader>q", ":bdelete<CR>", { desc = "Buffer delete" })
 -- --- Visual Mode ---
-kmap("v", "<C-k>", ":m '<-2<cr>gv=gv", { desc = "Move selection up" })
-kmap("v", "<C-j>", ":m '>+1<cr>gv=gv", { desc = "Move selection down" })
-
+vim.keymap.set("v", "<C-k>", ":m '<-2<cr>gv=gv", { desc = "Move selection up" })
+vim.keymap.set("v", "<C-j>", ":m '>+1<cr>gv=gv", { desc = "Move selection down" })
 -- --- Search and Replace ---
-kmap("n", "<leader>s", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]], { desc = "Substitute word under cursor" })
-
+vim.keymap.set("n", "<leader>s", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]],
+  { desc = "Substitute word under cursor" })
 -- --- Window Management ---
-kmap("n", "<Up>", "<C-w>+", { desc = "Increase window height", silent = true })
-kmap("n", "<Down>", "<C-w>-", { desc = "Decrease window height", silent = true })
-kmap("n", "<Left>", "<C-w><", { desc = "Decrease window width", silent = true })
-kmap("n", "<Right>", "<C-w>>", { desc = "Increase window width", silent = true })
-
+vim.keymap.set("n", "<Up>", "<C-w>+", { desc = "Increase window height", silent = true })
+vim.keymap.set("n", "<Down>", "<C-w>-", { desc = "Decrease window height", silent = true })
+vim.keymap.set("n", "<Left>", "<C-w><", { desc = "Decrease window width", silent = true })
+vim.keymap.set("n", "<Right>", "<C-w>>", { desc = "Increase window width", silent = true })
 -- --- Diagnostics ---
-kmap('n', '<leader>k', vim.diagnostic.open_float, { desc = 'Open floating diagnostic message' })
-
+vim.keymap.set('n', '<leader>k', vim.diagnostic.open_float, { desc = 'Open floating diagnostic message' })
 -- --- Insert Mode ---
-kmap('i', '<c-d>', InsertDate, { desc = 'Insert Date' })
-
+vim.keymap.set('i', '<c-d>', function() vim.api.nvim_put({ tostring(os.date("%Y-%m-%d")) }, "", true, true) end,
+  { desc = 'Insert Date' })
 -- --- Toggles ---
-kmap("n", "<leader>Tw",
+vim.keymap.set("n", "<leader>Tw",
   function()
     vim.opt.wrap = not vim.opt.wrap:get()
     vim.notify("Line Wrap: " .. (vim.opt.wrap:get() and "On" or "Off"))
   end, { desc = "Toggle Wrap Lines", silent = true })
 
-kmap("n", "<leader>Th",
+vim.keymap.set("n", "<leader>Th",
   function()
     vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled({}))
     vim.notify("LSP Inlay Hints: " .. (vim.lsp.inlay_hint.is_enabled({}) and "On" or "Off"))
   end, { desc = 'Toggle Inlay Hints' })
 
-kmap("n", "<leader>Ts",
+vim.keymap.set("n", "<leader>Ts",
   function()
     vim.opt.spell = not (vim.opt.spell:get())
     vim.notify("Spell Check: " .. (vim.opt.spell:get() and "On" or "Off"))
   end, { desc = 'Toggle Spell Check' })
 
-kmap("n", "<leader>Tc",
+vim.keymap.set("n", "<leader>Tc",
   function()
     local old_level = vim.g.conceallevel
     vim.ui.select({ nil, 0, 1, 2, 3 }, {
@@ -202,7 +109,7 @@ kmap("n", "<leader>Tc",
     end)
   end, { desc = 'Toggle Conceal Level' })
 
-kmap("n", "<leader>Tf", function()
+vim.keymap.set("n", "<leader>Tf", function()
   _G.FormatOnSave = not _G.FormatOnSave
   vim.notify("Format on Save: " .. tostring(_G.FormatOnSave))
 end, { desc = 'Toggle Format on Save' })
@@ -211,19 +118,17 @@ end, { desc = 'Toggle Format on Save' })
 -- 5. [AUTO] Auto Commands
 -- ===========================================================================
 
-vim.api.nvim_create_autocmd("TextYankPost", {
+vim.api.nvim_create_autocmd({ "TextYankPost" }, {
   group = vim.api.nvim_create_augroup("HighlightYank", { clear = true }),
   pattern = "*",
-  callback = function()
-    vim.highlight.on_yank({ higroup = "IncSearch", timeout = 40 })
-  end,
+  callback = function() vim.hl.on_yank() end,
 })
 
 vim.api.nvim_create_autocmd({ "BufWritePre" }, {
   group = vim.api.nvim_create_augroup("TrailingSpace", { clear = true }),
   pattern = "*",
   callback = function(args)
-    if vim.bo[args.buf].filetype ~= "markdown" then
+    if vim.bo[args.buf].filetype ~= "markdown" or vim.api.nvim_buf_line_count(args.buf) > 500 then
       vim.cmd([[%s/\s\+$//e]])
     end
   end,
@@ -235,9 +140,6 @@ vim.api.nvim_create_autocmd({ "TermOpen" }, {
   command = [[setlocal nonumber norelativenumber | startinsert]],
 })
 
--- ===========================================================================
--- 6. [PLUG] Plugin Management and Configuration
--- ===========================================================================
 
 vim.cmd [[colorscheme retrobox]]
 
@@ -358,7 +260,7 @@ require('mason').setup({
   }
 })
 require('mason-lspconfig').setup({
-  ensure_installed = { "lua_ls", "copilot" },
+  ensure_installed = { "lua_ls" },
   automatic_enable = true,
 })
 vim.lsp.enable('filepaths_ls')
@@ -434,76 +336,65 @@ vim.keymap.set({ 'n', 'v' }, '<leader>tw', function() tasks.move_task("wont") en
 vim.keymap.set({ 'n', 'v' }, '<leader>tc', function() tasks.move_task("cancelled") end, { desc = "Task:Cancelled" })
 vim.keymap.set({ 'n', 'v' }, '<leader>t<space>', function() tasks.select_move() end, { desc = "Task: Move" })
 
--- --- Rndr (3D/Image Preview) ---
-vim.api.nvim_create_autocmd('PackChanged', {
-  callback = function(ev)
-    local name, kind = ev.data.spec.name, ev.data.kind
-    if name == 'rndr.nvim' and (kind == 'install' or kind == 'update') then
-      vim.system({ 'make' }, { cwd = ev.data.path })
-    end
+--- Rndr (3D/Image Preview) ---
+local hooks = function(ev)
+  local name, kind = ev.data.spec.name, ev.data.kind
+  if name == 'rndr.nvim' and (kind == 'install' or kind == 'update') then
+    vim.system({ 'make' }, { cwd = ev.data.path })
   end
-})
+end
+
+vim.api.nvim_create_autocmd('PackChanged', { callback = hooks })
 vim.pack.add({ "https://github.com/SalarAlo/rndr.nvim" })
-require("rndr").setup({ preview = { auto_open = true } })
-
--- --- Treesitter ---
-vim.api.nvim_create_autocmd("PackChanged", {
-  pattern = "*",
-  callback = function(ev)
-    if ev.data.spec.name == "nvim-treesitter" and ev.data.spec.kind ~= "deleted" then
-      vim.notify("Updating Treesitter Parsers...")
-      vim.cmd("TSUpdate")
-    end
-  end,
+require("rndr").setup({
+  preview = { auto_open = true },
+  git = {
+    timeout = 900 -- 15 minutes/timeout, assimp
+  }
 })
+
+local plugin_info = vim.pack.get({ "rndr.nvim" })[1]
+if plugin_info then
+  if vim.uv.fs_stat(plugin_info.path .. "/renderer/build/rndr") then
+  else
+    vim.system({ 'make' }, { cwd = plugin_info.path })
+  end
+end
+
 vim.pack.add({
-  { src = "https://github.com/nvim-treesitter/nvim-treesitter" },
-  'https://github.com/nvim-treesitter/nvim-treesitter-context'
-})
-local ts = require('nvim-treesitter')
-ts.install({ 'lua', 'c_sharp', 'vim', 'vimdoc', 'query', 'nix' })
-
-vim.api.nvim_create_autocmd("FileType", {
-  group = vim.api.nvim_create_augroup("TreesitterSetup", { clear = true }),
-  callback = function(args)
-    local bufnr = args.buf
-    local ft = vim.bo[bufnr].filetype
-    local lang = vim.treesitter.language.get_lang(ft)
-    if ft == "mininotify" or ft == "minipick" or ft == "minifiles" or ft == "" then return end
-    if not lang then return end
-    if not vim.tbl_contains(ts.get_available(), lang) then return end
-    local has_parser = pcall(vim.treesitter.get_parser, bufnr, lang)
-    if not has_parser then
-      ts.install(lang)
-      return
-    end
-    vim.wo[0][0].foldexpr = 'v:lua.vim.treesitter.foldexpr()'
-    vim.wo[0][0].foldmethod = 'expr'
-    vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
-    vim.treesitter.start()
-  end,
+  "https://github.com/arborist-ts/arborist.nvim",
 })
 
--- --- VimTeX (LaTeX Support) ---
-vim.pack.add({ "https://github.com/lervag/vimtex" })
-vim.g.tex_flavor = 'latex'
-vim.g.vimtex_compiler_progname = 'latexmk'
-vim.g.vimtex_view_method = 'skim'
-vim.g.vimtex_view_skim_sync = 1
-vim.g.vimtex_view_skim_activate = 1
-vim.g.vimtex_continuous = 1
-vim.g.vimtex_view_automatic = 1
-vim.g.vimtex_snippets_enable_autoload = 1
-vim.g.vimtex_compiler_latexmk = { out_dir = 'out' }
-
--- ===========================================================================
--- 7. [FINI] Final Setup
--- ===========================================================================
+require("arborist").setup()
 
 require('vim._core.ui2').enable({})
-
 -- UPDATE AND CLEANUP PLUGINS
-vim.api.nvim_create_autocmd("UIEnter", {
+vim.api.nvim_create_autocmd("VimEnter", {
   once = true,
-  callback = CheckPluginUpdates,
+  callback = function()
+    local today = os.date('%Y-%m-%d')
+    local state_file = vim.fn.stdpath('data') .. '/daily_task_date.txt'
+    local last_run = ''
+
+    if vim.fn.filereadable(state_file) == 1 then
+      local file = io.open(state_file, 'r')
+      if file then
+        last_run = file:read('*all')
+        file:close()
+      end
+    end
+
+    if last_run ~= today then
+      vim.notify('Syncing lockfile and updating packages...', vim.log.levels.INFO)
+      pcall(vim.api.nvim_cmd, { cmd = "packupdate!", args = {} }, {})
+
+      local file = io.open(state_file, 'w')
+      if file then
+        file:write(today)
+        file:close()
+      end
+    end
+
+    pcall(vim.api.nvim_cmd, { cmd = "packdel", args = { "++all" } }, {})
+  end,
 })
