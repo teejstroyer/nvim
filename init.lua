@@ -149,8 +149,10 @@ vim.pack.add({
   'https://github.com/nvim-tree/nvim-web-devicons',
   'https://github.com/shorya-1012/buffer_walker.nvim',
   'https://github.com/HakonHarnes/img-clip.nvim',
-  'https://github.com/nvim-lualine/lualine.nvim'
+  'https://github.com/nvim-lualine/lualine.nvim',
+  'https://github.com/MunifTanjim/nui.nvim'
 })
+
 
 require('lualine').setup({ options = { theme = "gruvbox" } })
 require('nvim-web-devicons').setup()
@@ -366,6 +368,13 @@ vim.pack.add({
 })
 
 require("arborist").setup()
+
+vim.pack.add({ 'https://github.com/kawre/leetcode.nvim' })
+require("leetcode").setup({
+  lang = "csharp",
+  picker = { provider = "fzf-lua" },
+
+})
 
 require('vim._core.ui2').enable({})
 -- UPDATE AND CLEANUP PLUGINS
