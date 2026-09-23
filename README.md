@@ -13,5 +13,11 @@
            ╚═════╝ ╚═════╝ ╚═╝  ╚═══╝╚═╝     ╚═╝ ╚═════╝
 ```
 
-
 > A constant work in progress.
+
+---
+
+### Image Test
+
+![Neovim Logo](https://upload.wikimedia.org/wikipedia/commons/3/3a/Neovim-mark.svg)
+![Neovim Logo]("~/Downloads/TRMNL  Dashboard.png")
